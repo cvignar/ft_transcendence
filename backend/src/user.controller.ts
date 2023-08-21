@@ -25,4 +25,6 @@ export class UserController {
   ): Promise<UserModel> {
     return this.userService.createUser(userData);
   }
+
+  
 }
