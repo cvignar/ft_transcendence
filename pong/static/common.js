@@ -117,3 +117,19 @@ export class Player {
         return this.side;
     }
 }
+export class Partners {
+    constructor() {
+        this.partner = {};
+        this.partnersList = new Array;
+    }
+    getPartnersList(pongs, excludingId) {
+        for (let socketId of pongs.keys()) {
+            if (socketId != excludingId &&
+                (pongs.get(socketId).leftPlayer == '' || pongs.get(socketId).rightPlayer == '')) {
+                this.partner = { socket_id: socketId, nick_name: pongs.get(socketId).owner };
+                this.partnersList.push(this.partner);
+            }
+        }
+        return this.partnersList;
+    }
+}

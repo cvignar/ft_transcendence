@@ -16,6 +16,9 @@ var canvas = document.getElementById('canvas');
 canvas.addEventListener('mousemove', function(mouse) {
 	controls.mousemove(mouse.offsetY);
 });
+canvas.addEventListener('click', function(mouse) {
+	controls.pause();
+});
 
 // Player
 socket.emit('new player');
