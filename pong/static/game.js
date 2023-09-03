@@ -16,7 +16,7 @@ var canvas = document.getElementById('canvas');
 canvas.addEventListener('mousemove', function(mouse) {
 	controls.mousemove(mouse.offsetY);
 });
-canvas.addEventListener('click', function(mouse) {
+canvas.addEventListener('click', function() {
 	controls.pause();
 });
 
@@ -52,7 +52,9 @@ selector.select.addEventListener('change', function(socket_id) {
 
 // Confipm partner
 socket.on('confipm partner', function(partner) {
+	var pauseBefor = true;
 	if (controls.gameStatus != GameStatus.PAUSED) {
+		pauseBefor = false;
 		controls.pause();
 	}
 	sounds.playSound(Sound.SPEEDUP);
@@ -61,17 +63,25 @@ socket.on('confipm partner', function(partner) {
 		socket.emit('partner confirmation', partner[0]);
 		controls.new();
 	} else {
-		controls.pause();
+		if (!pauseBefor) {
+			controls.pause();
+		}
 		socket.emit('refusal', partner[0]);
 	}
 });
 
 // Alert 'partner unavailable'
 socket.on('partner unavailable', function() {
-	controls.pause();
+	var pauseBefor = true;
+	if (controls.gameStatus != GameStatus.PAUSED) {
+		pauseBefor = false;
+		controls.pause();
+	}
 	sounds.playSound(Sound.SPEEDUP);
 	alert('Sorry, partner is unavailable');
-	controls.pause();
+	if (!pauseBefor) {
+		controls.pause();
+	}
 });
 
 // Pong events

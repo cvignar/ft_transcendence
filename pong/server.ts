@@ -1,5 +1,4 @@
 import http from 'http';
-import path from 'path';
 import socketIO from './node_modules/socket.io/dist/index.js';
 import express from 'express';
 import { Player } from './static/common.js';
