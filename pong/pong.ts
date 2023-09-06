@@ -142,7 +142,7 @@ export class Pong extends PongOptions {
 	gameAndSetPreparation() {
 		if (this.newGame) {
 			this.servePreparation(true);
-			this.pathStartTime = 0;
+			this.pathStartTime = Date.now();
 			this.pathStart.copy(this.ball.center);
 			this.ball.visibility = false;
 			this.clickCounter = 0;
@@ -167,7 +167,7 @@ export class Pong extends PongOptions {
 				} else {
 					this.servePreparation(false);
 					this.setSound(Sound.SERVE);
-					this.pathStartTime = 0;
+					this.pathStartTime = Date.now();
 					this.pathStart.copy(this.ball.center);
 					this.status = GameStatus.PLAYING;
 				}
@@ -415,7 +415,7 @@ export class Pong extends PongOptions {
 		if (this.status == GameStatus.INACTIVE) {
 			this.gameAndSetPreparation();
 		} else if (this.status == GameStatus.PAUSED) {
-			this.pathStartTime = 0;
+			this.pathStartTime = Date.now();
 			this.pathStart.copy(this.ball.center);
 		} else if (this.status == GameStatus.PLAYING) {
 			if (
@@ -428,9 +428,6 @@ export class Pong extends PongOptions {
 				if (!this.rightPlayer) {
 					this.autoGamer(this.rightPaddle);
 				}
-			}
-			if (this.pathStartTime == 0) {
-				this.pathStartTime = Date.now();
 			}
 			this.oneBallPath();
 		}

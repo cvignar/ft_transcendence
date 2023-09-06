@@ -24,7 +24,7 @@ RUN . $NVM_DIR/nvm.sh \
 	&& npm i \
 	&& npx tsc
 
-EXPOSE 80
+EXPOSE 10080
 
 #ENTRYPOINT [ "/bin/bash" ]
 #CMD [ "npm", "start" ]

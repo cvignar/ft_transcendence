@@ -1,4 +1,4 @@
-import { GameMode, Side, Sound } from './common.js';
+import { GameMode, GameStatus, Side, Sound } from './common.js';
 import { Options, ImageOptions } from './options.js';
 import * as geometry from './geometry.js';
 export class Score {
@@ -246,11 +246,11 @@ export class Sounds {
 export class Image extends ImageOptions {
     constructor(canvasId) {
         super();
+        this.canvasId = canvasId;
         this.pathStartTime = 0;
         this.pathStart = new geometry.Vec(0, 0);
         this.ballSpeed = new geometry.Vec(0, 0);
         this.ball = new geometry.Vec(0, 0);
-        this.canvasId = canvasId;
         this.canvas = document.getElementById(this.canvasId);
         if (!this.canvas)
             return;
@@ -268,20 +268,28 @@ export class Image extends ImageOptions {
         return true;
     }
     ballMove(pathStart, speed, dt) {
-        this.ball.x = pathStart.x + Math.round(speed.x * dt);
-        this.ball.y = pathStart.y + Math.round(speed.y * dt);
+        this.ball.x = pathStart.x + Math.round(speed.x * dt / 1000);
+        this.ball.y = pathStart.y + Math.round(speed.y * dt / 1000);
     }
     render(state, score) {
-        const dt = (Date.now() - this.pathStartTime) / 1000;
         if (state.sound != 0) {
-            console.log('!!!!!!!!!!!!!!!!!!!');
-            this.pathStartTime = 0;
+            this.pathStartTime = Date.now();
             this.pathStart.x = state.ballCenter_x;
             this.pathStart.y = state.ballCenter_y;
             this.ballSpeed.x = state.ballSpeed_x;
             this.ballSpeed.y = state.ballSpeed_y;
         }
-        this.ballMove(this.pathStart, this.ballSpeed, dt);
+        if (state.status != GameStatus.PAUSED) {
+            let dt = (Date.now() - this.pathStartTime);
+            this.ballMove(this.pathStart, this.ballSpeed, dt);
+        }
+        else {
+            this.pathStartTime = Date.now();
+            this.pathStart.x = state.ballCenter_x;
+            this.pathStart.y = state.ballCenter_y;
+            this.ball.x = state.ballCenter_x;
+            this.ball.y = state.ballCenter_y;
+        }
         this.clear();
         this.drawBack();
         this.drawScore(score);
