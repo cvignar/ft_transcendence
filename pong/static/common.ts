@@ -92,6 +92,9 @@ export class BrowserMsg {
 export class ServerMsg {
 	ballCenter_x: number;
 	ballCenter_y: number;
+	ballSpeed_x: number;
+	ballSpeed_y: number;
+	paddleSide: Side;
 	leftPaddle_y: number;
 	rightPaddle_y: number;
 	leftScore: number;
@@ -102,6 +105,9 @@ export class ServerMsg {
 	constructor() {
 		this.ballCenter_x = PONG_INFINITY;
 		this.ballCenter_y = PONG_INFINITY;
+		this.ballSpeed_x = 0;
+		this.ballSpeed_y = 0;
+		this.paddleSide = Side.RIGHT;
 		this.leftPaddle_y = Options.paddleStart_yPos;
 		this.rightPaddle_y = Options.paddleStart_yPos;
 		this.leftScore = 0;

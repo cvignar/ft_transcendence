@@ -1,5 +1,6 @@
 import { GameMode, Side, Sound } from './common.js';
 import { Options, ImageOptions } from './options.js';
+import * as geometry from './geometry.js';
 export class Score {
     constructor() {
         this.left = 0;
@@ -245,6 +246,10 @@ export class Sounds {
 export class Image extends ImageOptions {
     constructor(canvasId) {
         super();
+        this.pathStartTime = 0;
+        this.pathStart = new geometry.Vec(0, 0);
+        this.ballSpeed = new geometry.Vec(0, 0);
+        this.ball = new geometry.Vec(0, 0);
         this.canvasId = canvasId;
         this.canvas = document.getElementById(this.canvasId);
         if (!this.canvas)
@@ -262,14 +267,28 @@ export class Image extends ImageOptions {
         }
         return true;
     }
+    ballMove(pathStart, speed, dt) {
+        this.ball.x = pathStart.x + Math.round(speed.x * dt);
+        this.ball.y = pathStart.y + Math.round(speed.y * dt);
+    }
     render(state, score) {
+        const dt = (Date.now() - this.pathStartTime) / 1000;
+        if (state.sound != 0) {
+            console.log('!!!!!!!!!!!!!!!!!!!');
+            this.pathStartTime = 0;
+            this.pathStart.x = state.ballCenter_x;
+            this.pathStart.y = state.ballCenter_y;
+            this.ballSpeed.x = state.ballSpeed_x;
+            this.ballSpeed.y = state.ballSpeed_y;
+        }
+        this.ballMove(this.pathStart, this.ballSpeed, dt);
         this.clear();
         this.drawBack();
         this.drawScore(score);
         this.drawDividingNet();
         this.drawLeftPaddle(state.leftPaddle_y);
         this.drawRightPaddle(state.rightPaddle_y);
-        this.drawBall(state.ballCenter_x, state.ballCenter_y);
+        this.drawBall(this.ball.x, this.ball.y);
     }
     clear() {
         this.context.clearRect(0, 0, Image.width, Image.height);

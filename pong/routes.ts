@@ -51,4 +51,9 @@ export function routes(app: any) {
 		response.header('Content-Type: text/javascript');
 		response.sendFile(path.join(__dirname, '/static/common.js'));
 	});
+
+	app.get('/geometry.js', function(request: any, response: { header: (arg0: string) => void; sendFile: (arg0: string) => void; }) {
+		response.header('Content-Type: text/javascript');
+		response.sendFile(path.join(__dirname, '/static/geometry.js'));
+	});
 }
