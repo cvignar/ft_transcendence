@@ -1,5 +1,5 @@
 var _a, _b, _c, _d;
-class Options {
+export class Options {
 }
 _a = Options;
 Options.port = 5000;
@@ -18,8 +18,7 @@ Options.paddle_zoneHeight = _a.paddle_height / _a.paddle_zones;
 Options.paddleStart_yPos = Math.round(_a.height / 2) - Math.round(_a.paddle_height / 2);
 Options.leftPaddle_xPos = _a.paddle_width;
 Options.rightPaddle_xPos = _a.width - 2 * _a.paddle_width;
-export { Options };
-class PongOptions extends Options {
+export class PongOptions extends Options {
 }
 _b = PongOptions;
 PongOptions.fieldOfBallCenter_xPos = _b.leftPaddle_xPos + _b.paddle_width + _b.ball_radius;
@@ -39,9 +38,8 @@ PongOptions.ball_startSpeed = 100 * _b.line_width;
 PongOptions.ball_StartClicksForSpeedup = 12;
 PongOptions.ball_speedUp = 1.2;
 PongOptions.ball_speedUpMax = 6;
-PongOptions.calculation_period = 1000 / 30;
-export { PongOptions };
-class ControlOptions extends Options {
+PongOptions.calculation_period = 1000 / 60;
+export class ControlOptions extends Options {
 }
 _c = ControlOptions;
 ControlOptions.key_space = 32;
@@ -53,8 +51,7 @@ ControlOptions.key_arrowUp = 38;
 ControlOptions.key_arrowDown = 40;
 ControlOptions.paddle_keyMove = Math.round(_c.paddle_height / 8);
 ControlOptions.key_interval = 1000 / 100;
-export { ControlOptions };
-class ImageOptions extends Options {
+export class ImageOptions extends Options {
 }
 _d = ImageOptions;
 ImageOptions.color_back = 'black';
@@ -71,5 +68,4 @@ ImageOptions.score_fontSize = 18 * _d.line_width;
 ImageOptions.score_font = _d.score_fontSize.toString() + 'px ' + 'Courier Prime';
 ImageOptions.score_font1 = _d.score_fontSize.toString() + 'px ' + 'Share Tech Mono';
 ImageOptions.score_font2 = _d.score_fontSize.toString() + 'px ' + 'VT323';
-ImageOptions.rendering_period = 1000 / 30;
-export { ImageOptions };
+ImageOptions.rendering_period = 1000 / 60;

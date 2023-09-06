@@ -23,7 +23,7 @@ up:
 	docker build . --tag pong
 	rm -f pong.zip
 #	docker run pong
-	docker run -p 80:80 -it pong /bin/bash
+	docker run -p 10080:10080 -it pong /bin/bash
 	@echo "======================================"
 	docker images
 	@echo "======================================"
