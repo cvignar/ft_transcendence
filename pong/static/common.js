@@ -89,6 +89,9 @@ export class ServerMsg {
     constructor() {
         this.ballCenter_x = PONG_INFINITY;
         this.ballCenter_y = PONG_INFINITY;
+        this.ballSpeed_x = 0;
+        this.ballSpeed_y = 0;
+        this.paddleSide = Side.RIGHT;
         this.leftPaddle_y = Options.paddleStart_yPos;
         this.rightPaddle_y = Options.paddleStart_yPos;
         this.leftScore = 0;

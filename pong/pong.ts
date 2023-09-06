@@ -318,6 +318,9 @@ export class Pong extends PongOptions {
 		this.state.ballCenter_y = this.ball.visibility
 			? this.ball.center.y
 			: PONG_INFINITY;
+		this.state.ballSpeed_x = this.ballSpeed.x;
+		this.state.ballSpeed_y = this.ballSpeed.y;
+		this.state.paddleSide = side;
 		this.state.leftPaddle_y = this.leftPaddle.visibility
 			? this.leftPaddle.v0.y
 			: PONG_INFINITY;
@@ -408,7 +411,7 @@ export class Pong extends PongOptions {
 			this.giveControl();
 		}
 	}
-	calculate(){
+	calculate() {
 		if (this.status == GameStatus.INACTIVE) {
 			this.gameAndSetPreparation();
 		} else if (this.status == GameStatus.PAUSED) {

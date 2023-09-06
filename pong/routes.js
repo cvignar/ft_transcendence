@@ -40,4 +40,8 @@ export function routes(app) {
         response.header('Content-Type: text/javascript');
         response.sendFile(path.join(__dirname, '/static/common.js'));
     });
+    app.get('/geometry.js', function (request, response) {
+        response.header('Content-Type: text/javascript');
+        response.sendFile(path.join(__dirname, '/static/geometry.js'));
+    });
 }
