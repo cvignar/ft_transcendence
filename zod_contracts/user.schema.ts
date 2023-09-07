@@ -23,9 +23,14 @@ const UserSchema = z.object({
 	hashedRtoken: z.string(),
 });
 
-
+const CreateUserSchema = UserSchema.pick({
+	id: true,
+	username: true,
+	email: true,
+	hash: true,
+});
 
 export namespace CreateUser {
-	export class Request extends createZodDto(UserSchema) {}
+	export class Request extends createZodDto(CreateUserSchema) {}
 }
 
