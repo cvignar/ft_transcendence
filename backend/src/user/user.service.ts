@@ -52,13 +52,21 @@ export class UserService {
 //   }
 
   async createUser(userData: CreateUser.Request): Promise<User> {
-    return await this.prisma.user.create({
-		data: {
-			id: userData.id,
-			email: userData.email,
-			username: userData.username,
-		},
-    });
+	try{
+		const user = await this.prisma.user.create({
+			data: {
+				id: userData.id,
+				username: userData.username,
+				email: userData.email,
+				hash: userData.hash,
+			},
+		});
+		return user;
+	}
+	catch (error) {
+		console.error(`createChannel error: ${error}`);
+		// throw new WsException(error.message);
+	}
   }
 
   async updateUser(params: {

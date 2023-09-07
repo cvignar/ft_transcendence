@@ -18,7 +18,7 @@ model User {
 
   email    String  @unique
   username String? @unique
-  // hash		String
+  hash		String
   avatar   String?
 
   // hashedRtoken	String?
