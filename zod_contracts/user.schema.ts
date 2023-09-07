@@ -23,6 +23,12 @@ const UserSchema = z.object({
 	hashedRtoken: z.string(),
 });
 
+
+/** 
+ * @description
+ * This is the schema for the request body of the POST /user/create endpoint.
+ */
+
 const CreateUserSchema = UserSchema.pick({
 	id: true,
 	username: true,
@@ -34,3 +40,44 @@ export namespace CreateUser {
 	export class Request extends createZodDto(CreateUserSchema) {}
 }
 
+/**
+ * @description
+ * This is the schema for the request body of the POST /user/update_username endpoint.
+*/
+
+const UpdateUsernameSchema = UserSchema.pick({
+	id: true,
+	username: true,
+});
+
+export namespace UpdateUsername {
+	export class Request extends createZodDto(UpdateUsernameSchema) {}
+}
+
+/**
+ * @description
+ * This is the schema for the request body of the POST /user/update_email endpoint.
+ */
+
+const UpdateEmailSchema = UserSchema.pick({
+	id: true,
+	email: true,
+});
+
+export namespace UpdateEmail {
+	export class Request extends createZodDto(UpdateEmailSchema) {}
+}
+
+/**
+ * @description
+ * This is the schema for the request body of the POST /user/update_avatar endpoint.
+ */
+
+const UpdateAvatarSchema = UserSchema.pick({
+	id: true,
+	avatar: true,
+});
+
+export namespace UpdateAvatar {
+	export class Request extends createZodDto(UpdateAvatarSchema) {}
+}
