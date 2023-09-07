@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from '@prisma/client';
-import { CreateUser } from '../../contracts/user.schema';
+import { CreateUser } from '../../../zod_contracts/user.schema';
 
 @Controller()
 export class UserController {

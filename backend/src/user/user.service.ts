@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from './prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
-import { ChannelService } from './channel.service';
-import { CreateUser } from '../../contracts/user.schema'
+// import { ChannelService } from './channel.service';
+import { CreateUser } from '../../../zod_contracts/user.schema'
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService,
-				private channelService: ChannelService) {}
+  constructor(private prisma: PrismaService) {}
 
 	async getUserById(userId: number) {
 		try {
@@ -53,7 +52,7 @@ export class UserService {
 //   }
 
   async createUser(userData: CreateUser.Request): Promise<User> {
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
 		data: {
 			id: userData.id,
 			email: userData.email,
