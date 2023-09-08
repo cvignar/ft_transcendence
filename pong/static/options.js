@@ -2,7 +2,7 @@ var _a, _b, _c, _d;
 export class Options {
 }
 _a = Options;
-Options.port = 5000;
+Options.port = 1180;
 Options.width = 800;
 Options.maxWins = 6;
 Options.serveNum = 2;
