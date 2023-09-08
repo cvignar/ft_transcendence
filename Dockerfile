@@ -15,6 +15,6 @@ RUN npm install \
 	&& npm install -g npm@10.0.0 \
 	&& npm i
 
-EXPOSE 80
+EXPOSE 10080
 
 CMD [ "npm", "start" ]
