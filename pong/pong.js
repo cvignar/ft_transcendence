@@ -382,9 +382,6 @@ export class Pong extends PongOptions {
                     this.autoGamer(this.rightPaddle);
                 }
             }
-            // if (this.pathStartTime == 0) {
-            // 	this.pathStartTime = Date.now();
-            // }
             this.oneBallPath();
         }
         this.leftPaddle.speedometer();

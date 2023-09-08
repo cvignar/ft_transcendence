@@ -116,6 +116,20 @@ export class ServerMsg {
 		this.status  = GameStatus.INACTIVE;
 		this.sound = Sound.HUSH;
 	}
+	copy(state: ServerMsg) {
+		this.ballCenter_x = state.ballCenter_x;
+		this.ballCenter_y = state.ballCenter_y;
+		this.ballSpeed_x = state.ballSpeed_x;
+		this.ballSpeed_y = state.ballSpeed_y;
+		this.paddleSide = state.paddleSide;
+		this.leftPaddle_y = state.leftPaddle_y;
+		this.rightPaddle_y = state.rightPaddle_y;
+		this.leftScore = state.leftScore;
+		this.rightScore = state.rightScore;
+		this.mode = state.mode;
+		this.status = state.status;
+		this.sound = state.sound;
+	}
 }
 
 export class Player {

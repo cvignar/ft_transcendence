@@ -1,5 +1,5 @@
 import { GameMode, GameStatus, Side, Sound } from './common.js';
-import { Options, ImageOptions } from './options.js';
+import { Options, ImageOptions, PongOptions } from './options.js';
 import * as geometry from './geometry.js';
 export class Score {
     constructor() {
@@ -251,6 +251,9 @@ export class Image extends ImageOptions {
         this.pathStart = new geometry.Vec(0, 0);
         this.ballSpeed = new geometry.Vec(0, 0);
         this.ball = new geometry.Vec(0, 0);
+        this.leftPaddle_y = 0;
+        this.rightPaddle_y = 0;
+        this.mouse_y = 0;
         this.canvas = document.getElementById(this.canvasId);
         if (!this.canvas)
             return;
@@ -271,31 +274,54 @@ export class Image extends ImageOptions {
         this.ball.x = pathStart.x + Math.round(speed.x * dt / 1000);
         this.ball.y = pathStart.y + Math.round(speed.y * dt / 1000);
     }
-    render(state, score) {
-        if (state.sound != 0) {
+    mousemove(y) {
+        this.mouse_y = Options.height - 1 - y - Options.paddle_height / 2;
+        if (this.mouse_y < 0 || this.mouse_y > PongOptions.paddle_yPosLimit)
+            this.mouse_y = -1;
+    }
+    renderData(browserState) {
+        if (browserState.sound != Sound.HUSH) {
             this.pathStartTime = Date.now();
-            this.pathStart.x = state.ballCenter_x;
-            this.pathStart.y = state.ballCenter_y;
-            this.ballSpeed.x = state.ballSpeed_x;
-            this.ballSpeed.y = state.ballSpeed_y;
+            this.pathStart.x = browserState.ballCenter_x;
+            this.pathStart.y = browserState.ballCenter_y;
+            this.ballSpeed.x = browserState.ballSpeed_x;
+            this.ballSpeed.y = browserState.ballSpeed_y;
         }
-        if (state.status != GameStatus.PAUSED) {
+        if (browserState.status != GameStatus.PAUSED) {
             let dt = (Date.now() - this.pathStartTime);
             this.ballMove(this.pathStart, this.ballSpeed, dt);
         }
         else {
             this.pathStartTime = Date.now();
-            this.pathStart.x = state.ballCenter_x;
-            this.pathStart.y = state.ballCenter_y;
-            this.ball.x = state.ballCenter_x;
-            this.ball.y = state.ballCenter_y;
+            this.pathStart.x = browserState.ballCenter_x;
+            this.pathStart.y = browserState.ballCenter_y;
+            this.ball.x = browserState.ballCenter_x;
+            this.ball.y = browserState.ballCenter_y;
         }
+        if (this.mouse_y > -1 &&
+            (browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME)) {
+            if (browserState.paddleSide == Side.RIGHT) {
+                this.leftPaddle_y = browserState.leftPaddle_y;
+                this.rightPaddle_y = this.mouse_y;
+            }
+            else {
+                this.leftPaddle_y = this.mouse_y;
+                this.rightPaddle_y = browserState.rightPaddle_y;
+            }
+        }
+        else {
+            this.leftPaddle_y = browserState.leftPaddle_y;
+            this.rightPaddle_y = browserState.rightPaddle_y;
+        }
+    }
+    render(browserState, score) {
+        this.renderData(browserState);
         this.clear();
         this.drawBack();
         this.drawScore(score);
         this.drawDividingNet();
-        this.drawLeftPaddle(state.leftPaddle_y);
-        this.drawRightPaddle(state.rightPaddle_y);
+        this.drawLeftPaddle(this.leftPaddle_y);
+        this.drawRightPaddle(this.rightPaddle_y);
         this.drawBall(this.ball.x, this.ball.y);
     }
     clear() {

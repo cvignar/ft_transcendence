@@ -1,10 +1,13 @@
-import { GameCmd, GameMode, GameStatus, Sound } from './common.js';
+import { BrowserMsg, GameCmd, GameMode, GameStatus, ServerMsg, Sound } from './common.js';
 import { Controls, Selector } from './controls.js';
 import { Score, Image, Sounds } from './image.js';
+import { PongOptions } from './options.js';
 
 var socket = io();
 var nickname = '';
 var renderTimer = 0;
+var serverPollTimer = 0;
+var browserState = new ServerMsg();
 const controls = new Controls(socket);
 const selector = new Selector('PARTNERS');
 const image = new Image('canvas');
@@ -15,6 +18,7 @@ const score = new Score();
 var canvas = document.getElementById('canvas');
 canvas.addEventListener('mousemove', function(mouse) {
 	controls.mousemove(mouse.offsetY);
+	image.mousemove(mouse.offsetY);
 });
 canvas.addEventListener('click', function() {
 	controls.pause();
@@ -92,17 +96,20 @@ socket.on('pong launched', function() {
 		{
 			setTimeout(function() {
 			controls.emitCmd(controls.lastCmd);
-			}, Image.rendering_period );
+			}, PongOptions.calculation_period );
 		}
-		renderTimer = setInterval(function() {
+		serverPollTimer = setInterval(function() {
 			socket.emit('state');
+		}, PongOptions.calculation_period);
+		renderTimer = setInterval(function() {
+			sounds.play(browserState);
+			controls.colorizeButtons(browserState);
+			image.render(browserState, score.get(browserState), controls.msg);
 		}, Image.rendering_period);
 	}
 });
 socket.on('state', function(state) {
-	sounds.play(state);
-	controls.colorizeButtons(state);
-	image.render(state, score.get(state));
+		browserState.copy(state);
 	if (score.mode == GameMode.STOPPING) {
 		controls.stop();
 	}
@@ -112,9 +119,11 @@ socket.on('pong deleted', function() {
 	controls.normalizeButtons();
 	score.clear();
 	clearInterval(renderTimer);
+	clearInterval(serverPollTimer);
 	image.clear();
 });
 
 socket.on('disconnect', function() {
 	clearInterval(renderTimer);
+	clearInterval(serverPollTimer);
 });
