@@ -13,10 +13,8 @@ WORKDIR /pong
 
 RUN npm install \
 	&& npm install -g npm@10.0.0 \
-	&& npm install typescript tsc \
-	&& npm i \
-	&& npx tsc
+	&& npm i
 
-EXPOSE 11080
+EXPOSE 80
 
 CMD [ "npm", "start" ]
