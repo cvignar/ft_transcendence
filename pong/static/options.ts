@@ -1,5 +1,5 @@
 export class Options {
-	static port: number = 5000;
+	static port: number = 1180;
 	static width: number = 800;
 	static maxWins: number = 6;
 	static serveNum: number = 2;

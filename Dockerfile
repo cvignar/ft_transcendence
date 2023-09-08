@@ -1,30 +1,22 @@
-FROM debian:buster
+FROM node:18
 
-RUN apt-get update \
-	&& apt-get install curl unzip -y
+RUN apt-get install unzip -y
 
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
 COPY pong.zip .
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash \
-	&& . $NVM_DIR/nvm.sh \
-	&& nvm install $NODE_VERSION \
-	&& nvm use $NODE_VERSION \
-	&& nvm alias default $NODE_VERSION \
-	&& echo "source $NVM_DIR/nvm.sh" >> /root/.bashrc \
-	&& unzip pong.zip \
+RUN unzip pong.zip \
 	&& rm -f pong.zip
 
 WORKDIR /pong
 
-RUN . $NVM_DIR/nvm.sh \
-	&& npm install \
+RUN npm install \
+	&& npm install -g npm@10.0.0 \
 	&& npm install typescript tsc \
 	&& npm i \
 	&& npx tsc
 
-EXPOSE 10080
+EXPOSE 11080
 
-#ENTRYPOINT [ "/bin/bash" ]
-#CMD [ "npm", "start" ]
+CMD [ "npm", "start" ]
