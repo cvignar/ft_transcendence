@@ -38,7 +38,7 @@ PongOptions.ball_startSpeed = 100 * _b.line_width;
 PongOptions.ball_StartClicksForSpeedup = 12;
 PongOptions.ball_speedUp = 1.2;
 PongOptions.ball_speedUpMax = 6;
-PongOptions.calculation_period = 1000 / 60;
+PongOptions.calculation_period = 1000 / 30;
 export class ControlOptions extends Options {
 }
 _c = ControlOptions;
@@ -68,4 +68,4 @@ ImageOptions.score_fontSize = 18 * _d.line_width;
 ImageOptions.score_font = _d.score_fontSize.toString() + 'px ' + 'Courier Prime';
 ImageOptions.score_font1 = _d.score_fontSize.toString() + 'px ' + 'Share Tech Mono';
 ImageOptions.score_font2 = _d.score_fontSize.toString() + 'px ' + 'VT323';
-ImageOptions.rendering_period = 1000 / 60;
+ImageOptions.rendering_period = 1000 / 100;
