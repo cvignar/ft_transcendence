@@ -7,7 +7,7 @@ export function newPlayer(socket, players, nickname, nick_name) {
         if (!nickname) {
             nickname = nick_name;
         }
-        players.set(socket.id, new Player(nickname, Side.RIGHT));
+        players.set(socket.id, new Player(socket.id, nickname, Side.RIGHT));
         socket.emit('player created', nickname);
         if (Options.debug)
             console.log((_a = players.get(socket.id)) === null || _a === void 0 ? void 0 : _a.nickname, 'new player');

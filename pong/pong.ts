@@ -63,6 +63,7 @@ export class Pong extends PongOptions {
 	status: GameStatus = GameStatus.INACTIVE;
 	ownerSide: Side = Side.RIGHT;
 	owner: string = '';
+	partnerSocketId = '';
 	leftPlayer: string = '';
 	rightPlayer: string = '';
 	leftScore: number = 0;

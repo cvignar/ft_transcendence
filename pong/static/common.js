@@ -116,8 +116,9 @@ export class ServerMsg {
     }
 }
 export class Player {
-    constructor(nickname, side) {
+    constructor(socketId, nickname, side) {
         this.side = Side.RIGHT;
+        this.socketId = socketId;
         this.nickname = nickname;
         this.side = side;
     }
