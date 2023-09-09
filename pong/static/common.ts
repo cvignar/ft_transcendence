@@ -133,9 +133,11 @@ export class ServerMsg {
 }
 
 export class Player {
+	socketId: string;
 	nickname: string;
 	side: Side = Side.RIGHT;
-	constructor(nickname: string, side: Side) {
+	constructor(socketId: string, nickname: string, side: Side) {
+		this.socketId = socketId;
 		this.nickname = nickname;
 		this.side = side;
 	}
