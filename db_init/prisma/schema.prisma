@@ -1,0 +1,50 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+	id			Int			@id @default(autoincrement())
+  id42    Int
+
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+
+	email		String		@unique
+	username	String?		@unique  
+	hash		String
+	avatar		String?
+
+	hashedRtoken	String?
+	twoFAsecret		String?
+	twoFA			Boolean?	@default(false)
+
+	gamesWon		Int     @default(0)
+	gamesLost		Int     @default(0)
+	gamesPlayed		Int     @default(0)
+	gameHistory		Int[]
+	
+
+	winRate			Float?
+	playTime		Int		@default(0)
+	score			Int		@default(1200)
+	rank			Int?
+
+	friends		Int[]
+	adding		Int[]	
+	added		Int[]		
+
+	blocks		Int[]
+	blocking	Int[]
+	blocked		Int[]
+
+	@@unique([id, email])
+	@@map("users")    //mapped to another name
+}

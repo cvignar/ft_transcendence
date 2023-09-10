@@ -7,7 +7,7 @@ psls:
 	docker ps -a
 
 mkdir:
-	sudo mkdir -p ./db_vol
+	sudo mkdir -p ../db_vol
 	
 up:
 	docker-compose up -d --build
@@ -29,7 +29,7 @@ vol:
 	docker volume rm $$(docker volume ls -q)
 
 vold:
-	sudo rm -fr ./db_vol
+	sudo rm -fr ../db_vol
 	
 rst:
 	sudo systemctl restart docker
