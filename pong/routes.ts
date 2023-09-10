@@ -1,9 +1,34 @@
 import path from 'path';
 import { Options } from './static/options.js';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import * as url from 'url';
-import { nickname } from './server.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
+export class UserData {
+	nickname: any = '';
+	id:	any = '';
+	constructor(app: any) {
+		app.get('/', (request: Request, response: Response) => {
+			if (request && request.query) {
+				this.nickname = request.query['nickname'];
+				this.id = request.query['id'];
+			}
+			console.log(request.query['nickname']);
+			response.header('Content-Type: text/html');
+			response.sendFile(path.join(__dirname, '/html/index.html'));
+		});
+	}
+	getNickname(): any {
+		const nick = this.nickname;
+		this.nickname = '';
+		return nick;
+	}
+	getId(): any {
+		const id = this.id;
+		this.id = '';
+		return id;
+	}
+}
 
 export function routes(app: any) {
 
@@ -12,10 +37,6 @@ export function routes(app: any) {
 	app.use('/static', express.static(__dirname + '/static'));
 	app.use('/sounds', express.static(__dirname + '/sounds'));
 
-	app.get('/', function(request: any, response: { header: (arg0: string) => void; sendFile: (arg0: any) => void; }) {
-		response.header('Content-Type: text/html');
-		response.sendFile(path.join(__dirname, '/html/index.html'));
-	});
 
 	app.get('/socket.io.js', function(request: any, response: { header: (arg0: string) => void; sendFile: (arg0: string) => void; }) {
 		response.header('Content-Type: text/javascript');
