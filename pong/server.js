@@ -1,6 +1,7 @@
 import http from 'http';
 import socketIO from './node_modules/socket.io/dist/index.js';
 import express from 'express';
+import { Side } from './static/common.js';
 import { Options } from './static/options.js';
 import { Pong } from './pong.js';
 import { routes } from './routes.js';
@@ -43,8 +44,13 @@ io.on('connection', (socket) => {
 });
 // Calculation loop
 setInterval(function () {
-    var _a;
+    var _a, _b;
     for (const socketId of pongs.keys()) {
-        (_a = pongs.get(socketId)) === null || _a === void 0 ? void 0 : _a.calculate();
+        let pong = pongs.get(socketId);
+        if (pong) {
+            pong.calculate();
+            (_a = io.sockets.sockets.get(socketId)) === null || _a === void 0 ? void 0 : _a.emit('state', pong.getPongState(pong.ownerSide));
+            (_b = io.sockets.sockets.get(pong.partnerSocketId)) === null || _b === void 0 ? void 0 : _b.emit('state', pong.getPongState(pong.ownerSide == Side.LEFT ? Side.RIGHT : Side.LEFT));
+        }
     }
 }, Pong.calculation_period);

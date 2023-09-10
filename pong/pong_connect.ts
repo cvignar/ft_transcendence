@@ -113,7 +113,7 @@ export function partnerConfirmation(socket: any, io: any, players: any, pongs: a
 		partner.side = pong.setPartner(partner);
 		socket.emit('players', [pong.leftPlayer, pong.rightPlayer]);
 		partnerSocket.emit('players', [pong.leftPlayer, pong.rightPlayer]);
-		pongs.set(partnerSocket.id, pong);
+		// pongs.set(partnerSocket.id, pong);
 		partnerSocket.emit('pong launched');
 	} else {
 		partnerSocket.emit('partner unavailable');
@@ -126,6 +126,6 @@ export function refusal(socket: any, io: any, players: any, socket_id: any) {
 	}
 	const partnerSocket = io.sockets.sockets.get(socket_id);
 	if (partnerSocket) {
-		partnerSocket.emit('partner unavailable');
+		// partnerSocket.emit('partner unavailable');
 	}
 }

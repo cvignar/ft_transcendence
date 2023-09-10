@@ -98,9 +98,9 @@ socket.on('pong launched', function() {
 			controls.emitCmd(controls.lastCmd);
 			}, PongOptions.calculation_period );
 		}
-		serverPollTimer = setInterval(function() {
-			socket.emit('state');
-		}, PongOptions.calculation_period);
+		// serverPollTimer = setInterval(function() {
+		// 	socket.emit('state');
+		// }, PongOptions.calculation_period);
 		renderTimer = setInterval(function() {
 			sounds.play(browserState);
 			controls.colorizeButtons(browserState);
@@ -119,11 +119,11 @@ socket.on('pong deleted', function() {
 	controls.normalizeButtons();
 	score.clear();
 	clearInterval(renderTimer);
-	clearInterval(serverPollTimer);
+	// clearInterval(serverPollTimer);
 	image.clear();
 });
 
 socket.on('disconnect', function() {
 	clearInterval(renderTimer);
-	clearInterval(serverPollTimer);
+	// clearInterval(serverPollTimer);
 });

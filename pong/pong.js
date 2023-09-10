@@ -420,6 +420,7 @@ export class Pong extends PongOptions {
         }
     }
     setPartner(partner) {
+        this.partnerSocketId = partner.socketId;
         if (this.ownerSide == Side.LEFT) {
             this.leftPlayer = this.owner;
             this.rightPlayer = partner.nickname;
