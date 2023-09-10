@@ -8,7 +8,7 @@ volumes:
       o: bind
       device: ./db_vol
 
-service:
+services:
   image: postgres:14
   container_name: db
   environment:
