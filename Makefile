@@ -1,4 +1,4 @@
-all: mkdir deb up
+all: mkdir up psls
 
 psls:
 	docker images
