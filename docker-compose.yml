@@ -9,17 +9,18 @@ volumes:
       device: ./db_vol
 
 services:
-  image: postgres:14
-  container_name: db
-  environment:
-    - POSTGRES_USER=${DB_USERNAME}
-    - POSTGRES_PASSWORD=${DB_PASSWORD}
-  env_file: .env
-  restart: always
-  ports:
-    - 5432:11080
-  volumes:
-    - db_vol:/var/lib/postresql/data
+  db:
+    image: postgres:14
+    container_name: db
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    env_file: .env
+    restart: always
+    ports:
+      - 5432:11080
+    volumes:
+      - db_vol:/var/lib/postresql/data
 
 
   
