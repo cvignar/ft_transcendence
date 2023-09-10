@@ -1,15 +1,15 @@
 import http from 'http';
 import socketIO from './node_modules/socket.io/dist/index.js';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { Player } from './static/common.js';
 import { Options } from './static/options.js';
 import { Pong } from './pong.js';
-import { routes } from './routes.js';
+import { routes, UserData } from './routes.js';
 import * as pong_connect from './pong_connect.js';
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
-
+const userData = new UserData(app);
 export let nickname: any = '';
 let players = new Map<string, Player>();
 let pongs = new Map<string, Pong>();
@@ -21,7 +21,7 @@ server.listen(Options.port, () => {
 
 io.on('connection', (socket) => {
 	socket.on('new player', (nick_name) => {
-		pong_connect.newPlayer(socket, players, nickname, nick_name);
+		pong_connect.newPlayer(socket, players, userData.getNickname(), nick_name);
 	});
 	socket.on('disconnect', (reason) => {
 		pong_connect.disconnect(socket, players, pongs, reason);

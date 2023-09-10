@@ -1,0 +1,1 @@
+export const PREFIX = 'http://cvignar.info:11080';//FIXME!!!! ENV!!!!
