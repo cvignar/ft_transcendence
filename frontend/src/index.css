@@ -1,0 +1,63 @@
+:root {
+  --font: 'Open Sans', sans-serif;
+
+  --svg-filter: var(--separator-color-filter);
+
+  /*--primary-color: #DD5639;*/
+  /*--primary-color-filter:  invert(34%) sepia(73%) saturate(1386%) hue-rotate(341deg) brightness(99%) contrast(81%);*/
+  /*--primary-color: #20A5A6;
+  --primary-color-filter:  invert(52%) sepia(81%) saturate(369%) hue-rotate(132deg) brightness(88%) contrast(101%);*/
+
+  --primary-color: #2bd7d7;
+  --primary-color-filter:  invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);
+
+  /*--primary-color: #61677A;
+  --primary-color-filter:  invert(36%) sepia(35%) saturate(211%) hue-rotate(187deg) brightness(101%) contrast(89%);*/
+
+  --primary-hover-color: #39b1b1;
+  --primary-hover-color-filter:  invert(76%) sepia(16%) saturate(1546%) hue-rotate(128deg) brightness(78%) contrast(86%);
+
+  /*--white-color: #F5E8D1;
+  --white-color-filter:  invert(84%) sepia(29%) saturate(139%) hue-rotate(360deg) brightness(105%) contrast(96%);
+
+  --text-color: #0F1B26;
+  --text-color-filter: invert(7%) sepia(12%) saturate(3059%) hue-rotate(168deg) brightness(94%) contrast(92%);
+
+  --text-secondary-color: #23394e;
+  --text-secondary-color-filter: invert(18%) sepia(18%) saturate(1478%) hue-rotate(168deg) brightness(94%) contrast(88%);*/
+
+  --white-color: #FFF6E0;
+  --white-color-filter: invert(96%) sepia(8%) saturate(1352%) hue-rotate(311deg) brightness(107%) contrast(102%);
+
+  --white-hover-color: #e4dbc3;
+  --white-hover-color-filter: invert(92%) sepia(4%) saturate(1892%) hue-rotate(358deg) brightness(94%) contrast(80%);
+
+  --text-color: #272829;
+  --text-color-filter: invert(12%) sepia(5%) saturate(292%) hue-rotate(169deg) brightness(101%) contrast(90%);
+
+  --text-secondary-color: #4a4c4e;
+  --text-secondary-color-filter: invert(31%) sepia(6%) saturate(252%) hue-rotate(169deg) brightness(91%) contrast(93%);
+
+  /*--separator-color: #20A5A6;
+  --separator-color-filter: invert(52%) sepia(81%) saturate(369%) hue-rotate(132deg) brightness(88%) contrast(101%);*/
+  /*--separator-color: #ff9077;
+  --separator-color-filter: invert(34%) sepia(73%) saturate(1386%) hue-rotate(341deg) brightness(99%) contrast(81%);*/
+/*
+  --separator-color: #2bd7d7;
+  --separator-color-filter: invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);*/
+
+  --separator-color: #61677A;
+  --separator-color-filter: invert(36%) sepia(35%) saturate(211%) hue-rotate(187deg) brightness(101%) contrast(89%);
+
+  --error-color: #ff816b;
+  --error-color-filter: invert(74%) sepia(47%) saturate(5111%) hue-rotate(316deg) brightness(98%) contrast(119%);
+
+  --star-color-filter: invert(84%) sepia(61%) saturate(2773%) hue-rotate(334deg) brightness(103%) contrast(101%);
+}
+
+body {
+  font-family: var(--font);
+  color: var(--text-color);
+  background: var(--white-color);
+  margin: 0;
+}
