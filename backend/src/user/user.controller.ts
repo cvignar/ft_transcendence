@@ -5,6 +5,7 @@ import {
   Post,
   Body,
   ParseIntPipe,
+  ForbiddenException,
   //   Put,
   //   Delete,
 } from '@nestjs/common';
@@ -38,19 +39,31 @@ export class UserController {
     return this.userService.createUser(userData);
   }
 
-  @Post('user/update/name')
-  async updateUsername(@Body() updateData: UpdateUsername.Request): Promise<UserModel> {
-    return this.userService.updateUsername(updateData);
-  }
-
   @Post('user/update/email')
   async updateEmail(@Body() updateData: UpdateEmail.Request): Promise<UserModel> {
-	return this.userService.updateEmail(updateData);
+	try {
+		const result = await this.userService.updateEmail(updateData);
+		return result;
+	}
+	catch {
+		throw new ForbiddenException('Email already taken');
+	}
+  }
+
+  @Post('user/update/username')
+  async updateUsername(@Body() updateData: UpdateUsername.Request): Promise<UserModel> {
+	try {
+		const result = await this.userService.updateUsername(updateData);
+		return result;
+	}
+	catch {
+		throw new ForbiddenException('Username already taken');
+	}
   }
 
   @Post('user/update/avatar')
   async updateAvatar(@Body() updateData: UpdateAvatar.Request): Promise<UserModel> {
 	return this.userService.updateAvatar(updateData);
   }
-  
+
 }
