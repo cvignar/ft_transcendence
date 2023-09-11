@@ -1,1 +1,1 @@
-export const PREFIX = 'http://cvignar.info:11080';//FIXME!!!! ENV!!!!
+export const BACK_PREFIX = 'http://localhost:3000';//FIXME!!!! ENV!!!!

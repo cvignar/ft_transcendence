@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
-import { PREFIX } from '../helpers/API';
+import { BACK_PREFIX } from '../helpers/API';
 import { AuthResponse } from '../interfaces/auth.interface';
 //import { Profile } from '../interfaces/user.interface';
 import { loadState } from './storage';
@@ -9,11 +9,13 @@ import { loadState } from './storage';
 export const ID42_PERSISTENT_STATE = 'userData';
 export interface UserPersistantState {
 	id42: string | null;
+	username: string | null;
 }
 
 export interface UserState {
 	id42: string | null;
 	authErrorMessage?: string;
+	username?: string | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -24,15 +26,15 @@ const initialState: UserState = {
 	id42: loadState<UserPersistantState>(ID42_PERSISTENT_STATE)?.id42 ?? null
 };
 
-export const auth = createAsyncThunk('user/auth',
+export const auth = createAsyncThunk('user/create',
 	async (params: {username: string, id42: string, email: string, hash: string}) => {
 		try {
 			console.log(params);
-			const { data } = await axios.post<AuthResponse>(`${PREFIX}/user/auth`, {
+			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/user/create`, {
 				username: params.username,
 				id42: params.id42,
 				email: params.email,
-				password: params.hash
+				hash: params.hash
 			});
 			return data;
 		} catch (e) {

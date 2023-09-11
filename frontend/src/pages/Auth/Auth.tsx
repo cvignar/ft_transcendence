@@ -16,7 +16,7 @@ export function AuthForm() {
 
 	useEffect(() => {
 		if (id42) {
-			navigate('/');
+			navigate('/PongChat');
 		}
 	}, [id42, navigate]);
 
@@ -48,7 +48,7 @@ export function AuthForm() {
 						<Input id='email' name='email' type='email' placeholder='Email'/>
 					</div>
 					<div className={styles['field']}>
-						<label htmlFor='email'>Your email</label>
+						<label htmlFor='hash'>Your password</label>
 						<Input id='hash' name='hash' type='password' placeholder='Password'/>
 					</div>
 					<Button appearence='big'>Login</Button>
