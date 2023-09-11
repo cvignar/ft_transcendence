@@ -261,25 +261,19 @@ export class Sounds {
 
 export class Image extends ImageOptions {
 	canvasId: string;
-	pathStartTime: number;
-	pathStart: geometry.Vec;
-	ballSpeed: geometry.Vec;
-	ball: geometry.Vec;
 	leftPaddle_y: number;
 	rightPaddle_y: number;
 	mouse_y: number;
+	mouseOn: boolean;
 	canvas: any;
 	context: any;
 	constructor(canvasId: string) {
 		super();
 		this.canvasId = canvasId;
-		this.pathStartTime = 0;
-		this.pathStart = new geometry.Vec(0, 0);
-		this.ballSpeed = new geometry.Vec(0, 0);
-		this.ball = new geometry.Vec(0, 0);
 		this.leftPaddle_y = 0;
 		this.rightPaddle_y = 0;
 		this.mouse_y = 0;
+		this.mouseOn = false;
 		this.canvas	= document.getElementById(this.canvasId);
 		if (!this.canvas) return;
 		this.canvas.width = Image.width;
@@ -294,38 +288,17 @@ export class Image extends ImageOptions {
 		}
 		return true;
 	}
-	ballMove(pathStart: geometry.Vec, speed: geometry.Vec, dt: number) {
-		this.ball.x = pathStart.x + Math.round(speed.x * dt / 1000);
-		this.ball.y = pathStart.y + Math.round(speed.y * dt / 1000);
-	}
 	mousemove(y: number) {
 		this.mouse_y = Options.height - 1 - y - Options.paddle_height / 2;
 		if (y < Options.paddle_height / 2 ||
-		y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2)
+			y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2)
 		{
-			this.mouse_y = -1;
+			this.mouseOn = false;
 		}
 	}
 	renderData(browserState: ServerMsg) {
-		if (browserState.sound != Sound.HUSH) {
-			this.pathStartTime = Date.now();
-			this.pathStart.x = browserState.ballCenter_x;
-			this.pathStart.y = browserState.ballCenter_y;
-			this.ballSpeed.x = browserState.ballSpeed_x;
-			this.ballSpeed.y = browserState.ballSpeed_y;
-		}
-		if (browserState.status != GameStatus.PAUSED) {
-			let dt: number = (Date.now() - this.pathStartTime);
-			this.ballMove(this.pathStart, this.ballSpeed, dt);
-		} else {
-			this.pathStartTime = Date.now();
-			this.pathStart.x = browserState.ballCenter_x;
-			this.pathStart.y = browserState.ballCenter_y;
-			this.ball.x = browserState.ballCenter_x;
-			this.ball.y = browserState.ballCenter_y;
-		}
-		if (this.mouse_y > -1 &&
-			(browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME))
+		if ((browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME) &&
+			this.mouseOn)
 		{
 			if (browserState.paddleSide == Side.RIGHT) {
 				this.leftPaddle_y = browserState.leftPaddle_y;
@@ -347,7 +320,7 @@ export class Image extends ImageOptions {
 		this.drawDividingNet();
 		this.drawLeftPaddle(this.leftPaddle_y);
 		this.drawRightPaddle(this.rightPaddle_y);
-		this.drawBall(this.ball.x, this.ball.y);
+		this.drawBall(browserState.ballCenter_x, browserState.ballCenter_y);
 	}
 	clear() {
 		this.context.clearRect(0, 0, Image.width, Image.height);
