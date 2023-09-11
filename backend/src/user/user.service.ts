@@ -10,19 +10,21 @@ export class UserService {
     email: string;
     hash: string;
     id42: string;
-  }): Promise<User> {
+  }) {
     try {
+      console.log('CreateUser!');
+      //console.log(userData);
       return await this.prismaService.user.create({
         data: {
           username: userData.username,
           email: userData.email,
-          hash: userData.hash,
           id42: parseInt(userData.id42),
+          hash: userData.hash,
         },
       });
     } catch (e) {
-      console.log(e);
-      throw new Error(e);
+      //console.log(e);
+      return e;
     }
   }
 }
