@@ -20,7 +20,7 @@ canvas.addEventListener('mousemove', function(mouse) {
 	image.mouseOn = true;
 	controls.mousemove(mouse.offsetY);
 	image.mousemove(mouse.offsetY);
-	image.mouseOn = false;
+	// image.mouseOn = false;
 });
 canvas.addEventListener('click', function() {
 	controls.pause();
