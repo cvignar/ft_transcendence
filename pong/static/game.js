@@ -8,23 +8,11 @@ var nickname = '';
 var renderTimer = 0;
 var serverPollTimer = 0;
 var browserState = new ServerMsg();
-const controls = new Controls(socket);
-const selector = new Selector('PARTNERS');
 const image = new Image('canvas');
+const controls = new Controls(socket, image);
+const selector = new Selector('PARTNERS');
 const sounds = new Sounds();
 const score = new Score();
-
-// Mouse controls
-var canvas = document.getElementById('canvas');
-canvas.addEventListener('mousemove', function(mouse) {
-	image.mouseOn = true;
-	controls.mousemove(mouse.offsetY);
-	image.mousemove(mouse.offsetY);
-	// image.mouseOn = false;
-});
-canvas.addEventListener('click', function() {
-	controls.pause();
-});
 
 // Player
 socket.emit('new player');

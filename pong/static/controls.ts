@@ -1,9 +1,11 @@
 import { BrowserMsg, GameCmd, GameMode, GameStatus, ServerMsg, Sound, getGameCmd } from './common.js';
+import { Image } from './image';
 import { ControlOptions } from './options.js';
 
 export class Controls extends ControlOptions {
 	msg: BrowserMsg = new BrowserMsg;
 	socket: any;
+	image: Image;
 	interval: any = 0;
 	lastCmd: GameCmd = GameCmd.NOCMD;
 	gameMode: GameMode = GameMode.WAITING;
@@ -17,9 +19,24 @@ export class Controls extends ControlOptions {
 	bttnUp: any;
 	bttnDown: any;
 	bttnSnd: any;
-	constructor(socket: any) {
+	constructor(socket: any, image: Image) {
 		super();
 		this.socket = socket;
+		this.image = image;
+
+		// Mouse controls
+		this.image.canvas.addEventListener('mousemove', (mouse: { offsetY: any; }) => {
+			this.mousemove(mouse.offsetY);
+		});
+		this.image.canvas.addEventListener('click', () => {
+			this.pause();
+		});
+		this.image.canvas.addEventListener('mousemove', (mouse: { offsetY: number; }) => {
+			this.image.mousemove(mouse.offsetY);
+		});
+		this.image.canvas.addEventListener('mouseout', () => {
+			this.image.mouseOn = false;
+		});
 
 		// Keys controls
 		document.addEventListener('keydown', (event) => {
@@ -133,9 +150,11 @@ export class Controls extends ControlOptions {
 				}
 				break;
 			case Controls.key_arrowUp:
+				this.image.mouseOn = false;
 				this.msg.paddle_y = Controls.paddle_keyMove;
 				break;
 			case Controls.key_arrowDown:
+				this.image.mouseOn = false;
 				this.msg.paddle_y = -Controls.paddle_keyMove;
 				break;
 			default:

@@ -289,9 +289,10 @@ export class Image extends ImageOptions {
 		return true;
 	}
 	mousemove(y: number) {
+		this.mouseOn = true;
 		this.mouse_y = Options.height - 1 - y - Options.paddle_height / 2;
-		if (y < Options.paddle_height / 2 ||
-			y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2)
+		if (this.mouse_y < Options.paddle_height / 2 ||
+			this.mouse_y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2)
 		{
 			this.mouseOn = false;
 		}
