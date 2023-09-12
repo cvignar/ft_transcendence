@@ -1,0 +1,27 @@
+.pong-page {
+	margin-left: 10px;
+}
+
+.canvas {
+	width: 800px;
+	height: 600px;
+	border: 5px solid black;
+	margin-top: 10px;
+}
+
+.button {
+	width: 100px;
+	font-weight:bold;
+}
+
+.left_player {
+	text-align: left;
+}
+
+.right_player {
+	text-align: right;
+}
+
+button {
+	margin: 2px;
+}
