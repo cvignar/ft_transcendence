@@ -8,7 +8,7 @@ import { User } from '@prisma/client';
 export class UserController {
   constructor(private readonly userService: UserService) {}
   @UsePipes(ZodValidationPipe)
-  //@ApiTags('pong72')
+  //@ApiTags('user')
   @Post('create')
   //@ApiOperation({ summary: 'Create user' })
   async createUser(

@@ -6,12 +6,17 @@ import { AuthForm } from './pages/Auth/Auth';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { PongChat } from './pages/PongChat/PongChat';
+import { Chat } from './pages/Chat/Chat';
 
 const router = createBrowserRouter([
 	{
 		path: '/',
-		element: <AuthForm/>
+		element: <Chat/>
 	},
+	//{ // FIXME!!!! FAKE AUTH
+	//	path: '/',
+	//	element: <AuthForm/>
+	//},
 	{
 		path: '/PongChat',
 		element: <PongChat/>
