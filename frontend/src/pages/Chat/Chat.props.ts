@@ -5,17 +5,12 @@ export enum channelTypeEnum {
 	PUBLIC = 'public'
 }
 
-export const CHAT_HARDCORE = [
-	{
-		name: 'chat1',
-		picture: '/avatar.svg',
-		updatedAt: new Date('2023-09-12T03:24:00'),
-		type: channelTypeEnum
-	},
-	{
-
-	},
-	{
-		
-	}
-];
+export interface ChannelProps {
+  id: number
+  name: string
+  picture?: string 
+  createdAt: string
+  updatedAt: string
+  type: string
+  password?: string
+}

@@ -12,6 +12,8 @@ export const MessageSchema = z.object({
 	channelId: z.number().int(),
 });
 
+
+
 const CreateMessageSchema = z.object({
 	email: z.string().email(),
 });
