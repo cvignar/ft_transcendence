@@ -11,22 +11,34 @@ export enum typeEnum {
 	PUBLIC = 'public',
 }
 
-// const ChannelTypeEnum = z.nativeEnum(typeEnum);
+export const DirectChannelTarget = z.object({
+	id: z.number().int(),
+	email: z.string().email(),
+});
+
+export namespace CreateDirectChannel {
+	export class Request extends createZodDto(DirectChannelTarget) {}
+}
+
+export const MemberSchema = z.object({
+		id: z.number().int(),
+		name: z.string()
+	});
 
 export const ChannelSchema = z.object({
-	id: z.number().int(),
 	name: z.string().max(32),
-	picture: z.string(),
+	picture: z.string().optional(),
 	type: z.nativeEnum(typeEnum),
 	password: z.password().optional(),
-	email: z.string(),
-	owners: UserSchema.array(),
-	admins: UserSchema.array(),
-	members: UserSchema.array(),
-	invited: UserSchema.array(),
-	banned: UserSchema.array(),
-	muted: MuteSchema.array(),
-	messages: MessageSchema.array(),
+	email: z.string().email(),
+	members: MemberSchema.array()
+	//owners: UserSchema.array(),
+	//admins: UserSchema.array(),
+	//members: UserSchema.array().optional(),
+	//invited: UserSchema.array(),
+	//banned: UserSchema.array(),
+	//muted: MuteSchema.array(),
+	//messages: MessageSchema.array(),
 });
 
 const CreateProtectedChannelSchema = ChannelSchema.pick({
@@ -37,9 +49,9 @@ const CreateProtectedChannelSchema = ChannelSchema.pick({
 	members: true,
 });
 
-export namespace CreateProtectedChannel {
-	export class Request extends createZodDto(CreateProtectedChannelSchema) {}
-}
+//export namespace CreateProtectedChannel {
+//	export class Request extends createZodDto(CreateProtectedChannelSchema) {}
+//}
 
 const CreateChannelSchema = CreateProtectedChannelSchema.omit({
 	password: true,

@@ -1,0 +1,22 @@
+{
+	"name": "channel",
+	"type": "public",
+	"email": "uryvaeva.anna@gmail.com",
+	"members": [
+		{
+			"name": "anna",
+			"id": 1
+		},
+		{
+			"name": "bob",
+			"id": 2
+		}
+	]
+}
+
+{
+	"username": "anka",
+	"hash": "234",
+	"email": "uryvaeva.anna@gmail.com",
+	"id42": 234
+}
