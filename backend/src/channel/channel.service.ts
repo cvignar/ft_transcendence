@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Channel, Prisma } from '@prisma/client';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 //import { WsException } from '@nestjs/websockets';
 import {
   UpdateChannel,
   CreateChannel,
-  CreateDirectMessagesChannel,
-  CreateProtectedChannel,
+  //CreateDirectMessagesChannel,
+  //CreateProtectedChannel,
   typeEnum,
+  CreateDirectChannel,
 } from '../../../contracts/channel.schema';
-import { ExceptionWithMessage } from '@prisma/client/runtime/library';
+//import { ExceptionWithMessage } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ChannelService {
@@ -21,13 +22,13 @@ export class ChannelService {
 
   async showChannels() {
     const channels = await this.prisma.channel.findMany();
-    let count = 0;
-    for (const [index, channel] of channels.entries()) {
-      console.log(`channel ${index}: ${channel.name}`);
-      count = index + 1;
-    }
-    console.log(`total ${count} channels`);
-    return;
+    //let count = 0;
+    //for (const [index, channel] of channels.entries()) {
+    //  console.log(`channel ${index}: ${channel.name}`);
+    //  count = index + 1;
+    //}
+    //console.log(`total ${count} channels`);
+    return channels;
   }
 
   async getChannelNameById(channelId: number) {
@@ -66,7 +67,7 @@ export class ChannelService {
           },
           messages: {
             orderBy: { createdAt: 'asc' },
-            select: { message: true },
+            select: { msg: true },
             take: 1,
           },
         },
@@ -78,7 +79,7 @@ export class ChannelService {
     }
   }
 
-  async createDirectChannel(target: CreateDirectMessagesChannel.Request) {
+  async createDirectChannel(target: CreateDirectChannel.Request) {
     try {
       const ids: number[] = [];
       const id = await this.userService.getIdByEmail(target.email);
@@ -96,14 +97,12 @@ export class ChannelService {
     }
   }
 
-  async createChannel(
-    channelData: CreateChannel.Request | CreateProtectedChannel.Request,
-  ) {
+  async createChannel(channelData: CreateChannel.Request) {
     try {
-      let password = undefined;
-      if (channelData.type == typeEnum.PROTECTED) {
-        password = channelData.password;
-      }
+      const password = undefined;
+      //if (channelData.type == typeEnum.PROTECTED) {
+      //  password = channelData.password;
+      //}
       const channel = await this.prisma.channel.create({
         data: {
           name: channelData.name,
@@ -111,12 +110,12 @@ export class ChannelService {
           password: password,
           owners: { connect: { email: channelData.email } },
           admins: { connect: { email: channelData.email } },
-          members: {
-            connect: channelData.members.map((member) => ({ id: member.id })),
-          },
+          //members: {
+          //  connect: channelData.members.map((member) => ({ id: member.id })),
+          //},
         },
       });
-      return channel.id;
+      return channel;
     } catch (error) {
       console.error(`createChannel error: ${error}`);
       // throw new WsException(error.message);
@@ -128,7 +127,7 @@ export class ChannelService {
       const channel = await this.prisma.channel.update({
         where: { id: channelData.channelId },
         data: {
-          invited: { connect: { id: channelData.memberId } },
+          inviteds: { connect: { id: channelData.memberId } },
         },
       });
       return channel.id;
@@ -149,7 +148,7 @@ export class ChannelService {
           where: { id: channelData.channelId },
           data: {
             members: { connect: { email: channelData.email } },
-            invited: { disconnect: { email: channelData.email } },
+            inviteds: { disconnect: { email: channelData.email } },
           },
         });
         return newChannel.id;
@@ -172,7 +171,7 @@ export class ChannelService {
           owners: { disconnect: { id: memberId } },
           admins: { disconnect: { id: memberId } },
           members: { disconnect: { id: memberId } },
-          invited: { disconnect: { id: memberId } },
+          inviteds: { disconnect: { id: memberId } },
         },
       });
       const channel = await this.getChannelById(channelData.channelId);
@@ -198,7 +197,7 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.update({
         where: { id: channelData.channelId },
-        data: { invited: { connect: { id: channelData.memberId } } },
+        data: { inviteds: { connect: { id: channelData.memberId } } },
       });
       return channel.id;
     } catch (error) {
@@ -236,7 +235,7 @@ export class ChannelService {
             orderBy: { createdAt: 'asc' },
             select: {
               id: true,
-              message: true,
+              msg: true,
               createdAt: true,
               owner: {
                 select: {
