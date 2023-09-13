@@ -7,14 +7,12 @@ import {
   ParseIntPipe,
   ForbiddenException,
   UsePipes,
-  //   Put,
-  //   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from '@prisma/client';
-import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../zod_contracts/user.schema';
+import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../contracts/user.schema';
 import { ZodValidationPipe } from 'nestjs-zod';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+//import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 export class UserController {

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 // import { ChannelService } from './channel.service';
-import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../zod_contracts/user.schema'
+import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../contracts/user.schema';
 
 @Injectable()
 export class UserService {
@@ -47,7 +47,7 @@ export class UserService {
   }
 
   async getIdByEmail(userEmail: string) {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         email: userEmail,
       },
