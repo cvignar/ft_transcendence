@@ -2,9 +2,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { Inject } from '@nestjs/common';
+import { OAuthService } from './oAuth.service';
 
 export class FourtyTwoStrategy extends PassportStrategy(Strategy, '42') {
-	constructor(@Inject(UserService) private readonly usersService: UserService) {
+	constructor(@Inject(UserService) private readonly usersService: UserService, 
+	@Inject(OAuthService) private readonly oAuthService: OAuthService) {
 		super({
 			clientID: process.env.FORTYTWO_CLIENT_ID,
 			clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
@@ -16,19 +18,10 @@ export class FourtyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	{
 		const as_json = profile._json;
 		const { fourtyTwoId, username, photos } = profile;
-		const databaseUser = await this.usersService.createFrom42(as_json);
-		const image = databaseUser.avatar;
-		let id = databaseUser ? databaseUser.id : null;
-		const user = {
-			accessToken,
-			refreshToken,
-			profile: {
-				id,
-				username,
-				image,
-			},
-		};
-		done(null, user); // we basically create id for user 
-		return { id, username, photos };
+		
+		const user42 = await await this.oAuthService.login({id42: profile.id});;
+
+		done(null, user42); // we basically create id for user 
+		return this.usersService.createFrom42(as_json)
 	}
 }
