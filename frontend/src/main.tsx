@@ -1,4 +1,4 @@
-import React from 'react';
+//import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -6,18 +6,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { PongChat } from './pages/PongChat/PongChat';
-import { Chat } from './pages/Chat/Chat';
+//import { Chat } from './pages/Chat/Chat';
 import { Pong } from './pages/Pong/pong';
 
 const router = createBrowserRouter([
-	{
-		path: '/',
-		element: <Chat/>
-	},
 	//{
 	//	path: '/',
-	//	element: <Pong/>
+	//	element: <Chat/>
 	//},
+	{
+		path: '/',
+		element: <Pong/>
+	},
 	//{ // FIXME!!!! FAKE AUTH
 	//	path: '/',
 	//	element: <AuthForm/>
@@ -29,10 +29,10 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<React.StrictMode>
-		<Provider store={store}>
-			<RouterProvider router={router}/>
-		</Provider>
+	//<React.StrictMode>
+	<Provider store={store}>
+		<RouterProvider router={router}/>
+	</Provider>
 
-	</React.StrictMode>
+	//</React.StrictMode>
 );

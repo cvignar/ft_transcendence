@@ -1,5 +1,7 @@
 export class Options {
 	static port: number = 5000;
+	static host: string = 'http://localhost'
+	static pong_server: string = this.host + ':' + this.port.toString();
 	static width: number = 800;
 	static maxWins: number = 6;
 	static serveNum: number = 2;

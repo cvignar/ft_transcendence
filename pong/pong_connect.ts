@@ -85,7 +85,7 @@ export function partnerChoosed(socket: any, io: any, players: any, socket_id: an
 	}
 	const partnerSocket = io.sockets.sockets.get(socket_id);
 	if (partnerSocket && players.has(partnerSocket.id)) {
-		partnerSocket.emit('confipm partner', [socket.id, players.get(socket.id)?.nickname]);
+		partnerSocket.emit('confirm partner', [socket.id, players.get(socket.id)?.nickname]);
 	} else {
 		socket.emit('partner unavailable');
 	}
@@ -126,6 +126,6 @@ export function refusal(socket: any, io: any, players: any, socket_id: any) {
 	}
 	const partnerSocket = io.sockets.sockets.get(socket_id);
 	if (partnerSocket) {
-		// partnerSocket.emit('partner unavailable');
+		partnerSocket.emit('partner unavailable');
 	}
 }

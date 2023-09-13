@@ -4,11 +4,13 @@ import express from 'express';
 import { Player, Side } from './static/common.js';
 import { Options } from './static/options.js';
 import { Pong } from './pong.js';
-import { routes } from './routes.js';
+import { UserData, routes } from './routes.js';
 import * as pong_connect from './pong_connect.js';
+import cors from 'cors';
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
+const userData = new UserData(app);
 
 export let nickname: any = '';
 let players = new Map<string, Player>();
@@ -20,8 +22,9 @@ server.listen(Options.port, () => {
 });
 
 io.on('connection', (socket) => {
+	console.log("Hello!");
 	socket.on('new player', (nick_name) => {
-		pong_connect.newPlayer(socket, players, nickname, nick_name);
+		pong_connect.newPlayer(socket, players, userData.getNickname(), nick_name);
 	});
 	socket.on('disconnect', (reason) => {
 		pong_connect.disconnect(socket, players, pongs, reason);
