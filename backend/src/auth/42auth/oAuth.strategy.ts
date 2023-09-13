@@ -3,6 +3,8 @@ import { Strategy } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { Inject } from '@nestjs/common';
 import { OAuthService } from './oAuth.service';
+import { CreateUser42 } from 'contracts/user.schema';
+import { User } from '@prisma/client';
 
 export class FourtyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	constructor(@Inject(UserService) private readonly usersService: UserService, 
@@ -17,9 +19,12 @@ export class FourtyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	async validate(accessToken: string, refreshToken: string, profile: any, done: Function)
 	{
 		const as_json = profile._json;
-		const { fourtyTwoId, username, photos } = profile;
 		
-		const user42 = await await this.oAuthService.login({id42: profile.id});;
+		const user42 = await this.oAuthService.login({id42: as_json['id']});
+
+		// if (user42) {
+		// 	return user42;
+		// }
 
 		done(null, user42); // we basically create id for user 
 		return this.usersService.createFrom42(as_json)
