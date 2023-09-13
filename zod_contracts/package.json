@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "nestjs-zod": "^2.3.3"
+  }
+}
