@@ -8,21 +8,11 @@ var nickname = '';
 var renderTimer = 0;
 var serverPollTimer = 0;
 var browserState = new ServerMsg();
-const controls = new Controls(socket);
-const selector = new Selector('PARTNERS');
 const image = new Image('canvas');
+const controls = new Controls(socket, image);
+const selector = new Selector('PARTNERS');
 const sounds = new Sounds();
 const score = new Score();
-
-// Mouse controls
-var canvas = document.getElementById('canvas');
-canvas.addEventListener('mousemove', function(mouse) {
-	controls.mousemove(mouse.offsetY);
-	image.mousemove(mouse.offsetY);
-});
-canvas.addEventListener('click', function() {
-	controls.pause();
-});
 
 // Player
 socket.emit('new player');
@@ -98,9 +88,6 @@ socket.on('pong launched', function() {
 			controls.emitCmd(controls.lastCmd);
 			}, PongOptions.calculation_period );
 		}
-		serverPollTimer = setInterval(function() {
-			socket.emit('state');
-		}, PongOptions.calculation_period);
 		renderTimer = setInterval(function() {
 			sounds.play(browserState);
 			controls.colorizeButtons(browserState);
@@ -119,11 +106,9 @@ socket.on('pong deleted', function() {
 	controls.normalizeButtons();
 	score.clear();
 	clearInterval(renderTimer);
-	clearInterval(serverPollTimer);
 	image.clear();
 });
 
 socket.on('disconnect', function() {
 	clearInterval(renderTimer);
-	clearInterval(serverPollTimer);
 });

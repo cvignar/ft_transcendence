@@ -266,8 +266,6 @@ export class Pong extends PongOptions {
         this.state.ballCenter_y = this.ball.visibility
             ? this.ball.center.y
             : PONG_INFINITY;
-        this.state.ballSpeed_x = this.ballSpeed.x;
-        this.state.ballSpeed_y = this.ballSpeed.y;
         this.state.paddleSide = side;
         this.state.leftPaddle_y = this.leftPaddle.visibility
             ? this.leftPaddle.v0.y
@@ -420,6 +418,7 @@ export class Pong extends PongOptions {
         }
     }
     setPartner(partner) {
+        this.partnerSocketId = partner.socketId;
         if (this.ownerSide == Side.LEFT) {
             this.leftPlayer = this.owner;
             this.rightPlayer = partner.nickname;

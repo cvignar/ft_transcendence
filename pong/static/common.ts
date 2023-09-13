@@ -92,8 +92,6 @@ export class BrowserMsg {
 export class ServerMsg {
 	ballCenter_x: number;
 	ballCenter_y: number;
-	ballSpeed_x: number;
-	ballSpeed_y: number;
 	paddleSide: Side;
 	leftPaddle_y: number;
 	rightPaddle_y: number;
@@ -105,8 +103,6 @@ export class ServerMsg {
 	constructor() {
 		this.ballCenter_x = PONG_INFINITY;
 		this.ballCenter_y = PONG_INFINITY;
-		this.ballSpeed_x = 0;
-		this.ballSpeed_y = 0;
 		this.paddleSide = Side.RIGHT;
 		this.leftPaddle_y = Options.paddleStart_yPos;
 		this.rightPaddle_y = Options.paddleStart_yPos;
@@ -119,8 +115,6 @@ export class ServerMsg {
 	copy(state: ServerMsg) {
 		this.ballCenter_x = state.ballCenter_x;
 		this.ballCenter_y = state.ballCenter_y;
-		this.ballSpeed_x = state.ballSpeed_x;
-		this.ballSpeed_y = state.ballSpeed_y;
 		this.paddleSide = state.paddleSide;
 		this.leftPaddle_y = state.leftPaddle_y;
 		this.rightPaddle_y = state.rightPaddle_y;
