@@ -1,15 +1,18 @@
 import classNames from 'classnames';
 import styles from './Pong.module.css';
+import { io } from 'socket.io-client';
 
-//const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/user/create`, {
-//	username: params.username,
-//	id42: params.id42,
-//	email: params.email,
-//	hash: params.hash
-//});
-//return data;
+
+import { game } from './game';
+import { useEffect } from 'react';
+import { Options } from '../../../../pong/static/options';
+
+const	socket = io(`${Options.pong_server}`, { transports : ['websocket'] });
 
 export function Pong() {
+	useEffect(() => {
+		game(socket);
+	}, []);
 
 	return (
 		<div className={styles['pong-page']}>
