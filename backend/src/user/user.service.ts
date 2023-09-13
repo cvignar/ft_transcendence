@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
+import * as argon from 'argon2';
 // import { ChannelService } from './channel.service';
-import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../contracts/user.schema';
+import { CreateUser,CreateUser42, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../contracts/user.schema';
 
 @Injectable()
 export class UserService {
@@ -23,20 +24,56 @@ export class UserService {
 		}
 	}
 
+	async getUserByIntra(userName: string) {
+		try {
+			const user =  await this.prisma.user.findUnique({
+				where: { intra42: userName},
+			});
+			if (user) {
+				return user;
+			} else {
+				return 'user not found';
+			}
+		} catch (error) {
+			return `getUserById error`;
+		}
+	}
+
 	async listAllUsers() {
 		return await this.prisma.user.findMany();
 	}
 
 
-  async createUser(userData: CreateUser.Request): Promise<User> {
-	  try{
-      const user = await this.prisma.user.create({
-        data: {
-          id42: userData.id42,
-          username: userData.username,
-          email: userData.email,
-          hash: userData.hash,
-        },
+//   async createUser(userData: CreateUser.Request): Promise<User> {
+// 	  try{
+//       const user = await this.prisma.user.create({
+//         data: {
+//           id42: userData.id42,
+//           username: userData.username,
+//           email: userData.email,
+//           hash: userData.hash,
+//         },
+// 		});
+// 		return user;
+// 	}
+// 	catch (error) {
+// 		console.error(`createChannel error: ${error}`);
+// 		// throw new WsException(error.message);
+// 	}
+//   }
+	async createUser(userData: CreateUser42.Request): Promise<User> {
+		try{
+		const rdm_string = this.generate_random_password();
+			// hash password using argon2
+		const hash = await argon.hash(rdm_string);
+		const user = await this.prisma.user.create({
+		data: {
+			intra42: userData.intra42,
+			id42: userData.id42,
+			username: userData.username,
+			email: userData.email,
+			hash: hash,
+		},
 		});
 		return user;
 	}
@@ -44,7 +81,28 @@ export class UserService {
 		console.error(`createChannel error: ${error}`);
 		// throw new WsException(error.message);
 	}
-  }
+	}
+
+  async createFrom42(json: JSON): Promise<User | null>
+	{
+		let user = await this.getUserByIntra(json['login']);
+
+		if (!user) {
+			try{
+				const user = this.createUser({
+					intra42: json['login'],
+					id42: json['id'],
+					username: json['login'],
+					email: json['email'],
+				  });
+				  return user;
+			  }
+			  catch (error) {
+				  console.error(`createChannel error: ${error}`);
+				  // throw new WsException(error.message);
+			  }
+		}
+	}
 
   async getIdByEmail(userEmail: string) {
     const user = await this.prisma.user.findUnique({
@@ -133,4 +191,14 @@ export class UserService {
 			console.log(`updateAvatar error: ${error}`);
 		}
 	}	
+
+	// UTILS
+	generate_random_password(): string {
+		// generate random password for 42 User
+		const password =
+			Math.random().toString(36).slice(2, 15) +
+			Math.random().toString(36).slice(2, 15);
+		return password;
+	}
+
 }
