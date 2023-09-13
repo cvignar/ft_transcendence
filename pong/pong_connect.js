@@ -88,7 +88,7 @@ export function partnerChoosed(socket, io, players, socket_id) {
     }
     const partnerSocket = io.sockets.sockets.get(socket_id);
     if (partnerSocket && players.has(partnerSocket.id)) {
-        partnerSocket.emit('confipm partner', [socket.id, (_a = players.get(socket.id)) === null || _a === void 0 ? void 0 : _a.nickname]);
+        partnerSocket.emit('confirm partner', [socket.id, (_a = players.get(socket.id)) === null || _a === void 0 ? void 0 : _a.nickname]);
     }
     else {
         socket.emit('partner unavailable');

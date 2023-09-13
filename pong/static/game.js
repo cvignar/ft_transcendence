@@ -44,15 +44,15 @@ selector.select.addEventListener('change', function(socket_id) {
 	sounds.playSound(Sound.SPEEDUP);
 });
 
-// Confipm partner
-socket.on('confipm partner', function(partner) {
+// Confirm partner
+socket.on('confirm partner', function(partner) {
 	var pauseBefor = true;
 	if (controls.gameStatus != GameStatus.PAUSED) {
 		pauseBefor = false;
 		controls.pause();
 	}
 	sounds.playSound(Sound.SPEEDUP);
-	const yes = confirm('Player '+partner[1]+' wants to join your game');
+	const yes = window.confirm('Player '+partner[1]+' wants to join your game');
 	if (yes) {
 		socket.emit('partner confirmation', partner[0]);
 		controls.new();
@@ -91,7 +91,7 @@ socket.on('pong launched', function() {
 		renderTimer = setInterval(function() {
 			sounds.play(browserState);
 			controls.colorizeButtons(browserState);
-			image.render(browserState, score.get(browserState), controls.msg);
+			image.render(browserState, score.get(browserState));
 		}, Image.rendering_period);
 	}
 });

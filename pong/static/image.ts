@@ -123,7 +123,7 @@ export class Sounds {
 
 		this.game_start = new Audio();
 		this.game_start.preload = 'auto';
-		this.game_start.src = 'sounds/game_start.mp3';
+		this.game_start.src = `${Options.pong_server}/sounds/game_start.mp3`;
 
 		// First start sounds fo Safari policy
 		document.addEventListener('focusin', () => {
@@ -143,45 +143,45 @@ export class Sounds {
 
 		this.ball = new Audio();
 		this.ball.preload = 'auto';
-		this.ball.src = 'sounds/ball.mp3';
+		this.ball.src = `${Options.pong_server}/sounds/ball.mp3`;
 
 		this.ball_loss_left = new Audio();
 		this.ball_loss_left.preload = 'auto';
-		this.ball_loss_left.src = 'sounds/ball_loss_left.mp3';
+		this.ball_loss_left.src = `${Options.pong_server}/sounds/ball_loss_left.mp3`;
 		this.ball_loss_right = new Audio();
 		this.ball_loss_right.preload = 'auto';
-		this.ball_loss_right.src = 'sounds/ball_loss_right.mp3';
+		this.ball_loss_right.src = `${Options.pong_server}/sounds/ball_loss_right.mp3`;
 
 		this.ball_left = new Audio();
 		this.ball_left.preload = 'auto';
-		this.ball_left.src = 'sounds/ball_left.mp3';
+		this.ball_left.src = `${Options.pong_server}/sounds/ball_left.mp3`;
 		this.ball_right = new Audio();
 		this.ball_right.preload = 'auto';
-		this.ball_right.src = 'sounds/ball_right.mp3';
+		this.ball_right.src = `${Options.pong_server}/sounds/ball_right.mp3`;
 
 		this.siren_left = new Audio();
 		this.siren_left.preload = 'auto';
-		this.siren_left.src = 'sounds/siren_left.mp3';
+		this.siren_left.src = `${Options.pong_server}/sounds/siren_left.mp3`;
 
 		this.siren_right = new Audio();
 		this.siren_right.preload = 'auto';
-		this.siren_right.src = 'sounds/siren_right.mp3';
+		this.siren_right.src = `${Options.pong_server}/sounds/siren_right.mp3`;
 
 		this.deadlock = new Audio();
 		this.deadlock.preload = 'auto';
-		this.deadlock.src = 'sounds/deadlock.mp3';
+		this.deadlock.src = `${Options.pong_server}/sounds/deadlock.mp3`;
 
 		this.serve = new Audio();
 		this.serve.preload = 'auto';
-		this.serve.src = 'sounds/serve.mp3';
+		this.serve.src = `${Options.pong_server}/sounds/serve.mp3`;
 
 		this.speedup = new Audio();
 		this.speedup.preload = 'auto';
-		this.speedup.src = 'sounds/speedup.mp3';
+		this.speedup.src = `${Options.pong_server}/sounds/speedup.mp3`;
 
 		this.applause = new Audio();
 		this.applause.preload = 'auto';
-		this.applause.src = 'sounds/applause.mp3';
+		this.applause.src = `${Options.pong_server}/sounds/applause.mp3`;
 	}
 	playSound(sound: Sound): boolean {
 		if (this.on) {
@@ -275,11 +275,17 @@ export class Image extends ImageOptions {
 		this.mouse_y = 0;
 		this.mouseOn = false;
 		this.canvas	= document.getElementById(this.canvasId);
-		if (!this.canvas) return;
+		if (!this.canvas) {
+			console.log("Canvas not defined");
+			return;
+		}
 		this.canvas.width = Image.width;
 		this.canvas.height = Image.height;
 		this.context = this.canvas.getContext('2d');
-		if (!this.context) return;
+		if (!this.context) {
+			console.log("Canvas.context not defined");
+			return;
+		}
 	}
 	valid(): Boolean {
 		if (!this.canvas || !this.context) {
