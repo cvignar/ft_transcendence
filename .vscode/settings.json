@@ -1,0 +1,23 @@
+{
+	"editor.formatOnPaste": true,
+	"editor.formatOnSave": true,
+	"editor.insertSpaces": false,
+	"editor.comments.insertSpace": false,
+	"editor.defaultFormatter": "dbaeumer.vscode-eslint",
+	"editor.useTabStops": true,
+	"files.autoSave": "onFocusChange",
+	"workbench.editor.highlightModifiedTabs": true,
+	"eslint.format.enable": true,
+	"prettier.tabWidth": 4,
+	"prettier.useTabs": true,
+	"explorer.confirmDragAndDrop": false,
+	"javascript.format.semicolons": "insert",
+	"javascript.preferences.quoteStyle": "single",
+	"js/ts.implicitProjectConfig.target": "ESNext",
+	"typescript.format.semicolons": "insert",
+	"typescript.implementationsCodeLens.enabled": true,
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.referencesCodeLens.enabled": true,
+	"prettier.jsxSingleQuote": true,
+	"prettier.singleQuote": true
+}

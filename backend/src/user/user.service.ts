@@ -28,15 +28,15 @@ export class UserService {
 	}
 
 
-  	async createUser(userData: CreateUser.Request): Promise<User> {
-	try{
-		const user = await this.prisma.user.create({
-			data: {
-				id: userData.id,
-				username: userData.username,
-				email: userData.email,
-				hash: userData.hash,
-			},
+  async createUser(userData: CreateUser.Request): Promise<User> {
+	  try{
+      const user = await this.prisma.user.create({
+        data: {
+          id42: userData.id42,
+          username: userData.username,
+          email: userData.email,
+          hash: userData.hash,
+        },
 		});
 		return user;
 	}
@@ -46,6 +46,16 @@ export class UserService {
 	}
   }
 
+  async getIdByEmail(userEmail: string) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email: userEmail,
+      },
+      select: { id: true },
+    });
+    return user.id;
+  }
+  
   	async getAllUsers() {
 	//returns a record of all the users, ordered by id in acending order
 	try {
@@ -122,9 +132,5 @@ export class UserService {
 		catch (error) {
 			console.log(`updateAvatar error: ${error}`);
 		}
-	}
-
-
-	
+	}	
 }
-

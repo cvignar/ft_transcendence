@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
 import { ChannelController } from './channel.controller';
 import { ChannelService } from './channel.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
 
 @Module({
-	imports: [],
-	controllers: [ChannelController],
-	providers: [ChannelService, PrismaService],
+  //   imports: [forwardRef(() => UserModule)],
+  imports: [],
+  controllers: [ChannelController],
+  providers: [ChannelService, PrismaService, UserService /*, ChannelGateway*/],
+  //   exports: [/*ChannelGateway, */ ChannelService],
 })
 export class ChannelModule {}

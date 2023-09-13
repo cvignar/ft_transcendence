@@ -1,0 +1,23 @@
+.page {
+	display: flex;
+	align-items: top;
+	justify-content: center;
+	/*max-height: 80vh;*/
+}
+
+.left-panel {
+	border: 1px solid black;
+	/*min-height: 80vh;*/
+	min-width: auto;
+}
+
+.right-panel {
+	border: 1px solid black;
+	/*min-height: 80vh;*/
+	min-width: max-content;
+}
+
+.channel-list {
+	display: flex;
+	flex-direction: column;
+}

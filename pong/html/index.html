@@ -1,0 +1,37 @@
+<html>
+  <head>
+    <title>Pong 1972</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <style>
+      * {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      canvas {
+        width: 800px;
+        height: 600px;
+        border: 5px solid black;
+      }
+    </style>
+    <script type="module" src="socket.io.js"></script>
+  </head>
+  <body>
+    <div id="PARTNERS">Choose Your Partner: </div>
+    <hr>
+    <button id="LEFT" style="width: 100px; text-align: left; font-weight:bold;">|</button>
+    <button id="RIGHT" style="width: 100px; text-align: right; font-weight:bold;">|</button>
+    <button id="NEW">New (N)</button>
+    <button id="TRNNG" style="font-weight:bold;">TRNNG (T)</button>
+    <button id="AUTO" style="font-weight:bold;">Auto (A)</button>
+    <button id="PAUSE">Pause (Space)</button>
+    <button id="STOP">Stop (S)</button>
+    <button id="Up">Up</button>
+    <button id="Down">Down</button>
+    <button id="SOUND">Sound</button>
+    <br><br>
+    <canvas id="canvas"></canvas>
+  </body>
+  <script type="module" src="game.js"></script>
+</html>

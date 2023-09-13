@@ -1,0 +1,1 @@
+export const BACK_PREFIX = 'http://localhost:3000';//FIXME!!!! ENV!!!!

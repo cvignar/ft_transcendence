@@ -6,17 +6,30 @@ import {
   Body,
   ParseIntPipe,
   ForbiddenException,
+  UsePipes,
   //   Put,
   //   Delete,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User as UserModel } from '@prisma/client';
 import { CreateUser, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../zod_contracts/user.schema';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
+  
+//   @UsePipes(ZodValidationPipe)
+//   //@ApiTags('user')
+//   @Post('create')
+//   //@ApiOperation({ summary: 'Create user' })
+//   async createUser(
+//     @Body()
+//     userData: CreateUser.Request,
+//   ): Promise<User> {
+//     return this.userService.createUser(userData);
+//   }
   
   @Get('user')
   async listAllUsers() {
@@ -65,5 +78,4 @@ export class UserController {
   async updateAvatar(@Body() updateData: UpdateAvatar.Request): Promise<UserModel> {
 	return this.userService.updateAvatar(updateData);
   }
-
 }
