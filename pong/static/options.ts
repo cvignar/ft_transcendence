@@ -40,7 +40,7 @@ export class PongOptions extends Options {
 	static ball_StartClicksForSpeedup: number = 12;
 	static ball_speedUp: number = 1.2;
 	static ball_speedUpMax: number = 6;
-	static calculation_period: number = 1000 / 30;
+	static calculation_period: number = 1000 / 60;
 }
 
 export class ControlOptions extends Options {

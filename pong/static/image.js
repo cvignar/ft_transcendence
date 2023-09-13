@@ -1,6 +1,5 @@
-import { GameMode, GameStatus, Side, Sound } from './common.js';
+import { GameMode, Side, Sound } from './common.js';
 import { Options, ImageOptions, PongOptions } from './options.js';
-import * as geometry from './geometry.js';
 export class Score {
     constructor() {
         this.left = 0;
@@ -247,13 +246,10 @@ export class Image extends ImageOptions {
     constructor(canvasId) {
         super();
         this.canvasId = canvasId;
-        this.pathStartTime = 0;
-        this.pathStart = new geometry.Vec(0, 0);
-        this.ballSpeed = new geometry.Vec(0, 0);
-        this.ball = new geometry.Vec(0, 0);
         this.leftPaddle_y = 0;
         this.rightPaddle_y = 0;
         this.mouse_y = 0;
+        this.mouseOn = false;
         this.canvas = document.getElementById(this.canvasId);
         if (!this.canvas)
             return;
@@ -270,38 +266,17 @@ export class Image extends ImageOptions {
         }
         return true;
     }
-    ballMove(pathStart, speed, dt) {
-        this.ball.x = pathStart.x + Math.round(speed.x * dt / 1000);
-        this.ball.y = pathStart.y + Math.round(speed.y * dt / 1000);
-    }
     mousemove(y) {
+        this.mouseOn = true;
         this.mouse_y = Options.height - 1 - y - Options.paddle_height / 2;
-        if (y < Options.paddle_height / 2 ||
-            y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2) {
-            this.mouse_y = -1;
+        if (this.mouse_y < Options.paddle_height / 2 ||
+            this.mouse_y > PongOptions.paddle_yPosLimit - Options.paddle_height / 2) {
+            this.mouseOn = false;
         }
     }
     renderData(browserState) {
-        if (browserState.sound != Sound.HUSH) {
-            this.pathStartTime = Date.now();
-            this.pathStart.x = browserState.ballCenter_x;
-            this.pathStart.y = browserState.ballCenter_y;
-            this.ballSpeed.x = browserState.ballSpeed_x;
-            this.ballSpeed.y = browserState.ballSpeed_y;
-        }
-        if (browserState.status != GameStatus.PAUSED) {
-            let dt = (Date.now() - this.pathStartTime);
-            this.ballMove(this.pathStart, this.ballSpeed, dt);
-        }
-        else {
-            this.pathStartTime = Date.now();
-            this.pathStart.x = browserState.ballCenter_x;
-            this.pathStart.y = browserState.ballCenter_y;
-            this.ball.x = browserState.ballCenter_x;
-            this.ball.y = browserState.ballCenter_y;
-        }
-        if (this.mouse_y > -1 &&
-            (browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME)) {
+        if ((browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME) &&
+            this.mouseOn) {
             if (browserState.paddleSide == Side.RIGHT) {
                 this.leftPaddle_y = browserState.leftPaddle_y;
                 this.rightPaddle_y = this.mouse_y;
@@ -324,7 +299,7 @@ export class Image extends ImageOptions {
         this.drawDividingNet();
         this.drawLeftPaddle(this.leftPaddle_y);
         this.drawRightPaddle(this.rightPaddle_y);
-        this.drawBall(this.ball.x, this.ball.y);
+        this.drawBall(browserState.ballCenter_x, browserState.ballCenter_y);
     }
     clear() {
         this.context.clearRect(0, 0, Image.width, Image.height);
