@@ -1,3 +1,4 @@
+import { Pong } from '../pong';
 import { Options } from './options.js';
 
 export enum GameMode {
@@ -128,12 +129,14 @@ export class ServerMsg {
 
 export class Player {
 	socketId: string;
-	nickname: string;
-	side: Side = Side.RIGHT;
-	constructor(socketId: string, nickname: string, side: Side) {
+	name: string;
+	id: number;
+	side: Side;
+	constructor(socketId: string, user: {name: string, id: number}) {
 		this.socketId = socketId;
-		this.nickname = nickname;
-		this.side = side;
+		this.name = user.name;
+		this.id = user.id;
+		this.side = Side.RIGHT;
 	}
 	changeSide(): Side {
 		if (this.side == Side.LEFT) {
@@ -148,19 +151,22 @@ export class Player {
 }
 
 export class Partners {
-	partner: any;
-	partnersList: any;
+	partner: { socket_id: string, nick_name: string } | null;
+	pong: Pong | null;
+	partnersList: Array<{ socket_id: string, nick_name: string }>;
 	constructor() {
-		this.partner = {};
-		this.partnersList = new Array<{}>;
+		this.partner = null;
+		this.pong = null;
+		this.partnersList = new Array<{ socket_id: string, nick_name: string }>;
 	}
 	getPartnersList(pongs: any, excludingId: string): any {
 		for (let socketId of pongs.keys()) {
-			if (socketId != excludingId && 
-				(pongs.get(socketId).leftPlayer == '' || pongs.get(socketId).rightPlayer == ''))
-			{
-				this.partner = { socket_id: socketId, nick_name: pongs.get(socketId).owner };
-				this.partnersList.push(this.partner);
+			if (socketId != excludingId) {
+				this.pong = pongs.get(socketId);
+				if (this.pong && !this.pong.partner && this.pong.owner) {
+					this.partner = { socket_id: socketId, nick_name: this.pong.owner.name };
+					this.partnersList.push(this.partner);
+				}
 			}
 		}
 		return this.partnersList;

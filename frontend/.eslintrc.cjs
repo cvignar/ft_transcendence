@@ -19,6 +19,7 @@ module.exports = {
     quotes: ['error', 'single'],
     "react/prop-types": [0],
     "indent": ["error", "tab"],
-    "@typescript-eslint/no-unused-vars": "warn"
+    "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-explicit-any": "off"
   },
 }

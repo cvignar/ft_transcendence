@@ -1,34 +1,65 @@
 import { Options } from './static/options.js';
-import { Side, GameCmd, GameCommand, BrowserMsg, Player, Partners } from './static/common.js';
+import { Side, GameCmd, GameCommand, BrowserMsg, Player, Partners, GameStatus, GameMode } from './static/common.js';
 import { Pong } from './pong.js';
 
-export function newPlayer(socket: any, players: any, nickname: any, nick_name: any) {
-	if (!(!nickname && !nick_name)) {
-		if (!nickname) {
-			nickname = nick_name;
+export function findPong(pongs: any, player: Player): Pong | null {
+	let pong = pongs.get(player.socketId);
+	if (pong) {
+		return pong;
+	}
+	for (const socketId of pongs.keys()) {
+		pong = pongs.get(socketId);
+		if (pong && pong.partner && pong.partner.socketId == player.socketId) {
+			return pong;
 		}
-		players.set(socket.id, new Player(socket.id, nickname, Side.RIGHT));
-		socket.emit('player created', nickname);
-		if (Options.debug) console.log(players.get(socket.id)?.nickname, 'new player');
-		nickname = '';
+	}
+	return null;
+}
+
+export function deletePong(pongs: any, socketId: any, io: any) {
+	let pong = pongs.get(socketId);
+	if (pong) {
+		if (pong.owner) {
+			io.sockets.sockets.get(pong.owner.socketId)?.emit('pong deleted');
+			if (Options.debug) {
+				console.log(pong.owner.name, 'pong deleted');
+			}
+		}
+		if (pong.partner) {
+			io.sockets.sockets.get(pong.partner.socketId)?.emit('pong deleted');
+			if (Options.debug) {
+				console.log(pong.partner.name, 'partner pong deleted');
+			}
+		}
+		pongs.delete(socketId);
+	}
+}
+
+export function newPlayer(socket: any, players: any, user: {name: string, id: number} | null) {
+	if (user) {
+		players.set(socket.id, new Player(socket.id, user));
+		socket.emit('player created', user.name);
+		if (Options.debug) {
+			console.log(players.get(socket.id)?.name, 'new player');
+		}
 	} else {
 		socket.emit('player not crated');
-		nickname = '';
 	}
 }
 
 export function disconnect(socket: any, players: any, pongs: any, reason: any) {
-	const playerNickname = players.get(socket.id)?.nickname;
-	if (players.delete(socket.id) && Options.debug) {
-		console.log(playerNickname, reason);
+	const player = players.get(socket.id);
+	if (Options.debug) {
+		console.log(player, reason);
 	}
-	const pong = pongs.get(socket.id);
+	if (!player) {
+		return;
+	}
+	const pong = findPong(pongs, player);
 	if (pong) {
-		let msg = new BrowserMsg;
-		msg.cmd = GameCmd.STOP;
-		pong.setControls(msg, undefined);
-		pongs.delete(socket.id);
+		pong.mode = GameMode.STOPPING;
 	}
+	players.delete(socket.id);
 }
 
 export function getPartnersList(socket: any, players: any, pongs: any) {
@@ -38,18 +69,20 @@ export function getPartnersList(socket: any, players: any, pongs: any) {
 	const partners = new Partners;
 	const partnersList = partners.getPartnersList(pongs, socket.id);
 	socket.emit('partners list', partnersList);
-	if (Options.debug) console.log(partnersList);
+	if (Options.debug) {
+		console.log(partnersList);
+	}
 }
 
 export function controls(socket: any, players: any, pongs: any, msg: BrowserMsg) {
 	const player = players.get(socket.id);
-	if (Options.debug && msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE) {
-		console.log(player?.nickname, GameCommand[msg.cmd], 'controls');
+	if (Options.debug && (msg.paddle_y == 0 || msg.cmd != GameCmd.MOUSE)) {
+		console.log(player.name, GameCommand[msg.cmd], 'controls');
 	}
 	if (!player) {
 		return;
 	}
-	let pong = pongs.get(socket.id);
+	let pong = findPong(pongs, player);
 	if (pong) {
 		if (msg.cmd == GameCmd.STOP) {
 			pong.setControls(msg, player.side);
