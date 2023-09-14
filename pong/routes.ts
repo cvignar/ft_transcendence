@@ -6,42 +6,42 @@ import bodyParser from 'body-parser';
 import { nickname } from './server.js';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-export class UserData {
-	nickname: any = '';
-	id:	any = '';
-	constructor(app: any) {
-		app.use(bodyParser.json());
-		app.use(bodyParser.urlencoded({ extended: true }));
+//export class UserData {
+//	nickname: any = '';
+//	id:	any = '';
+//	constructor(app: any) {
+//		app.use(bodyParser.json());
+//		app.use(bodyParser.urlencoded({ extended: true }));
 
-		app.get('/', (request: Request, response: Response) => {
-			if (request && request.query) {
-				this.nickname = request.query['nickname'];
-				this.id = request.query['id'];
-			}
-			response.header('Content-Type: text/html');
-			response.sendFile(path.join(__dirname, '/html/index.html'));
-		});
+//		app.get('/', (request: Request, response: Response) => {
+//			if (request && request.query) {
+//				this.nickname = request.query['nickname'];
+//				this.id = request.query['id'];
+//			}
+//			response.header('Content-Type: text/html');
+//			response.sendFile(path.join(__dirname, '/html/index.html'));
+//		});
 
-		app.post('/', (request: Request, response: Response) => {
-			if (request && request.body) {
-				this.nickname = request.body['nickname'];
-				this.id = request.body['id'];
-			}
-			response.header('Content-Type: text/html');
-			response.sendFile(path.join(__dirname, '/html/index.html'));
-		})
-	}
-	getNickname(): any {
-		const nick = this.nickname;
-		this.nickname = '';
-		return nick;
-	}
-	getId(): any {
-		const id = this.id;
-		this.id = '';
-		return id;
-	}
-}
+//		app.post('/', (request: Request, response: Response) => {
+//			if (request && request.body) {
+//				this.nickname = request.body['nickname'];
+//				this.id = request.body['id'];
+//			}
+//			response.header('Content-Type: text/html');
+//			response.sendFile(path.join(__dirname, '/html/index.html'));
+//		})
+//	}
+//	getNickname(): any {
+//		const nick = this.nickname;
+//		this.nickname = '';
+//		return nick;
+//	}
+//	getId(): any {
+//		const id = this.id;
+//		this.id = '';
+//		return id;
+//	}
+//}
 
 export function routes(app: any) {
 

@@ -20,7 +20,7 @@ socket.on('player not crated', function() {
 	while(!nickname) {
 		nickname = window.prompt('Enter Your Nickname:');
 	}
-	socket.emit('new player', nickname);
+	socket.emit('new player', (nickname, -1));
 });
 socket.on('player created', function(nick_name) {
 	nickname = nick_name;
