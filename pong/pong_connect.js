@@ -129,6 +129,6 @@ export function refusal(socket, io, players, socket_id) {
     }
     const partnerSocket = io.sockets.sockets.get(socket_id);
     if (partnerSocket) {
-        // partnerSocket.emit('partner unavailable');
+        partnerSocket.emit('partner unavailable');
     }
 }

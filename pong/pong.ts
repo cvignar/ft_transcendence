@@ -59,13 +59,10 @@ export class Paddle extends geometry.Rectangle {
 }
 
 export class Pong extends PongOptions {
+	owner: Player | null = null;
+	partner: Player | null = null;
 	mode: GameMode = GameMode.WAITING;
 	status: GameStatus = GameStatus.INACTIVE;
-	ownerSide: Side = Side.RIGHT;
-	owner: string = '';
-	partnerSocketId = '';
-	leftPlayer: string = '';
-	rightPlayer: string = '';
 	leftScore: number = 0;
 	rightScore: number = 0;
 	clickCounter: number = 0;
@@ -333,27 +330,27 @@ export class Pong extends PongOptions {
 		this.state.sound = this.getSound(side);
 		return this.state;
 	}
-	setControls(msg: BrowserMsg, player: Side | undefined) {
-		if (!player) {
-			player = Side.RIGHT;
+	setControls(msg: BrowserMsg, side: Side | undefined) {
+		if (!side) {
+			side = Side.RIGHT;
 		}
-		if (msg.cmd == GameCmd.STOP) {
+		if (msg.cmd == GameCmd.STOP || this.mode == GameMode.STOPPING) {
 			this.mode = GameMode.STOPPING;
 			return;
 		}
 		if (this.mode != GameMode.AUTO_GAME) {
 			if (msg.cmd == GameCmd.MOUSE) {
-				if (player == Side.LEFT && msg.paddle_y > 0) {
+				if (side == Side.LEFT && msg.paddle_y > 0) {
 					this.leftPaddle.set_y0(msg.paddle_y);
 				}
-				if (player == Side.RIGHT && msg.paddle_y > 0) {
+				if (side == Side.RIGHT && msg.paddle_y > 0) {
 					this.rightPaddle.set_y0(msg.paddle_y);
 				}
 			} else {
-				if (player == Side.LEFT) {
+				if (side == Side.LEFT) {
 					this.leftPaddle.set_dy0(msg.paddle_y);
 				}
-				if (player == Side.RIGHT) {
+				if (side == Side.RIGHT) {
 					this.rightPaddle.set_dy0(msg.paddle_y);
 				}
 			}
