@@ -164,7 +164,7 @@ export class ChannelService {
       const channel = await this.prisma.channel.update({
         where: { id: channelData.channelId },
         data: {
-          inviteds: { connect: { id: channelData.memberId } },
+          inviteds: { connect: { id: channelData.invitedId } },
         },
       });
       return channel.id;
@@ -233,7 +233,7 @@ export class ChannelService {
     try {
       const channel = await this.prisma.channel.update({
         where: { id: channelData.channelId },
-        data: { inviteds: { connect: { id: channelData.memberId } } },
+        data: { inviteds: { connect: { id: channelData.invitedId } } },
       });
       return channel.id;
     } catch (error) {

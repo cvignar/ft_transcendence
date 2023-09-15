@@ -10,6 +10,6 @@ import { ChannelGateway } from './channel.gateway';
   imports: [],
   controllers: [ChannelController],
   providers: [ChannelService, PrismaService, UserService, ChannelGateway],
-  //   exports: [/*ChannelGateway, */ ChannelService],
+  exports: [ChannelGateway, ChannelService],
 })
 export class ChannelModule {}
