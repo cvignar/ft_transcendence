@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { PongChat } from './pages/PongChat/PongChat';
 import { Chat } from './pages/Chat/Chat';
 import { Pong } from './pages/Pong/pong';
+import { io } from 'socket.io-client';
 
 const router = createBrowserRouter([
 	{

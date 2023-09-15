@@ -6,13 +6,17 @@
 }
 
 .left-panel {
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 	/*min-height: 80vh;*/
-	min-width: auto;
+	width: 444px;
+}
+
+.head {
+	margin: 16px;
 }
 
 .right-panel {
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 	/*min-height: 80vh;*/
 	min-width: max-content;
 }
