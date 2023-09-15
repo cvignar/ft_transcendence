@@ -1,8 +1,12 @@
 import { Options } from './static/options.js';
 import { Side, GameCmd, GameCommand, BrowserMsg, Player, Partners, GameStatus, GameMode } from './static/common.js';
-import { Pong } from './pong.js';
+import { Pong } from './Pong';
 
-export function findPong(pongs: any, player: Player): Pong | null {
+let players = new Map<string, Player>();
+let pongs = new Map<string, Pong>();
+let pongsPartners = new Map<string, Pong>(); // Index pongs by partners
+
+export function findPong(player: Player): Pong | null {
 	let pong = pongs.get(player.socketId);
 	if (pong) {
 		return pong;
@@ -84,16 +88,7 @@ export function controls(socket: any, players: any, pongs: any, msg: BrowserMsg)
 	}
 	let pong = findPong(pongs, player);
 	if (pong) {
-		if (msg.cmd == GameCmd.STOP) {
-			pong.setControls(msg, player.side);
-			pongs.delete(socket.id);
-			socket.emit('pong deleted');
-		} else if (msg.cmd == GameCmd.NEW && (!pong.leftPlayer || !pong.rightPlayer)) {
-			return;
-		} else {
-			pong.setControls(msg, player.side);
-			socket.emit('players', [pong.leftPlayer, pong.rightPlayer]);
-		}
+		pong.setControls(msg, player.side);
 	} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
 		pong = new Pong;
 		player.side = Side.RIGHT;
@@ -160,5 +155,30 @@ export function refusal(socket: any, io: any, players: any, socket_id: any) {
 	const partnerSocket = io.sockets.sockets.get(socket_id);
 	if (partnerSocket) {
 		partnerSocket.emit('partner unavailable');
+	}
+}
+
+export function calculatePongs() {
+	let socketIdForDelete: any  = null;
+	for (const socketId of pongs.keys()) {
+		let pong = pongs.get(socketId);
+		if (pong) {
+			if (pong.mode == GameMode.STOPPING) {
+				if (!socketIdForDelete) {
+					socketIdForDelete = socketId;
+				}
+				break;
+			}
+			pong.calculate();
+			if (pong.owner) {
+				io.sockets.sockets.get(pong.owner.socketId)?.emit('state', pong.getPongState(pong.owner.side));
+			}
+			if (pong.partner) {
+				io.sockets.sockets.get(pong.partner.socketId)?.emit('state', pong.getPongState(pong.partner.side));
+			}
+		}
+	}
+	if (socketIdForDelete) {
+		pong_connect.deletePong(pongs, socketIdForDelete, io);
 	}
 }

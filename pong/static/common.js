@@ -112,11 +112,11 @@ export class ServerMsg {
     }
 }
 export class Player {
-    constructor(socketId, nickname, side) {
-        this.side = Side.RIGHT;
+    constructor(socketId, user) {
         this.socketId = socketId;
-        this.nickname = nickname;
-        this.side = side;
+        this.name = user.name;
+        this.id = user.id;
+        this.side = Side.RIGHT;
     }
     changeSide() {
         if (this.side == Side.LEFT) {
@@ -133,15 +133,18 @@ export class Player {
 }
 export class Partners {
     constructor() {
-        this.partner = {};
+        this.partner = null;
+        this.pong = null;
         this.partnersList = new Array;
     }
     getPartnersList(pongs, excludingId) {
         for (let socketId of pongs.keys()) {
-            if (socketId != excludingId &&
-                (pongs.get(socketId).leftPlayer == '' || pongs.get(socketId).rightPlayer == '')) {
-                this.partner = { socket_id: socketId, nick_name: pongs.get(socketId).owner };
-                this.partnersList.push(this.partner);
+            if (socketId != excludingId) {
+                this.pong = pongs.get(socketId);
+                if (this.pong && !this.pong.partner && this.pong.owner) {
+                    this.partner = { socket_id: socketId, nick_name: this.pong.owner.name };
+                    this.partnersList.push(this.partner);
+                }
             }
         }
         return this.partnersList;

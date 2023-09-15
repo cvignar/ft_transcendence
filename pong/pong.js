@@ -1,6 +1,6 @@
-import { PongOptions } from './static/options.js';
-import * as geometry from './static/geometry.js';
-import { GameMode, GameStatus, GameCmd, Side, Sound, ServerMsg, PONG_INFINITY, } from './static/common.js';
+import { PongOptions } from './static/options';
+import * as geometry from './static/geometry';
+import { GameMode, GameStatus, GameCmd, Side, Sound, ServerMsg, PONG_INFINITY, } from './static/common';
 export class Ball extends geometry.Circle {
     constructor(x, y, r) {
         super(x, y, r);
@@ -44,13 +44,10 @@ export class Paddle extends geometry.Rectangle {
 export class Pong extends PongOptions {
     constructor() {
         super(...arguments);
+        this.owner = null;
+        this.partner = null;
         this.mode = GameMode.WAITING;
         this.status = GameStatus.INACTIVE;
-        this.ownerSide = Side.RIGHT;
-        this.owner = '';
-        this.partnerSocketId = '';
-        this.leftPlayer = '';
-        this.rightPlayer = '';
         this.leftScore = 0;
         this.rightScore = 0;
         this.clickCounter = 0;
@@ -280,28 +277,28 @@ export class Pong extends PongOptions {
         this.state.sound = this.getSound(side);
         return this.state;
     }
-    setControls(msg, player) {
-        if (!player) {
-            player = Side.RIGHT;
+    setControls(msg, side) {
+        if (!side) {
+            side = Side.RIGHT;
         }
-        if (msg.cmd == GameCmd.STOP) {
+        if (msg.cmd == GameCmd.STOP || this.mode == GameMode.STOPPING) {
             this.mode = GameMode.STOPPING;
             return;
         }
         if (this.mode != GameMode.AUTO_GAME) {
             if (msg.cmd == GameCmd.MOUSE) {
-                if (player == Side.LEFT && msg.paddle_y > 0) {
+                if (side == Side.LEFT && msg.paddle_y > 0) {
                     this.leftPaddle.set_y0(msg.paddle_y);
                 }
-                if (player == Side.RIGHT && msg.paddle_y > 0) {
+                if (side == Side.RIGHT && msg.paddle_y > 0) {
                     this.rightPaddle.set_y0(msg.paddle_y);
                 }
             }
             else {
-                if (player == Side.LEFT) {
+                if (side == Side.LEFT) {
                     this.leftPaddle.set_dy0(msg.paddle_y);
                 }
-                if (player == Side.RIGHT) {
+                if (side == Side.RIGHT) {
                     this.rightPaddle.set_dy0(msg.paddle_y);
                 }
             }
