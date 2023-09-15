@@ -1,3 +1,4 @@
+import { UseFilters, UsePipes } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,42 +11,36 @@ import {
 import { Server, Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { ChannelService } from './channel.service';
+import { ZodValidationPipe } from 'nestjs-zod';
+import {
+  HttpToWsFilter,
+  ProperWsFilter,
+} from '../http-exception-to-websocket-exception/http-exception-to-websocket-exception.filter';
 
+@UsePipes(new ZodValidationPipe())
+@UseFilters(new HttpToWsFilter())
+@UseFilters(new ProperWsFilter())
 @WebSocketGateway()
-export class ChannelGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
-{
+export class ChannelGateway {
   @WebSocketServer()
   server: Server;
 
   constructor(
-    //private channelService: ChannelService,
+    private channelService: ChannelService,
     private userService: UserService,
   ) {}
 
-  async handleConnection(client: Socket, ...args: any[]) {
-    console.log(`client ${args} connected, socket: ${client.data}`);
+  async handleJoinSocket(id: number, @ConnectedSocket() client: Socket) {
+    const channels = await this.channelService.getChannelsByUserId(id);
+    await client.join('default_all');
+    if (channels)
+      for (const channel of channels) {
+        await client.join(channel);
+      }
   }
-  //const channels = await this.channelService.getChannelsByUserId(id);
-  //await client.join('all');
-  //if (channels) {
-  //  for (const channel of channels) {
-  //    await client.join(channel);
-  //  }
-  //}
 
-  async handleDisconnect(client: any) {
-    console.log(`client disconnected: ${client}`);
-  }
-  @SubscribeMessage('hello')
-  //handleGetChannels(@MessageBody('id') id: number): {}
-  handleMessage(@MessageBody() data: string) {
-    console.log(`recieved data: ${data}`);
-    this.server.emit('message', 'hello!');
-  }
-  //@SubscribeMessage('get previews')
-  //handleGetChannels(@MessageBody('id') id: number): {}
-  //handleMessage(client: any, payload: any): string {
-  //  return 'Hello world!';
+  //@SubscribeMessage('get preview')
+  //async getPreview(@MessageBody() email: string) {
+  //  const data = await this.channelService;
   //}
 }

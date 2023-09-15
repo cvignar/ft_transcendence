@@ -8,6 +8,7 @@ import { ChannelModule } from './channel/channel.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
+import { AppGateway } from './app.gateway';
 
 @Module({
   imports: [
@@ -29,6 +30,6 @@ import { jwtConstants } from './auth/constants';
     //}),
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService],
+  providers: [AppService, PrismaService, AppGateway],
 })
 export class AppModule {}
