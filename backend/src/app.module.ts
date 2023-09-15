@@ -5,6 +5,9 @@ import { AppService } from './app.service';
 import { PrismaService } from './prisma/prisma.service';
 import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConstants } from './auth/constants';
 
 @Module({
   imports: [
@@ -18,6 +21,12 @@ import { ChannelModule } from './channel/channel.module';
       expandVariables: true,
     }),
     ChannelModule,
+    AuthModule,
+    //JwtModule.register({
+    //  global: true,
+    //  secret: jwtConstants.secret,
+    //  signOptions: { expiresIn: '300m' },
+    //}),
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],

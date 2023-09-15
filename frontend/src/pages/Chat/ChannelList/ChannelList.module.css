@@ -2,3 +2,8 @@
 	display: flex;
 	flex-direction: column;
 }
+.preview-button {
+	height: 70px;
+	display: flex;
+	align-items: top;
+}

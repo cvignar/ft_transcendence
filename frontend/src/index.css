@@ -26,11 +26,11 @@
   --text-secondary-color: #23394e;
   --text-secondary-color-filter: invert(18%) sepia(18%) saturate(1478%) hue-rotate(168deg) brightness(94%) contrast(88%);*/
 
-  --white-color: #FFF6E0;
-  --white-color-filter: invert(96%) sepia(8%) saturate(1352%) hue-rotate(311deg) brightness(107%) contrast(102%);
+  --white-color:  #e4dbc3;
+  --white-color-filter:  invert(92%) sepia(4%) saturate(1892%) hue-rotate(358deg) brightness(94%) contrast(80%);
 
-  --white-hover-color: #e4dbc3;
-  --white-hover-color-filter: invert(92%) sepia(4%) saturate(1892%) hue-rotate(358deg) brightness(94%) contrast(80%);
+  --white-hover-color: #FFF6E0;
+  --white-hover-color-filter:invert(96%) sepia(8%) saturate(1352%) hue-rotate(311deg) brightness(107%) contrast(102%);
 
   --text-color: #272829;
   --text-color-filter: invert(12%) sepia(5%) saturate(292%) hue-rotate(169deg) brightness(101%) contrast(90%);

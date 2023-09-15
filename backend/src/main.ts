@@ -27,9 +27,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.useGlobalPipes(new ZodValidationPipe());
-  app.enableCors({
-    origin: 'http://localhost:5173',
-  });
+  app.enableCors();
 
   //const { httpAdapter } = app.get(HttpAdapterHost);
   //app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));

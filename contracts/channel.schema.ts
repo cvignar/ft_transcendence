@@ -31,10 +31,9 @@ export const ChannelSchema = z.object({
 	type: z.nativeEnum(typeEnum),
 	password: z.password().optional(),
 	email: z.string().email(),
-	members: MemberSchema.array()
-	//owners: UserSchema.array(),
+	members: MemberSchema.array(),
+	owners: UserSchema.array(),
 	//admins: UserSchema.array(),
-	//members: UserSchema.array().optional(),
 	//invited: UserSchema.array(),
 	//banned: UserSchema.array(),
 	//muted: MuteSchema.array(),
@@ -77,10 +76,9 @@ const UpdateChannelSchema = z.object({
 	email: z.string().email(),
 	password: z.password(),
 	memberId: z.number(),
-	verifyPassword: z.password(),
+	newPassword: z.password(),
 });
 
 export namespace UpdateChannel {
 	export class Request extends createZodDto(UpdateChannelSchema) {}
 }
-

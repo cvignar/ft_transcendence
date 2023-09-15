@@ -1,0 +1,28 @@
+.window{
+	width: 400px;
+	/*border: 1px solid black;*/
+	/*min-height: 80vh;*/
+	min-width: max-content;
+	background: var(--white-hover-color);
+}
+
+.head {
+	height: 50px;
+	display: flex;
+	flex-direction: row;
+	margin: 9px;
+	border: none;
+	border-bottom: 1px solid var(--separator-color);
+}
+
+.chat-area {
+	margin: 44px;	
+}
+
+.messages {
+	height: 835px;
+}
+
+.text-area {
+	margin-top: auto;
+}
