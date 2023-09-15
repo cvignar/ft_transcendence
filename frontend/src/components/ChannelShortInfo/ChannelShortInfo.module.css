@@ -1,13 +1,3 @@
-.preview {
-	display: flex;
-	flex-direction: row;
-	/*align-items: center;*/
-	height: 70px;
-	width: 100ch;
-
-
-}
-
 .info {
 	display: flex;
 	flex-direction: row;
@@ -43,12 +33,4 @@
 	display: flex;
 	flex-direction: column;
 	margin-left: 10px;
-}
-
-.time {
-	font-size: 14px;
-	font-style: normal;
-	font-weight: 400;
-	line-height: normal;
-	margin-left: auto;
 }
