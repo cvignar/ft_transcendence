@@ -1,6 +1,12 @@
 import { z } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 
+export enum Status {
+  online = 'online',
+  offline = 'offline',
+  playing = 'playing'
+}
+
 export const UserSchema = z.object({
   id: z.number().int(),
   username: z.string().max(32),
