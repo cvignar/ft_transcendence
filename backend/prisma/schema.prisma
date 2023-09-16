@@ -69,10 +69,6 @@ model Channel {
 
   type        String
   password    String?
-//  dm          Boolean   @default(false)
-//  private     Boolean   @default(false)
-//  isPassword  Boolean   @default(false)
-//  password    String?
 
   owners      User[]      @relation("owner")
   admins      User[]      @relation("admin")

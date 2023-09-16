@@ -26,18 +26,31 @@ export const MemberSchema = z.object({
 	});
 
 export const ChannelSchema = z.object({
+	id: z.number().int(),
 	name: z.string().max(32),
 	picture: z.string().optional(),
+	createdAt: z.date().default(new Date('now')),
+	updatedAt: z.date(),
+	type: z.nativeEnum(typeEnum),
+	password: z.password().optional(),
+	owners: z.array(UserSchema),
+	admins: z.array(UserSchema),
+	members: z.array(UserSchema),
+	inviteds: z.array(UserSchema),
+	blocked: z.array(UserSchema),
+	muted: z.array(MuteSchema),
+	messages: z.array(MessageSchema),
+});
+
+const CreateChannelSchema = z.object({
+	name: z.string(),
 	type: z.nativeEnum(typeEnum),
 	password: z.password().optional(),
 	email: z.string().email(),
-	members: MemberSchema.array(),
-	owners: UserSchema.array(),
-	//admins: UserSchema.array(),
-	//invited: UserSchema.array(),
-	//banned: UserSchema.array(),
-	//muted: MuteSchema.array(),
-	//messages: MessageSchema.array(),
+	members: z.array(z.object({
+		id: z.number().int(),
+		name: z.string(),
+	})),
 });
 
 const CreateProtectedChannelSchema = ChannelSchema.pick({
@@ -51,10 +64,6 @@ const CreateProtectedChannelSchema = ChannelSchema.pick({
 //export namespace CreateProtectedChannel {
 //	export class Request extends createZodDto(CreateProtectedChannelSchema) {}
 //}
-
-const CreateChannelSchema = CreateProtectedChannelSchema.omit({
-	password: true,
-});
 
 export namespace CreateChannel {
 	export class Request extends createZodDto(CreateChannelSchema) {
@@ -87,6 +96,7 @@ const ChannelPreviewSchema = z.object({
 	id: z.number(),
 	type: z.nativeEnum(typeEnum),
 	name: z.string(),
+	password: z.password().optional(),
 	updatedAt: z.string(),
 	lastMessage: z.string(),
 	unreadCount: z.number().optional(),
@@ -95,5 +105,5 @@ const ChannelPreviewSchema = z.object({
 });
 
 export namespace ChannelPreview {
-	export class Request extends createZodDto(ChannelPreviewSchema) {}
+	export class Response extends createZodDto(ChannelPreviewSchema) {}
 }

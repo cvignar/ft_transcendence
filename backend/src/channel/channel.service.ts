@@ -9,19 +9,23 @@ import {
   //CreateProtectedChannel,
   typeEnum,
   CreateDirectChannel,
+  ChannelPreview,
 } from '../../../contracts/channel.schema';
 import { Channel } from '@prisma/client';
+import { WsException } from '@nestjs/websockets';
+import { channel } from 'diagnostics_channel';
+import { MemberPreview, Status } from 'contracts/user.schema';
 //import { ExceptionWithMessage } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ChannelService {
   constructor(
-    private prisma: PrismaService,
+    private prismaService: PrismaService,
     private userService: UserService,
   ) {}
 
   async showChannels() {
-    const channels = await this.prisma.channel.findMany();
+    const channels = await this.prismaService.channel.findMany();
     //let count = 0;
     //for (const [index, channel] of channels.entries()) {
     //  console.log(`channel ${index}: ${channel.name}`);
@@ -33,7 +37,7 @@ export class ChannelService {
 
   async getChannelsByUserId(userId: number) {
     const channels = [];
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prismaService.user.findUnique({
       where: { id: userId },
       select: {
         owner: true,
@@ -69,7 +73,7 @@ export class ChannelService {
 
   async getChannelNameById(channelId: number) {
     try {
-      const channel = await this.prisma.channel.findUnique({
+      const channel = await this.prismaService.channel.findUnique({
         where: {
           id: channelId,
         },
@@ -86,7 +90,7 @@ export class ChannelService {
 
   async getChannelById(channelId: number) {
     try {
-      const channel = await this.prisma.channel.findUniqueOrThrow({
+      const channel = await this.prismaService.channel.findUniqueOrThrow({
         where: { id: channelId },
         select: {
           id: true,
@@ -136,32 +140,28 @@ export class ChannelService {
 
   async createChannel(channelData: CreateChannel.Request) {
     try {
-      const password = undefined;
-      //if (channelData.type == typeEnum.PROTECTED) {
-      //  password = channelData.password;
-      //}
-      const channel = await this.prisma.channel.create({
+      const channel = await this.prismaService.channel.create({
         data: {
           name: channelData.name,
           type: channelData.type,
-          password: password,
+          password: channelData.password,
           owners: { connect: { email: channelData.email } },
           admins: { connect: { email: channelData.email } },
-          //members: {
-          //  connect: channelData.members.map((member) => ({ id: member.id })),
-          //},
+          members: {
+            connect: channelData.members.map((member) => ({ id: member.id })),
+          },
         },
       });
-      return channel;
+      return channel.id;
     } catch (error) {
       console.error(`createChannel error: ${error}`);
-      // throw new WsException(error.message);
+      throw new WsException(error);
     }
   }
 
   async inviteUser(channelData: UpdateChannel.Request) {
     try {
-      const channel = await this.prisma.channel.update({
+      const channel = await this.prismaService.channel.update({
         where: { id: channelData.channelId },
         data: {
           inviteds: { connect: { id: channelData.invitedId } },
@@ -174,25 +174,28 @@ export class ChannelService {
     }
   }
 
-  async addMember(channelData: UpdateChannel.Request) {
+  async joinChannel(
+    channelData: UpdateChannel.Request,
+  ): Promise<number | undefined> {
     try {
-      const channel = await this.prisma.channel.findUnique({
+      const channel = await this.prismaService.channel.findUnique({
         where: { id: channelData.channelId },
         select: { password: true },
       });
       if (channel.password === channelData.newPassword) {
-        const newChannel = await this.prisma.channel.update({
+        const updatedChannel = await this.prismaService.channel.update({
           where: { id: channelData.channelId },
           data: {
             members: { connect: { email: channelData.email } },
             inviteds: { disconnect: { email: channelData.email } },
           },
         });
-        return newChannel.id;
+        return updatedChannel.id;
       }
+      return undefined;
     } catch (error) {
       console.error(`addMember error: ${error}`);
-      // throw new WsException(error.message);
+      throw new WsException(error);
     }
   }
 
@@ -231,7 +234,7 @@ export class ChannelService {
 
   async inviteMember(channelData: UpdateChannel.Request) {
     try {
-      const channel = await this.prisma.channel.update({
+      const channel = await this.prismaService.channel.update({
         where: { id: channelData.channelId },
         data: { inviteds: { connect: { id: channelData.invitedId } } },
       });
@@ -244,7 +247,7 @@ export class ChannelService {
 
   async getDirectChannelTarget(channelData: UpdateChannel.Request) {
     try {
-      const channel = await this.prisma.channel.findUnique({
+      const channel = await this.prismaService.channel.findUnique({
         where: { id: channelData.channelId },
         select: {
           owners: {
@@ -264,7 +267,7 @@ export class ChannelService {
 
   async getMessages(channelId: number) {
     try {
-      const messages = await this.prisma.channel.findUnique({
+      const messages = await this.prismaService.channel.findUnique({
         where: { id: channelId },
         select: {
           messages: {
@@ -291,5 +294,286 @@ export class ChannelService {
     }
   }
 
-  // async createNewMessage(messageData: )
+  async getChannelsListById(email: string) {
+    try {
+      const channelsList = await this.prismaService.user.findUnique({
+        where: { email: email },
+        select: {
+          owner: {
+            where: { type: 'direct' },
+            select: {
+              id: true,
+              type: true,
+              name: true,
+              password: true,
+              updatedAt: true,
+              owners: {
+                select: {
+                  id: true,
+                  email: true,
+                  username: true,
+                },
+              },
+              messages: {
+                where: { unsent: false },
+                orderBy: { createdAt: 'desc' },
+                select: { msg: true },
+                take: 1,
+              },
+            },
+          },
+          admin: {
+            select: {
+              id: true,
+              type: true,
+              name: true,
+              password: true,
+              updatedAt: true,
+              owners: {
+                select: {
+                  id: true,
+                  email: true,
+                  username: true,
+                },
+              },
+              messages: {
+                where: { unsent: false },
+                orderBy: { createdAt: 'desc' },
+                select: { msg: true },
+                take: 1,
+              },
+            },
+          },
+          member: {
+            select: {
+              id: true,
+              type: true,
+              name: true,
+              password: true,
+              updatedAt: true,
+              owners: {
+                select: {
+                  id: true,
+                  email: true,
+                  username: true,
+                },
+              },
+              messages: {
+                where: { unsent: false },
+                orderBy: { createdAt: 'desc' },
+                select: { msg: true },
+                take: 1,
+              },
+            },
+          },
+          invited: {
+            select: {
+              id: true,
+              type: true,
+              name: true,
+              password: true,
+              updatedAt: true,
+              owners: {
+                select: {
+                  id: true,
+                  email: true,
+                  username: true,
+                },
+              },
+              messages: {
+                where: { unsent: false },
+                orderBy: { createdAt: 'desc' },
+                select: { msg: true },
+                take: 1,
+              },
+            },
+          },
+        },
+      });
+      return channelsList;
+    } catch (e) {
+      console.log(e.message);
+      throw new WsException(e);
+    }
+  }
+
+  async extractPreviews(channelsList: any, email: string) {
+    const previews: ChannelPreview.Response[] = [];
+    if (channelsList) {
+      if (channelsList.owner) {
+        for (let i = 0; i < channelsList.owner.length; i++) {
+          let name = '';
+          if (channelsList.owner[i].owners.length > 1) {
+            name =
+              channelsList.owner[i].owners[0].email === email
+                ? channelsList.owner[i].owners[0].username
+                : channelsList.owner[i].owners[1].username;
+          }
+          let ownerId = -1;
+          if (channelsList.owner[i].owners.length > 1) {
+            ownerId =
+              channelsList.owner[i].owners[0].email === email
+                ? channelsList.owner[i].owners[0].id
+                : channelsList.owner[i].owners[1].id;
+          }
+          const messageCount = channelsList.owner[i].messages.length;
+          const channelPreview: ChannelPreview.Response = {
+            id: channelsList.owner[i].id,
+            type: channelsList.owner[i].type,
+            name: name,
+            updatedAt: channelsList.owner[i].updatedAt,
+            lastMessage:
+              messageCount > 0 ? channelsList.owner[i].messages[0].msg : '',
+            ownerEmail: channelsList.owner[i].owners[0].email,
+            ownerId: ownerId,
+          };
+          previews.push(channelPreview);
+        }
+      }
+      if (channelsList.admin) {
+        for (let i = 0; i < channelsList.admin.length; i++) {
+          const messageCount = channelsList.admin[i].messages.length;
+          const channelPreview: ChannelPreview.Response = {
+            id: channelsList.admin[i].id,
+            type: channelsList.admin[i].type,
+            name: channelsList.admin[i].name,
+            updatedAt: channelsList.admin[i].updatedAt,
+            lastMessage:
+              messageCount > 0 ? channelsList.admin[i].messages[0].msg : '',
+            ownerEmail: channelsList.admin[i].owner[0].email,
+            ownerId: channelsList.admin[i].owner[0].id,
+          };
+          previews.push(channelPreview);
+        }
+      }
+      if (channelsList.members) {
+        for (let i = 0; i < channelsList.members.length; i++) {
+          const messageCount = channelsList.members[i].messages.length;
+          const channelPreview: ChannelPreview.Response = {
+            id: channelsList.members[i].id,
+            type: channelsList.members[i].type,
+            name: channelsList.members[i].name,
+            updatedAt: channelsList.members[i].updatedAt,
+            lastMessage:
+              messageCount > 0 ? channelsList.members[i].messages[0].msg : '',
+            ownerEmail: channelsList.members[i].owner[0].email,
+            ownerId: channelsList.members[i].owner[0].id,
+          };
+          previews.push(channelPreview);
+        }
+      }
+      if (channelsList.invited) {
+        for (let i = 0; i < channelsList.invited.length; i++) {
+          const messageCount = channelsList.invited[i].messages.length;
+          const channelPreview: ChannelPreview.Response = {
+            id: channelsList.invited[i].id,
+            type: channelsList.invited[i].type,
+            name: channelsList.invited[i].name,
+            updatedAt: channelsList.invited[i].updatedAt,
+            lastMessage:
+              channelsList.invited[i].type === 'protected'
+                ? ''
+                : messageCount > 0
+                ? channelsList.invited[i].messages[0].msg
+                : '',
+            ownerEmail: channelsList.invited[i].ownerEmail,
+            ownerId: channelsList.invited[i].ownerId,
+          };
+          previews.push(channelPreview);
+        }
+      }
+    }
+    return previews;
+  }
+
+  async getPreviews(email: string): Promise<ChannelPreview.Response[] | []> {
+    try {
+      const channelsList = this.getChannelsListById(email);
+      const previews = this.extractPreviews(channelsList, email);
+      return previews;
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  async extractPreview(
+    channel: any,
+    email: string,
+  ): Promise<ChannelPreview.Response> {
+    let messageCount = 0;
+    if (channel.messages) {
+      messageCount = channel.messages.length;
+    }
+    let name = '';
+    if (channel.owners.length > 1) {
+      name =
+        channel.owners[0].email === email
+          ? channel.owners[1].username
+          : channel.owners[0].username;
+    }
+    let ownerId = -1;
+    if (channel.owners.length > 1) {
+      ownerId =
+        channel.owners[0].email === email
+          ? channel.owners[1].id
+          : channel.owners[0].id;
+    } else {
+      ownerId = channel.owners[0].id;
+    }
+    const preview: ChannelPreview.Response = {
+      id: channel.id,
+      type: channel.type,
+      name: channel.type === 'direct' ? name : channel.name,
+      updatedAt: channel.updatedAt,
+      lastMessage:
+        channel.type === 'protected'
+          ? ''
+          : messageCount > 0
+          ? channel.messages[0].msg
+          : '',
+      ownerEmail: channel.owners.length > 0 ? channel.owners[0].email : '',
+      ownerId: ownerId,
+    };
+    return preview;
+  }
+  async getPreview(
+    channelId: number,
+    email: string,
+  ): Promise<ChannelPreview.Response> {
+    try {
+      const channel = await this.getChannelById(channelId);
+      const channelPreview = this.extractPreview(channel, email);
+      return channelPreview;
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  async getMembers(userId: number, channelId: number) {
+    try {
+      const channel = await this.prismaService.channel.findUnique({
+        where: { id: channelId },
+        select: { members: true },
+      });
+      const members: MemberPreview.Response[] = [];
+      if (channel && channel.members) {
+        for (let i = 0; i < channel.members.length; i++) {
+          const member: MemberPreview.Response = {
+            id: channel.members[i].id,
+            username: channel.members[i].username,
+            email: channel.members[i].email,
+            isFriend:
+              userId != channel.members[i].id
+                ? await this.userService.isFriend(userId, channel.members[i].id)
+                : false,
+          };
+          members.push(member);
+        }
+      }
+      return members;
+    } catch (e) {
+      console.log('get members error: ', e.message);
+      throw new WsException(e);
+    }
+  }
 }
