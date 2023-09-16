@@ -5,11 +5,11 @@ import { ChannelSchema } from './channel.schema';
 
 export const MuteSchema = z.object({
 	id: z.number().int(),
-	finishAt: z.dateString(),
-	checkAt: z.dateString(),
-	finished: z.boolean(),
-	user: UserSchema,
+	finishAt: z.date(),
+	checkAt: z.date().default(new Date('now')),
+	finished: z.boolean().default(false),
+	muted: UserSchema,
 	userId: z.number().int(),
 	channel: ChannelSchema,
-	channelId: z.number().int(),
+	cid: z.number().int(),
 });

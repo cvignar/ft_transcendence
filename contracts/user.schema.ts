@@ -1,5 +1,8 @@
-import { z } from 'nestjs-zod/z';
+import { z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
+import { ChannelSchema } from './channel.schema';
+import { MuteSchema } from './mute.schema';
+import { MessageSchema } from './Message.schema';
 
 export enum Status {
   online = 'online',
@@ -7,27 +10,80 @@ export enum Status {
   playing = 'playing'
 }
 
-export const UserSchema = z.object({
-  id: z.number().int(),
-  username: z.string().max(32),
-  email: z.string().email({ message: 'Invalid email' }),
-  hash: z.string(),
+export const CreateUserSchema = zod.object({
+  id: zod.number().int(),
+  username: zod.string().max(32),
+  email: zod.string().email({ message: 'Invalid email' }),
+  hash: zod.string(),
 });
 
-// export class UserDTO extends createZodDto(UserSchema) {}
-
 export namespace CreateUser {
-  export class Request extends createZodDto(UserSchema) {}
+  export class Request extends createZodDto(CreateUserSchema) {}
 }
 
-const UpdateUsernameSchema = UserSchema.pick({ username: true });
+const UpdateUsernameSchema = CreateUserSchema.pick({ username: true });
 
 export namespace UpdateUsername {
   export class Request extends createZodDto(UpdateUsernameSchema) {}
 }
 
-const UpdateEmailSchema = UserSchema.pick({ email: true });
+const UpdateEmailSchema = CreateUserSchema.pick({ email: true });
 
 export namespace UpdateUser {
   export class Request extends createZodDto(UpdateEmailSchema) {}
+}
+
+export const UserSchema = zod.object({
+  id: zod.number(),
+  id42: zod.number(),
+  createdAt: zod.date().default(new Date('now')),
+  updatedAt: zod.date(),
+  email: zod.string().email(),
+  username: zod.string(),  
+  hash: zod.password(),
+  avatar: zod.string().optional(),
+  hashedRtoken: zod.string().optional(),
+  twoFAsecret: zod.string().optional(),
+  twoFA: zod.boolean().default(false),
+  gamesWon: zod.number().int().default(0),
+  gamesLost: zod.number().int().default(0),
+  gamesPlayed: zod.number().int().default(0),
+  gameHistory: zod.number().array(),
+  winRate: zod.number().optional(),
+  playTime: zod.number().int().default(0),
+  score: zod.number().int().default(0),
+  rank: zod.number().int().optional(),
+  friends: zod.number().int().array(),
+  adding: zod.number().int().array(), 
+  added: zod.number().int().array(),
+  blocks: zod.number().int().array(),
+  blocking: zod.number().int().array(),
+  blocked: zod.number().int().array(),
+  owner: zod.array(ChannelSchema),
+  admin: zod.array(ChannelSchema),
+  member: zod.array(ChannelSchema),
+  invited: zod.array(ChannelSchema),
+  chanBlocked: zod.array(ChannelSchema),
+  Muted: zod.array(MuteSchema),
+  messages: zod.array(MessageSchema),
+});
+
+export namespace User {
+  export class response extends createZodDto(UserSchema) {}
+}
+
+const MemberPreviewSchema = zod.object({
+  id: zod.number().int(),
+  username: zod.string(),
+  email: zod.string().email(),
+  status: zod.nativeEnum(Status).default(Status.offline),
+  isOwner: zod.boolean().default(false),
+  isAdmin: zod.boolean().default(false),
+  isInvited: zod.boolean().default(false),
+  isMuted: zod.boolean().default(false),
+  isFriend: zod.boolean().default(false),
+});
+
+export namespace MemberPreview {
+  export class Response extends createZodDto(MemberPreviewSchema) {}
 }
