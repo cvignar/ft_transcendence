@@ -303,7 +303,6 @@ export class Pong extends PongOptions {
                 }
             }
         }
-        const prevMode = this.mode;
         if (this.mode == GameMode.WAITING) {
             if (msg.cmd == GameCmd.NEW) {
                 this.mode = GameMode.PARTNER_GAME;
@@ -316,7 +315,6 @@ export class Pong extends PongOptions {
                 this.ballSpeedUp = 1;
             }
             else if (msg.cmd == GameCmd.AUTO) {
-                this.takeControl();
                 this.mode = GameMode.AUTO_GAME;
                 this.status = GameStatus.PLAYING;
                 this.ballSpeedUp = 1;
@@ -349,15 +347,11 @@ export class Pong extends PongOptions {
                 }
             }
             else if (msg.cmd == GameCmd.AUTO) {
-                this.takeControl();
                 this.mode = GameMode.AUTO_GAME;
                 if (this.atGameStart) {
                     this.status = GameStatus.PLAYING;
                 }
             }
-        }
-        if (prevMode == GameMode.AUTO_GAME && prevMode != this.mode) {
-            this.giveControl();
         }
     }
     calculate() {
@@ -369,13 +363,19 @@ export class Pong extends PongOptions {
             this.pathStart.copy(this.ball.center);
         }
         else if (this.status == GameStatus.PLAYING) {
-            if (this.mode == GameMode.TRNNG_GAME ||
-                this.mode == GameMode.AUTO_GAME) {
-                if (!this.leftPlayer) {
+            if (this.mode != GameMode.PARTNER_GAME && !this.partner) {
+                if (this.mode == GameMode.AUTO_GAME) {
                     this.autoGamer(this.leftPaddle);
-                }
-                if (!this.rightPlayer) {
                     this.autoGamer(this.rightPaddle);
+                }
+                else if (this.mode == GameMode.TRNNG_GAME) {
+                    if (this.owner) {
+                        if (this.owner.side == Side.RIGHT) {
+                            this.autoGamer(this.leftPaddle);
+                        }
+                        else if (this.owner.side == Side.LEFT)
+                            this.autoGamer(this.rightPaddle);
+                    }
                 }
             }
             this.oneBallPath();
@@ -405,57 +405,50 @@ export class Pong extends PongOptions {
         return !sound ? Sound.HUSH : sound;
     }
     setOwner(owner) {
-        this.owner = owner.nickname;
-        this.ownerSide = owner.side;
-        if (this.ownerSide == Side.LEFT) {
-            this.leftPlayer = owner.nickname;
-        }
-        else if (this.ownerSide == Side.RIGHT) {
-            this.rightPlayer = owner.nickname;
+        if (owner) {
+            this.owner = owner;
+            if (this.owner.side != Side.LEFT && this.owner.side != Side.RIGHT) {
+                this.owner.side = Side.RIGHT;
+            }
         }
     }
     setPartner(partner) {
-        this.partnerSocketId = partner.socketId;
-        if (this.ownerSide == Side.LEFT) {
-            this.leftPlayer = this.owner;
-            this.rightPlayer = partner.nickname;
-            return Side.RIGHT;
-        }
-        else {
-            this.leftPlayer = partner.nickname;
-            this.rightPlayer = this.owner;
-            this.ownerSide = Side.RIGHT;
+        if (partner) {
+            this.partner = partner;
+            if (this.owner) {
+                if (this.owner.side == Side.RIGHT) {
+                    this.partner.side = Side.LEFT;
+                }
+                else if (this.owner.side == Side.LEFT) {
+                    this.partner.side = Side.RIGHT;
+                }
+            }
+            return this.partner.side;
         }
         return Side.LEFT;
     }
     swapPlayers() {
-        if (this.ownerSide == Side.RIGHT) {
-            this.rightPlayer = this.leftPlayer;
-            this.leftPlayer = this.owner;
-            this.ownerSide = Side.LEFT;
-        }
-        else {
-            this.leftPlayer = this.rightPlayer;
-            this.rightPlayer = this.owner;
-            this.ownerSide = Side.RIGHT;
-        }
-    }
-    takeControl() {
-        if (this.ownerSide == Side.RIGHT) {
-            this.rightPlayer = '';
-        }
-        else {
-            this.leftPlayer = '';
-            this.ownerSide = Side.LEFT;
-        }
-    }
-    giveControl() {
-        if (this.ownerSide == Side.RIGHT) {
-            this.rightPlayer = this.owner;
-        }
-        else {
-            this.leftPlayer = this.owner;
-            this.ownerSide = Side.LEFT;
+        if (this.owner) {
+            if (this.owner.side == Side.RIGHT) {
+                this.owner.side = Side.LEFT;
+            }
+            else if (this.owner.side == Side.LEFT) {
+                this.owner.side = Side.RIGHT;
+            }
+            else {
+                this.owner.side = Side.RIGHT;
+            }
+            if (this.partner) {
+                if (this.owner.side == Side.RIGHT) {
+                    this.partner.side = Side.LEFT;
+                }
+                else if (this.owner.side == Side.LEFT) {
+                    this.partner.side = Side.RIGHT;
+                }
+                else {
+                    this.partner.side = Side.LEFT;
+                }
+            }
         }
     }
 }

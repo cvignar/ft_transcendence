@@ -1,3 +1,4 @@
+import { Player } from './GamesSet';
 import { PongOptions } from './static/options';
 import * as geometry from './static/geometry';
 import {
@@ -9,7 +10,6 @@ import {
 	BrowserMsg,
 	ServerMsg,
 	PONG_INFINITY,
-	Player,
 } from './static/common';
 
 export class Ball extends geometry.Circle {
@@ -486,5 +486,34 @@ export class Pong extends PongOptions {
 				}
 			}
 		}
+	}
+	getLeftPlayer(): Player | null {
+		if (this.owner) {
+			if (this.owner.side == Side.LEFT && this.mode != GameMode.AUTO_GAME) {
+				return this.owner;
+			} else if (this.partner) {
+				if (this.partner.side == Side.LEFT && this.mode == GameMode.PARTNER_GAME) {
+					return this.partner;
+				}
+			}
+		}
+		return null;
+	}
+	getRightPlayer(): Player | null {
+		if (this.owner) {
+			if (this.owner.side == Side.RIGHT && this.mode != GameMode.AUTO_GAME) {
+				return this.owner;
+			} else if (this.partner) {
+				if (this.partner.side == Side.RIGHT && this.mode == GameMode.PARTNER_GAME) {
+					return this.partner;
+				}
+			}
+		}
+		return null;
+	}
+	getPlayersNames(): [ left: string, right: string ] {
+		const left = '';
+		const right = '';
+		return [ left, right ]
 	}
 }

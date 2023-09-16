@@ -1,6 +1,6 @@
 import { Options } from './static/options.js';
 import { Side, GameCmd, GameCommand, Player, Partners, GameMode } from './static/common.js';
-import { Pong } from './Pong.js';
+import { Pong } from './Pong';
 let players = new Map();
 let pongs = new Map();
 let pongsPartners = new Map(); // Index pongs by partners
