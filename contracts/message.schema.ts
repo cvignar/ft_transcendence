@@ -6,10 +6,14 @@ import { ChannelSchema } from './channel.schema';
 export const MessageSchema = z.object({
 	id: z.number().int(),
 	msg: z.string(),
+	history: z.string().array(),
+	unsent: z.boolean().default(false),
+	createdAt: z.date().default(new Date('now')),
+	updatedAt: z.date(),
 	owner: UserSchema,
-	ownerId: z.number().int(),
+	userId: z.number().int(),
 	channel: ChannelSchema,
-	channelId: z.number().int(),
+	cid: z.number().int(),
 });
 
 
