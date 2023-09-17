@@ -1,5 +1,5 @@
 import { Pong } from './Pong';
-import { GameMode, Side } from './static/common';
+import { BrowserMsg, GameCmd, GameCommand, GameMode, Side } from './static/common';
 import { Options } from './static/options';
 
 
@@ -54,25 +54,21 @@ export class GamesSet {
 		if (!user) {
 			return null;
 		}
+		if (user.name) {
+			return null;
+		}
 		const player = new Player(socketId, user);
 		this.players.set(socketId, player);
-		if (Options.debug) {
-			console.log(player.name, 'new player');
-		}
 		return player;
 	}
-	deletePlayer(socketId: string, reason: string) {
-		const player = this.players.get(socketId);
-		if (Options.debug) {
-			console.log(player?.name, reason);
-		}
-		if (!player) {
-			this.players.delete(socketId);
-		}
+	deletePlayer(socketId: string): Player | undefined {
 		const pong = this.getPong(socketId);
 		if (pong) {
 			pong.mode = GameMode.STOPPING;
 		}
+		const player = this.players.get(socketId);
+		this.players.delete(socketId);
+		return player;
 	}
 	nwePong(owner: Player): Pong {
 		const pong = new Pong;
@@ -134,21 +130,55 @@ export class GamesSet {
 	}
 	getPartnersList(excludeId: string): any {
 		let partnersList = new Array<{ socket_id: string, nick_name: string }>;
-		for (const socketId of this.pongs.keys() ) {
-			if (socketId != excludeId) {
-				const pong = this.pongs.get(socketId);
-				if (pong && !pong.partner && pong.owner) {
-					const partner = { socket_id: socketId, nick_name: pong.owner.name };
-					partnersList.push(partner);
+		if (this.players.has(excludeId)) {
+			for (const socketId of this.pongs.keys() ) {
+				if (socketId != excludeId) {
+					const pong = this.pongs.get(socketId);
+					if (pong && !pong.partner && pong.owner) {
+						const partner = { socket_id: socketId, nick_name: pong.owner.name };
+						partnersList.push(partner);
+					}
 				}
 			}
 		}
-		if (Options.debug) {
-			console.log('partnersList:', partnersList);
-		}
 		return partnersList;
 	}
-	controls() {
-		const player = games
+	controls(player: Player | null, msg: BrowserMsg): [ leftPlayerName: string, rightPlayerName: string ] | null {
+		if (player) {
+			let pong = this.getPong(player.socketId);
+			if (pong) {
+				pong.setControls(msg, player.side);
+				if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+					return pong.getPlayerNames();
+				}
+			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+				pong = this.nwePong(player);
+				pong.setControls(msg, player.side);
+				return pong.getPlayerNames();
+			}
+		}
+		return null;
+	}
+	getMySocketIdAndName_if(my_socketId: string, choosed_socket_id: string): [ my_socketId: string, my_name: string ] | null {
+		const me = this.getPlayer(my_socketId);
+		if (me) {
+			const partner = this.getPlayer(choosed_socket_id);
+			if (partner) {
+				return [ my_socketId, me.name ];
+			}
+		}
+		return null;
+	}
+	setPartner_if(owner_socketId: string, partner_socket_id: string): Player | null {
+		const owner = this.getPlayer(owner_socketId);
+		if (owner) {
+			const partner = this.getPlayer(partner_socket_id);
+			const pong = this.getPong(owner.socketId);
+			if (partner && pong) {
+				pong.setPartner(partner);
+				return partner;
+			}
+		}
+		return null;
 	}
 }

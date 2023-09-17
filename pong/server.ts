@@ -12,6 +12,12 @@ const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
 
+export function gebugPprinting(param1: any | undefined, param2: any | undefined) {
+	if (Options.debug) {
+		console.log(param1, param2);
+	}
+}
+
 routes(app);
 server.listen(Options.port, () => {
 	console.log('Server starts on port', Options.port);
@@ -25,49 +31,57 @@ io.on('connection', (socket) => {
 		} else {
 			socket.emit('player not created');
 		}
+		gebugPprinting(player?.name, player ? 'new player' : 'new player not created');
 	});
 	socket.on('disconnect', (reason) => {
-		games.deletePlayer(socket.id, reason);
+		const player = games.deletePlayer(socket.id);
+		gebugPprinting(player?.name, reason);
 	});
 	socket.on('get partners list', () => {
-		if (games.getPlayer(socket.id)) {
-			socket.emit('partners list', games.getPartnersList(socket.id));
-		}
+		const partnersList = games.getPartnersList(socket.id);
+		socket.emit('partners list', partnersList);
+		gebugPprinting('partnersList:', partnersList);
 	});
 	socket.on('controls', (msg) => {
 		const player = games.getPlayer(socket.id);
-		if (player) {
-			let pong = games.getPong(socket.id);
-			if (pong) {
-				pong.setControls(msg, player.side);
-				if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-					const left = pong.getLeftPlayer();
-					const right = pong.getRightPlayer();
-					socket.emit('players', [ left ? left.name : 'auto',right ? right.name : 'auto' ]);
-				}
-			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-				pong = games.nwePong(player);
-				pong.setControls(msg, player.side);
-				const left = pong.getLeftPlayer();
-				const right = pong.getRightPlayer();
-				socket.emit('players', [ left ? left.name : 'auto',right ? right.name : 'auto' ]);
-			}
+		const playerNames = games.controls(player, msg);
+		if (playerNames) {
+			socket.emit('players', playerNames);
 		}
-		if (Options.debug && (msg.paddle_y == 0 || msg.cmd != GameCmd.MOUSE)) {
-			console.log(player?.name, GameCommand[msg.cmd], 'controls');
+		if (msg.paddle_y == 0 || msg.cmd != GameCmd.MOUSE) {
+			gebugPprinting(player?.name, GameCommand[msg.cmd]+'controls');
 		}
-	});
-	socket.on('state', () => {
-		pong_connect.state(socket, players, pongs);
 	});
 	socket.on('partner choosed', (socket_id) => {
-		pong_connect.partnerChoosed(socket, io, players, socket_id);
+		const mySocketIdAndName = games.getMySocketIdAndName_if(socket.id, socket_id);
+		if (mySocketIdAndName) {
+			const choosedPartnerSocket = io.sockets.sockets.get(socket_id);
+			if (choosedPartnerSocket) {
+				choosedPartnerSocket.emit('confirm partner', mySocketIdAndName);
+				return;
+			}
+		}
+		socket.emit('partner unavailable');
 	});
 	socket.on('partner confirmation', (socket_id) => {
-		pong_connect.partnerConfirmation(socket, io, players, pongs, socket_id);
-	});
-	socket.on('refusal', (socket_id) => {
-		pong_connect.refusal(socket, io, players, socket_id);
+		const partner = games.setPartner_if(socket.id, socket_id);
+		if (partner) {
+			const playersDeletedPong = games.deletePong(partner.socketId);
+			if (playersDeletedPong) {
+				if (playersDeletedPong.owner) {
+					io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit('pong deleted');
+				}
+				if (playersDeletedPong.partner) {
+					io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit('pong deleted');
+				}
+			}
+			const ownePong = games.getPong(socket.id);
+			
+
+		}
+
+
+
 	});
 });
 
