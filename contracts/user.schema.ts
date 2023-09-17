@@ -80,6 +80,7 @@ const MemberPreviewSchema = zod.object({
   isOwner: zod.boolean().default(false),
   isAdmin: zod.boolean().default(false),
   isInvited: zod.boolean().default(false),
+  isBlocked: zod.boolean().default(false),
   isMuted: zod.boolean().default(false),
   isFriend: zod.boolean().default(false),
 });

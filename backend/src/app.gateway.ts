@@ -10,7 +10,8 @@ import {
 } from '@nestjs/websockets';
 import {
   CreateChannel,
-  CreateDirectChannel,
+  DirectChannel,
+  //CreateDirectChannel,
   UpdateChannel,
 } from 'contracts/channel.schema';
 import { Status } from 'contracts/user.schema';
@@ -83,7 +84,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('get new direct messages')
   async getNewDirectMessages(
-    @MessageBody() channelData: CreateDirectChannel.Request,
+    @MessageBody() channelData: DirectChannel.Request,
   ) {
     const channelName = await this.channelService.getChannelNameById(
       channelData.channelId,
@@ -97,10 +98,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('get new invite')
   async getNewInvite(@MessageBody() channelData: UpdateChannel.Request) {
-    if (this.clientSocket.has(channelData.invitedId)) {
-      const client = this.clientSocket.get(channelData.invitedId);
+    if (this.clientSocket.has(channelData.memberId)) {
+      const client = this.clientSocket.get(channelData.memberId);
       const channelName = await this.channelService.getChannelNameById(
-        channelData.channelId,
+        channelData.id,
       );
       client.join(channelName);
       client.emit('update channel request');
