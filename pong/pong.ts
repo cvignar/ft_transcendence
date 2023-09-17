@@ -445,27 +445,15 @@ export class Pong extends PongOptions {
 		}
 		return !sound ? Sound.HUSH : sound;
 	}
-	setOwner(owner: Player) {
-		if (owner) {
-			this.owner = owner;
-			if (this.owner.side != Side.LEFT && this.owner.side != Side.RIGHT) {
-				this.owner.side = Side.RIGHT;
+	setPartner(partner: Player){
+		if (this.owner) {
+			if (this.owner.side == Side.RIGHT) {
+				partner.side = Side.LEFT;
+			} else if (this.owner.side == Side.LEFT) {
+				partner.side = Side.RIGHT;
 			}
-		}
-	}
-	setPartner(partner: Player): Side {
-		if (partner) {
 			this.partner = partner;
-			if (this.owner) {
-				if (this.owner.side == Side.RIGHT) {
-					this.partner.side = Side.LEFT;
-				} else if (this.owner.side == Side.LEFT) {
-					this.partner.side = Side.RIGHT;
-				}
-			}
-			return this.partner.side;
 		}
-		return Side.LEFT;
 	}
 	swapPlayers() {
 		if (this.owner) {
@@ -511,9 +499,9 @@ export class Pong extends PongOptions {
 		}
 		return null;
 	}
-	getPlayersNames(): [ left: string, right: string ] {
-		const left = '';
-		const right = '';
-		return [ left, right ]
+	getPlayerNames(): [ left: string, right: string ] {
+		const left = this.getLeftPlayer();
+		const right = this.getRightPlayer();
+		return [ left ? left.name : 'auto', right ? right.name : 'auto' ]
 	}
 }
