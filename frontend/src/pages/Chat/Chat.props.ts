@@ -1,9 +1,9 @@
-export enum channelTypeEnum {
-	PRIVATE = 'private',
-	PROTECTED = 'protected',
-	DIRECT = 'direct',
-	PUBLIC = 'public'
-}
+//export enum channelTypeEnum {
+//	PRIVATE = 'private',
+//	PROTECTED = 'protected',
+//	DIRECT = 'direct',
+//	PUBLIC = 'public'
+//}
 
 export interface ChannelProps {
   id: number

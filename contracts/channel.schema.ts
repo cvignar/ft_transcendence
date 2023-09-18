@@ -1,16 +1,9 @@
-import { string, z, z as zod } from 'nestjs-zod/z';
+import { string, z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 import { UserSchema } from './user.schema';
 import { MuteSchema } from './mute.schema';
 import { MessageSchema } from './Message.schema';
-
-export enum typeEnum {
-	DIRECT = 'direct',
-	PRIVATE = 'private',
-	PROTECTED = 'protected',
-	PUBLIC = 'public',
-}
-
+import { typeEnum } from './enums';
 export const DirectChannelSchema = zod.object({
 	channelId: zod.number(),
 	userId: zod.number(),
@@ -71,9 +64,9 @@ export namespace CreateChannel {
 	}
 }
 
-const CreateDirectChannelSchema = z.object({
-	id: z.number().int(),
-	email: z.string().email(),
+const CreateDirectChannelSchema = zod.object({
+	id: zod.number().int(),
+	email: zod.string().email(),
 });
 export namespace CreateDirectChannel {
 	export class Request extends createZodDto(CreateDirectChannelSchema) {}
@@ -97,7 +90,6 @@ const ChannelPreviewSchema = zod.object({
 	type: zod.nativeEnum(typeEnum),
 	name: zod.string(),
 	picture: zod.string(),
-	password: zod.password().optional(),
 	updatedAt: zod.string(),
 	lastMessage: zod.string(),
 	unreadCount: zod.number().optional(),
@@ -111,7 +103,7 @@ export namespace ChannelPreview {
 
 const SearchPreviewSchema = zod.object({
 	id: zod.number().int(),
-	key: z.number().int(),
+	key: zod.number().int(),
 	name: zod.string(),
 	picture: zod.string(),
 	tag: zod.string(),
