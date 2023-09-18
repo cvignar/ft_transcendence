@@ -136,6 +136,42 @@ export class UserService {
 	}
 }
 
+async has2FA(id: number): Promise<boolean> {
+	let user = await this.getUser(id);
+	if (!user) {
+		return false;
+	}
+	return user.twoFactorAuth? true : false;
+}
+
+async activate2FA(id: number): Promise<User | null> {
+	let user = await this.getUserById(id);
+	if (!user) {
+		return null;
+	}
+	user.twoFA = true;
+	// user.twoFactorAuthenticated = true;
+	return await this.userRepository.save(user);
+}
+
+async deactivate2FA(id: number): Promise<User | null> {
+	let user = await this.getUserById(id);
+	if (!user) {
+		return null;
+	}
+	user.twoFA = false;
+	return await this.userRepository.save(user);
+}
+
+async validate2FA(id: number): Promise<User | null> {
+	let user = await this.getUserById(id);
+	if (!user) {
+		return null;
+	}
+	// user.twoFactorAuthenticated = true;
+	return await this.userRepository.save(user);
+}
+
 //   async updateUser(params: {
 //     where: Prisma.UserWhereUniqueInput;
 //     data: Prisma.UserUpdateInput;

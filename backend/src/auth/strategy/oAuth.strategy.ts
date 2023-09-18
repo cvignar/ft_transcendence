@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { UserService } from '../../user/user.service';
 import { Inject } from '@nestjs/common';
-import { OAuthService } from './oAuth.service';
+import { OAuthService } from '../42auth/oAuth.service';
 import { CreateUser42 } from 'contracts/user.schema';
 import { User } from '@prisma/client';
 
@@ -20,13 +20,13 @@ export class FourtyTwoStrategy extends PassportStrategy(Strategy, '42') {
 	{
 		const as_json = profile._json;
 		
-		const user42 = await this.oAuthService.login({id42: as_json['id']});
+		const user42 = await this.usersService.createFrom42(as_json)
 
 		// if (user42) {
 		// 	return user42;
 		// }
 
-		done(null, user42); // we basically create id for user 
-		return this.usersService.createFrom42(as_json)
+		done(null, user42); 
+		return user42.id;
 	}
 }
