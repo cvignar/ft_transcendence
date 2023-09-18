@@ -43,23 +43,23 @@ export class Score {
     }
     showPlayers() {
         if (this.windowLeft) {
-            if (this.leftPlayer != '') {
+            if (this.leftPlayer != 'auto') {
                 this.windowLeft.style.fontWeight = 'bold';
                 this.windowLeft.textContent = this.leftPlayer;
             }
             else {
                 this.windowLeft.style.fontWeight = 'normal';
-                this.windowLeft.textContent = 'auto';
+                //this.windowLeft.textContent = 'auto';
             }
         }
         if (this.windowRight) {
-            if (this.rightPlayer != '') {
+            if (this.rightPlayer != 'auto') {
                 this.windowRight.style.fontWeight = 'bold';
                 this.windowRight.textContent = this.rightPlayer;
             }
             else {
                 this.windowRight.style.fontWeight = 'normal';
-                this.windowRight.textContent = 'auto';
+                //this.windowRight.textContent = 'auto';
             }
         }
     }

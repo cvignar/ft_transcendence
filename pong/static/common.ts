@@ -1,4 +1,3 @@
-import { Pong } from '../Pong';
 import { Options } from './options.js';
 
 export enum GameMode {
