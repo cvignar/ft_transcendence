@@ -1,6 +1,6 @@
-import { PongOptions } from './static/options';
-import * as geometry from './static/geometry';
-import { GameMode, GameStatus, GameCmd, Side, Sound, ServerMsg, PONG_INFINITY, } from './static/common';
+import { PongOptions } from './static/options.js';
+import * as geometry from './static/geometry.js';
+import { GameMode, GameStatus, GameCmd, Side, Sound, ServerMsg, PONG_INFINITY, } from './static/common.js';
 export class Ball extends geometry.Circle {
     constructor(x, y, r) {
         super(x, y, r);
@@ -44,8 +44,8 @@ export class Paddle extends geometry.Rectangle {
 export class Pong extends PongOptions {
     constructor() {
         super(...arguments);
-        this.owner = null;
-        this.partner = null;
+        this.owner = undefined;
+        this.partner = undefined;
         this.mode = GameMode.WAITING;
         this.status = GameStatus.INACTIVE;
         this.leftScore = 0;
@@ -404,28 +404,16 @@ export class Pong extends PongOptions {
         }
         return !sound ? Sound.HUSH : sound;
     }
-    setOwner(owner) {
-        if (owner) {
-            this.owner = owner;
-            if (this.owner.side != Side.LEFT && this.owner.side != Side.RIGHT) {
-                this.owner.side = Side.RIGHT;
-            }
-        }
-    }
     setPartner(partner) {
-        if (partner) {
-            this.partner = partner;
-            if (this.owner) {
-                if (this.owner.side == Side.RIGHT) {
-                    this.partner.side = Side.LEFT;
-                }
-                else if (this.owner.side == Side.LEFT) {
-                    this.partner.side = Side.RIGHT;
-                }
+        if (this.owner) {
+            if (this.owner.side == Side.RIGHT) {
+                partner.side = Side.LEFT;
             }
-            return this.partner.side;
+            else if (this.owner.side == Side.LEFT) {
+                partner.side = Side.RIGHT;
+            }
+            this.partner = partner;
         }
-        return Side.LEFT;
     }
     swapPlayers() {
         if (this.owner) {
@@ -450,5 +438,36 @@ export class Pong extends PongOptions {
                 }
             }
         }
+    }
+    getLeftPlayer() {
+        if (this.owner) {
+            if (this.owner.side == Side.LEFT && this.mode != GameMode.AUTO_GAME) {
+                return this.owner;
+            }
+            else if (this.partner) {
+                if (this.partner.side == Side.LEFT && this.mode == GameMode.PARTNER_GAME) {
+                    return this.partner;
+                }
+            }
+        }
+        return null;
+    }
+    getRightPlayer() {
+        if (this.owner) {
+            if (this.owner.side == Side.RIGHT && this.mode != GameMode.AUTO_GAME) {
+                return this.owner;
+            }
+            else if (this.partner) {
+                if (this.partner.side == Side.RIGHT && this.mode == GameMode.PARTNER_GAME) {
+                    return this.partner;
+                }
+            }
+        }
+        return null;
+    }
+    getPlayerNames() {
+        const left = this.getLeftPlayer();
+        const right = this.getRightPlayer();
+        return [left ? left.name : 'auto', right ? right.name : 'auto'];
     }
 }
