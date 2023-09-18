@@ -1,5 +1,5 @@
 import { BrowserMsg, GameCmd, GameMode, GameStatus, ServerMsg, Sound, getGameCmd } from './common.js';
-import { Image } from './image';
+import { Image } from './image.js';
 import { ControlOptions } from './options.js';
 
 export class Controls extends ControlOptions {

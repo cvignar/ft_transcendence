@@ -1,6 +1,6 @@
-import { Player } from './GamesSet';
-import { PongOptions } from './static/options';
-import * as geometry from './static/geometry';
+import { Player } from './GamesSet.js';
+import { PongOptions } from './static/options.js';
+import * as geometry from './static/geometry.js';
 import {
 	GameMode,
 	GameStatus,
@@ -10,7 +10,7 @@ import {
 	BrowserMsg,
 	ServerMsg,
 	PONG_INFINITY,
-} from './static/common';
+} from './static/common.js';
 
 export class Ball extends geometry.Circle {
 	visibility: boolean;
@@ -59,8 +59,8 @@ export class Paddle extends geometry.Rectangle {
 }
 
 export class Pong extends PongOptions {
-	owner: Player | null = null;
-	partner: Player | null = null;
+	owner: Player | undefined = undefined;
+	partner: Player | undefined = undefined;
 	mode: GameMode = GameMode.WAITING;
 	status: GameStatus = GameStatus.INACTIVE;
 	leftScore: number = 0;

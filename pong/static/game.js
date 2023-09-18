@@ -1,4 +1,4 @@
-import { BrowserMsg, GameCmd, GameMode, GameStatus, ServerMsg, Sound } from './common.js';
+import { GameCmd, GameMode, GameStatus, ServerMsg, Sound } from './common.js';
 import { Controls, Selector } from './controls.js';
 import { Score, Image, Sounds } from './image.js';
 import { PongOptions } from './options.js';
@@ -16,11 +16,11 @@ const score = new Score();
 
 // Player
 socket.emit('new player');
-socket.on('player not crated', function() {
+socket.on('player not created', function() {
 	while(!nickname) {
 		nickname = window.prompt('Enter Your Nickname:');
 	}
-	socket.emit('new player', (nickname, -1));
+	socket.emit('new player', ({name: nickname, id: -1}));
 });
 socket.on('player created', function(nick_name) {
 	nickname = nick_name;
@@ -102,6 +102,7 @@ socket.on('state', function(state) {
 	}
 });
 socket.on('pong deleted', function() {
+	console.log('pong deleted');//FIXME
 	sounds.playSound(Sound.SPEEDUP);
 	controls.normalizeButtons();
 	score.clear();
