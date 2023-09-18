@@ -21,7 +21,13 @@ import { ChannelGateway } from './channel/channel.gateway';
 import { ChannelService } from './channel/channel.service';
 import { UserService } from './user/user.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Accept'],
+  },
+})
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly jwtService: JwtService,
@@ -39,6 +45,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(client: Socket) {
     try {
       client.setMaxListeners(20); //FIXME!!!!
+      console.log(`client connected: ${client.id}`);
+      console.log(client.handshake.headers.token);
       const UserId: number = this.jwtService.verify(
         String(client.handshake.headers.token),
         { secret: jwtConstants.secret },
@@ -56,6 +64,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       console.log('connect userId', UserId, client.id);
       await this.channelGateway.handleJoinSocket(UserId, client);
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

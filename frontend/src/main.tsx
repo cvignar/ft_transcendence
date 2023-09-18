@@ -9,20 +9,22 @@ import { PongChat } from './pages/PongChat/PongChat';
 import { Chat } from './pages/Chat/Chat';
 import { Pong } from './pages/Pong/pong';
 import { io } from 'socket.io-client';
+import { AuthForm } from './pages/Auth/Auth';
+import { RequireAuth } from './helpers/RequireAuth';
 
 const router = createBrowserRouter([
 	{
-		path: '/',
-		element: <Chat/>
+		path: '/Chat',
+		element: <RequireAuth><Chat/></RequireAuth>
 	},
 	//{
 	//	path: '/',
 	//	element: <Pong/>
 	//},
-	//{ // FIXME!!!! FAKE AUTH
-	//	path: '/',
-	//	element: <AuthForm/>
-	//},
+	{ // FIXME!!!! FAKE AUTH
+		path: '/',
+		element: <AuthForm/>
+	},
 	{
 		path: '/PongChat',
 		element: <PongChat/>

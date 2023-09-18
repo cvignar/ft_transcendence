@@ -6,15 +6,11 @@ export function ChannelList({ channels, setChannel }: ChannelListProps) {
 	console.log(channels);
 	return (
 		<div className={styles['list']} >
-			{channels.map(c => (
+			{channels?.map(c => (
 				<CardButton className={styles['preview-button']} onClick={() => setChannel(c)}>
 					<ChannelPreview
 						key={c.id}
-						id={c.id}
-						name={c.name}
-						createdAt={c.createdAt}
-						updatedAt={c.updatedAt}
-						type={c.type}
+						props={c}
 					/>
 
 				</CardButton>

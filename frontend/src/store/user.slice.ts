@@ -6,16 +6,18 @@ import { AuthResponse } from '../interfaces/auth.interface';
 import { loadState } from './storage';
 //import { RootState } from './store';
 
-export const ID42_PERSISTENT_STATE = 'userData';
+export const JWT_PERSISTENT_STATE = 'userToken';
 export interface UserPersistantState {
-	id42: string | null;
-	username: string | null;
+	//id42: string | null;
+	//username: string | null;
+	token: string | null;
 }
 
 export interface UserState {
-	id42: string | null;
+	token: string | null;
+	//id42: string | null;
 	authErrorMessage?: string;
-	username?: string | null;
+	//username?: string | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -23,18 +25,17 @@ export interface UserState {
 
 
 const initialState: UserState = {
-	id42: loadState<UserPersistantState>(ID42_PERSISTENT_STATE)?.id42 ?? null
+	token: loadState<UserPersistantState>(JWT_PERSISTENT_STATE)?.token ?? null
 };
 
-export const auth = createAsyncThunk('user/create',
-	async (params: {username: string, id42: string, email: string, hash: string}) => {
+export const auth = createAsyncThunk('auth/login',
+	async (params: {email: string, username: string, password: string}) => {
 		try {
 			console.log(params);
-			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/user/create`, {
-				username: params.username,
-				id42: params.id42,
+			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/auth/login`, {
 				email: params.email,
-				hash: params.hash
+				username: params.username,
+				password: params.password
 			});
 			return data;
 		} catch (e) {
@@ -67,9 +68,9 @@ export const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
-		logout: (state) => {
-			state.id42 = null;
-		},
+		//logout: (state) => {
+		//	state.token = null;
+		//},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
 		}
@@ -83,10 +84,14 @@ export const userSlice = createSlice({
 			if (!action.payload) {
 				return;
 			}
-			state.id42 = action.payload.id42;
+			state.token = action.payload.access_token;
+			console.log(action
+				.payload);
+			console.log(state.token);
 		});
 		builder.addCase(auth.rejected, (state, action) => {
 			state.authErrorMessage = action.error.message;
+			console.log(action.error);
 		});
 		//builder.addCase(register.fulfilled, (state, action) => {
 		//	if (!action.payload) {

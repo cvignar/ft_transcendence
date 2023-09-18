@@ -12,21 +12,21 @@ import { auth, userActions } from '../../store/user.slice';
 export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const { id42, authErrorMessage } = useSelector((s: RootState) => s.user);
+	const { token, authErrorMessage } = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
-		if (id42) {
-			navigate('/PongChat');
+		if (token) {
+			navigate('/Chat');
 		}
-	}, [id42, navigate]);
+	}, [token, navigate]);
 
 	const submit = async (e: FormEvent) => {
 		e.preventDefault();
 		dispatch(userActions.clearAuthError());
 		const target = e.target as typeof e.target & AuthForm;
-		const {username, id42, email, hash} = target;
-		console.log(username.value, id42.value, email.value, hash.value);
-		dispatch(auth({ username: username.value, id42: id42.value, email: email.value, hash: hash.value }));
+		const {username, email, password} = target;
+		console.log(username.value, email.value, password.value);
+		dispatch(auth({ username: username.value, email: email.value, password: password.value }));
 	};
 
 	return (
@@ -40,16 +40,12 @@ export function AuthForm() {
 						<Input id='username' name='username' type='username' placeholder='Username'/>
 					</div>
 					<div className={styles['field']}>
-						<label htmlFor='id42'>Your id42</label>
-						<Input id='id42' name='id42' placeholder='Id42'/>
-					</div>
-					<div className={styles['field']}>
 						<label htmlFor='email'>Your email</label>
 						<Input id='email' name='email' type='email' placeholder='Email'/>
 					</div>
 					<div className={styles['field']}>
-						<label htmlFor='hash'>Your password</label>
-						<Input id='hash' name='hash' type='password' placeholder='Password'/>
+						<label htmlFor='password'>Your password</label>
+						<Input id='password' name='password' type='password' placeholder='Password'/>
 					</div>
 					<Button appearence='big'>Login</Button>
 				</form>

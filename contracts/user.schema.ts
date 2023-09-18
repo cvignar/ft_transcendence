@@ -10,6 +10,15 @@ export enum Status {
   playing = 'playing'
 }
 
+export enum Role {
+  member = 'member',
+  invited = 'invited',
+  owner = 'owner',
+  admin = 'admin',
+  default = 'default'
+
+}
+
 export const CreateUserSchema = zod.object({
   id: zod.number().int(),
   username: zod.string().max(32),
