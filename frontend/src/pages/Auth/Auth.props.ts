@@ -5,10 +5,7 @@ export interface AuthForm {
 	email: {
 		value: string;
 	};
-	hash: {
-		value: string;
-	};
-	id42: {
+	password: {
 		value: string;
 	};
 }

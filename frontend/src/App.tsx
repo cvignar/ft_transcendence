@@ -5,13 +5,10 @@ export interface UserData {
   username: {
     value: string
   };
-  id42: {
-    value: string
-  };
   email: {
     value: string
   };
-  hash: {
+  password: {
     value: string
   };
 }
@@ -22,8 +19,8 @@ function App() {
 	const onSubmit = (e: FormEvent) => {
 		e.preventDefault();
 		const target = e.target as typeof e.target & UserData;
-		const {username, email, hash, id42} = target;
-		console.log(username.value, email.value, hash.value, id42.value);
+		const {username, email, password} = target;
+		console.log(username.value, email.value, password.value);
 		setUsername(username.value);
 	};
 

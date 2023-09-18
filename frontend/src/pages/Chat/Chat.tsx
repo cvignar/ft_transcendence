@@ -14,19 +14,8 @@ import { ChannelList } from './ChannelList/ChannelList';
 import ChatWindow from './ChatWindow/ChatWindow';
 import { ChannelPreview } from '../../interfaces/channel.interface';
 import { io } from 'socket.io-client';
+import { INITIAL_CHANNEL, socket } from '../../helpers/ChatInit';
 
-export const INITIAL_CHANNEL = {
-	id: -1,
-	name: '',
-	picture: '/', 
-	createdAt: '',
-	updatedAt: '',
-	type: '',
-	password: '',
-	memberCount: 0
-};
-
-export const socket = io('ws://127.0.0.1:3000', {transports: ['websocket'], query: {id: 1}});//FIXME!!!
 
 socket.emit('hello', 1);
 
@@ -35,11 +24,17 @@ socket.on('message', (data) => {
 });
 export function Chat() {
 	const dispatch = useDispatch<AppDispatch>();
-	const channels = useSelector((s: RootState) => s.channel.items);
+	const [channels, setChannels] = useState<ChannelPreview[]>();
+	//const channels = useSelector((s: RootState) => s.channel.items);
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 
 	useEffect(() => {
-		dispatch(getChannels());
+		socket.emit('get preview', 'uryvaeva.anna@gmail.com', (previews: ChannelPreview[]) => {
+			if(previews) {
+				setChannels(previews);
+			}
+			console.log(previews);
+		});
 	}, []);
 
 

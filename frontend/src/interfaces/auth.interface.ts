@@ -1,3 +1,3 @@
 export interface AuthResponse {
-	id42: string;
+	access_token: string | null;
 }

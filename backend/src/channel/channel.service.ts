@@ -6,10 +6,10 @@ import {
   UpdateChannel,
   CreateChannel,
   ChannelPreview,
-  typeEnum,
   SearchPreview,
   CreateDirectChannel,
 } from '../../../contracts/channel.schema';
+import { typeEnum } from '../../../contracts/enums';
 import { WsException } from '@nestjs/websockets';
 import { MemberPreview } from 'contracts/user.schema';
 import { CreateMessage, MessagePreview } from 'contracts/Message.schema';
@@ -288,109 +288,127 @@ export class ChannelService {
     }
   }
 
+  //async getChannelsListById(email: string) {
+  //  try {
+  //    const channelsList = await this.prismaService.user.findUnique({
+  //      where: { email: email },
+  //      select: {
+  //        owner: {
+  //          where: { type: 'direct' },
+  //          select: {
+  //            id: true,
+  //            type: true,
+  //            name: true,
+  //            password: true,
+  //            updatedAt: true,
+  //            owners: {
+  //              select: {
+  //                id: true,
+  //                email: true,
+  //                username: true,
+  //              },
+  //            },
+  //            messages: {
+  //              where: { unsent: false },
+  //              orderBy: { createdAt: 'desc' },
+  //              select: { msg: true },
+  //              take: 1,
+  //            },
+  //          },
+  //        },
+  //        admin: {
+  //          select: {
+  //            id: true,
+  //            type: true,
+  //            name: true,
+  //            password: true,
+  //            updatedAt: true,
+  //            owners: {
+  //              select: {
+  //                id: true,
+  //                email: true,
+  //                username: true,
+  //              },
+  //            },
+  //            messages: {
+  //              where: { unsent: false },
+  //              orderBy: { createdAt: 'desc' },
+  //              select: { msg: true },
+  //              take: 1,
+  //            },
+  //          },
+  //        },
+  //        member: {
+  //          select: {
+  //            id: true,
+  //            type: true,
+  //            name: true,
+  //            password: true,
+  //            updatedAt: true,
+  //            owners: {
+  //              select: {
+  //                id: true,
+  //                email: true,
+  //                username: true,
+  //              },
+  //            },
+  //            messages: {
+  //              where: { unsent: false },
+  //              orderBy: { createdAt: 'desc' },
+  //              select: { msg: true },
+  //              take: 1,
+  //            },
+  //          },
+  //        },
+  //        invited: {
+  //          select: {
+  //            id: true,
+  //            type: true,
+  //            name: true,
+  //            password: true,
+  //            updatedAt: true,
+  //            owners: {
+  //              select: {
+  //                id: true,
+  //                email: true,
+  //                username: true,
+  //              },
+  //            },
+  //            messages: {
+  //              where: { unsent: false },
+  //              orderBy: { createdAt: 'desc' },
+  //              select: { msg: true },
+  //              take: 1,
+  //            },
+  //          },
+  //        },
+  //      },
+  //    });
+  //    return channelsList;
+  //  } catch (e) {
+  //    console.log(e.message);
+  //    throw new WsException(e);
+  //  }
+  //}
+
   async getChannelsListById(email: string) {
     try {
       const channelsList = await this.prismaService.user.findUnique({
         where: { email: email },
         select: {
-          owner: {
-            where: { type: 'direct' },
-            select: {
-              id: true,
-              type: true,
-              name: true,
-              password: true,
-              updatedAt: true,
-              owners: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                },
-              },
-              messages: {
-                where: { unsent: false },
-                orderBy: { createdAt: 'desc' },
-                select: { msg: true },
-                take: 1,
-              },
-            },
-          },
-          admin: {
-            select: {
-              id: true,
-              type: true,
-              name: true,
-              password: true,
-              updatedAt: true,
-              owners: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                },
-              },
-              messages: {
-                where: { unsent: false },
-                orderBy: { createdAt: 'desc' },
-                select: { msg: true },
-                take: 1,
-              },
-            },
-          },
-          member: {
-            select: {
-              id: true,
-              type: true,
-              name: true,
-              password: true,
-              updatedAt: true,
-              owners: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                },
-              },
-              messages: {
-                where: { unsent: false },
-                orderBy: { createdAt: 'desc' },
-                select: { msg: true },
-                take: 1,
-              },
-            },
-          },
-          invited: {
-            select: {
-              id: true,
-              type: true,
-              name: true,
-              password: true,
-              updatedAt: true,
-              owners: {
-                select: {
-                  id: true,
-                  email: true,
-                  username: true,
-                },
-              },
-              messages: {
-                where: { unsent: false },
-                orderBy: { createdAt: 'desc' },
-                select: { msg: true },
-                take: 1,
-              },
-            },
-          },
+          owner: true,
+          admin: true,
+          member: true,
+          invited: true,
         },
       });
+      //console.log(channelsList.owner);
       return channelsList;
     } catch (e) {
       console.log(e.message);
       throw new WsException(e);
     }
   }
-
   async extractPreviews(channelsList: any, email: string) {
     const previews: ChannelPreview.Response[] = [];
     if (channelsList) {
@@ -614,6 +632,40 @@ export class ChannelService {
         }
       }
       return admins;
+    } catch (e) {
+      console.log('get members error: ', e.message);
+      throw new WsException(e);
+    }
+  }
+
+  async getOwners(userId: number, channelId: number) {
+    try {
+      const channel = await this.prismaService.channel.findUnique({
+        where: { id: channelId },
+        select: { owners: true },
+      });
+      const owners: MemberPreview.Response[] = [];
+      if (channel && channel.owners) {
+        for (let i = 0; i < channel.owners.length; i++) {
+          const roles = await this.getRole(channel.owners[i].id, channelId);
+          const owner: MemberPreview.Response = {
+            id: channel.owners[i].id,
+            username: channel.owners[i].username,
+            email: channel.owners[i].email,
+            isOwner: roles.isOwner,
+            isAdmin: roles.isAdmin,
+            isInvited: roles.isInvited,
+            isBlocked: roles.isBlocked,
+            isMuted: roles.isMuted,
+            isFriend:
+              userId != channel.owners[i].id
+                ? await this.userService.isFriend(userId, channel.owners[i].id)
+                : false,
+          };
+          owners.push(owner);
+        }
+      }
+      return owners;
     } catch (e) {
       console.log('get members error: ', e.message);
       throw new WsException(e);
@@ -855,6 +907,18 @@ export class ChannelService {
       return await this.getMessagePreview(message.id);
     } catch (e) {
       console.log('createMessage error: ', e);
+      throw new WsException(e);
+    }
+  }
+
+  async deleteMessage(messageData: MessagePreview.Response) {
+    try {
+      await this.prismaService.message.update({
+        where: { id: messageData.id },
+        data: { unsent: true },
+      });
+    } catch (e) {
+      console.log('deleteMessage error: ', e);
       throw new WsException(e);
     }
   }

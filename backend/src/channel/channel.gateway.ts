@@ -20,7 +20,7 @@ import {
   UpdateChannel,
 } from 'contracts/channel.schema';
 import { CreateMessage, MessagePreview } from 'contracts/Message.schema';
-import { MemberPreview } from 'contracts/user.schema';
+import { MemberPreview, Role } from 'contracts/user.schema';
 
 @UsePipes(new ZodValidationPipe())
 @UseFilters(new HttpToWsFilter())
@@ -279,40 +279,40 @@ export class ChannelGateway {
     this.server.in(channelName).emit(event, message);
   }
 
-  //async get__role(
-  //  email: string,
-  //  owners: MemberPreview.Response[],
-  //  admins: MemberPreview.Response[],
-  //  members: MemberPreview.Response[],
-  //  inviteds: MemberPreview.Response[],
-  //) {
-  //  let role = 'noRole';
-  //  if (inviteds && inviteds.length > 0) {
-  //    const isInvited: number = inviteds.filter((invited) => {
-  //      return invited.email === email;
-  //    }).length;
-  //    if (isInvited > 0) role = 'invited';
-  //  }
-  //  if (members && members.length > 0) {
-  //    const isMember: number = members.filter((member) => {
-  //      return member.email === email;
-  //    }).length;
-  //    if (isMember > 0) role = 'member';
-  //  }
-  //  if (admins && admins.length > 0) {
-  //    const isAdmin: number = admins.filter((admin) => {
-  //      return admin.email === email;
-  //    }).length;
-  //    if (isAdmin > 0) role = 'admin';
-  //  }
-  //  if (owners && owners.length > 0) {
-  //    const isOwner: number = owners.filter((owner) => {
-  //      return owner.email === email;
-  //    }).length;
-  //    if (isOwner > 0) role = 'owner';
-  //  }
-  //  return role;
-  //}
+  async getRole(
+    email: string,
+    owners: MemberPreview.Response[],
+    admins: MemberPreview.Response[],
+    members: MemberPreview.Response[],
+    inviteds: MemberPreview.Response[],
+  ) {
+    let role = Role.default;
+    if (inviteds && inviteds.length > 0) {
+      const isInvited: number = inviteds.filter((invited) => {
+        return invited.email === email;
+      }).length;
+      if (isInvited > 0) role = Role.invited;
+    }
+    if (members && members.length > 0) {
+      const isMember: number = members.filter((member) => {
+        return member.email === email;
+      }).length;
+      if (isMember > 0) role = Role.member;
+    }
+    if (admins && admins.length > 0) {
+      const isAdmin: number = admins.filter((admin) => {
+        return admin.email === email;
+      }).length;
+      if (isAdmin > 0) role = Role.admin;
+    }
+    if (owners && owners.length > 0) {
+      const isOwner: number = owners.filter((owner) => {
+        return owner.email === email;
+      }).length;
+      if (isOwner > 0) role = Role.owner;
+    }
+    return role;
+  }
 
   @SubscribeMessage('read room status')
   async handleFetchStatus(
@@ -320,10 +320,7 @@ export class ChannelGateway {
     @ConnectedSocket() client: Socket,
   ) {
     const user = await this.userService.getUserByEmail(data.email);
-    const owners = await this.channelService.fetch__owners(
-      user.id,
-      data.channelId,
-    );
+    const owners = await this.channelService.getOwners(user.id, data.channelId);
     client.emit('fetch owner', owners);
     const admins = await this.channelService.getAdmins(user.id, data.channelId);
     client.emit('fetch admins', admins);
@@ -337,10 +334,13 @@ export class ChannelGateway {
       data.channelId,
     );
     client.emit('fetch inviteds', inviteds);
-    //const role = await this.channelService.getRole(
-    //  data.email,
-    //  owners,
-    //);
+    const role = await this.getRole(
+      data.email,
+      owners,
+      admins,
+      members,
+      inviteds,
+    );
     client.emit('fetch role', role);
   }
 
@@ -353,123 +353,128 @@ export class ChannelGateway {
     client.emit('search update', search);
   }
 
-  @SubscribeMessage('get user tags')
-  async handleUserTags(
-    @MessageBody() email: string,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const userTags = await this.channelService.get__userTags(email);
-    client.emit('user tags', userTags);
-  }
+  //@SubscribeMessage('get user tags')
+  //async handleUserTags(
+  //  @MessageBody() email: string,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const userTags = await this.channelService.get__userTags(email);
+  //  client.emit('user tags', userTags);
+  //}
 
-  @SubscribeMessage('get invitation tags')
-  async handleInvitationTags(
-    @MessageBody() channelId: number,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const invitationTags =
-      await this.channelService.get__invitationTags(channelId);
-    client.emit('invitation tags', invitationTags);
-  }
+  //@SubscribeMessage('get invitation tags')
+  //async handleInvitationTags(
+  //  @MessageBody() channelId: number,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const invitationTags =
+  //    await this.channelService.get__invitationTags(channelId);
+  //  client.emit('invitation tags', invitationTags);
+  //}
 
   @SubscribeMessage('delete msg')
   async handleDeleteMsg(
-    @MessageBody() channelData: MessagePreview.Response,
+    @MessageBody() messageData: MessagePreview.Response,
     @ConnectedSocket() client: Socket,
   ) {
     const channelName = await this.channelService.getChannelNameById(
-      channelData.channelId,
+      messageData.channelId,
     );
-    await this.channelService.delete__msg(channelData);
-    const fetch = await this.channelService.getMessages(channelData.channelId);
+    await this.channelService.deleteMessage(messageData);
+    const fetch = await this.channelService.getMessages(messageData.channelId);
     client.emit('fetch msgs', fetch);
-    const previews = await this.channelService.getPreviews(channelData.email);
+    const previews = await this.channelService.getPreviews(messageData.email);
     client.emit('update preview', previews);
     this.server.in(channelName).emit('update channel request');
   }
 
-  @SubscribeMessage('be admin')
-  async handleBeAdmin(
-    @MessageBody() channelData: UpdateChannel.Request,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
-    await this.chatservice.be__admin(data);
-    const id = await this.chatservice.get__id__ByEmail(data.email);
-    const admins = await this.chatservice.fetch__admins(id, data.channelId);
-    client.emit('fetch admins', admins);
-    const members = await this.chatservice.fetch__members(id, data.channelId);
-    client.emit('fetch members', members);
-    this.updateChannelRequest('update channel request', cName);
-  }
+  //@SubscribeMessage('be admin')
+  //async handleBeAdmin(
+  //  @MessageBody() channelData: UpdateChannel.Request,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const channelName = await this.channelService.getChannelNameById(
+  //    channelData.id,
+  //  );
+  //  await this.channelService.be__admin(channelData);
+  //  const id = await this.channelService.get__id__ByEmail(channelData.email);
+  //  const admins = await this.channelService.fetch__admins(id, channelData.id);
+  //  client.emit('fetch admins', admins);
+  //  const members = await this.channelService.fetch__members(
+  //    id,
+  //    channelData.id,
+  //  );
+  //  client.emit('fetch members', members);
+  //  this.server.in(channelName).emit('update channel request');
+  //}
 
-  @SubscribeMessage('not admin')
-  async handleNotAdmin(
-    @MessageBody() data: updateChannel,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
-    await this.chatservice.not__admin(data);
-    const id = await this.chatservice.get__id__ByEmail(data.email);
-    const admins = await this.chatservice.fetch__admins(id, data.channelId);
-    client.emit('fetch admins', admins);
-    const members = await this.chatservice.fetch__members(id, data.channelId);
-    client.emit('fetch members', members);
-    this.updateChannelRequest('update channel request', cName);
-  }
+  //@SubscribeMessage('not admin')
+  //async handleNotAdmin(
+  //  @MessageBody() data: updateChannel,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
+  //  await this.chatservice.not__admin(data);
+  //  const id = await this.chatservice.get__id__ByEmail(data.email);
+  //  const admins = await this.chatservice.fetch__admins(id, data.channelId);
+  //  client.emit('fetch admins', admins);
+  //  const members = await this.chatservice.fetch__members(id, data.channelId);
+  //  client.emit('fetch members', members);
+  //  this.updateChannelRequest('update channel request', cName);
+  //}
 
-  @SubscribeMessage('get setting')
-  async handleGetSetting(
-    @MessageBody() channelId: number,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const info = await this.chatservice.get__setting(channelId);
-    client.emit('setting info', info);
-  }
+  //@SubscribeMessage('get setting')
+  //async handleGetSetting(
+  //  @MessageBody() channelId: number,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const info = await this.chatservice.get__setting(channelId);
+  //  client.emit('setting info', info);
+  //}
 
-  @SubscribeMessage('update setting')
-  async handleUpdateSetting(
-    @MessageBody() data: updateChannel,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
-    await this.chatservice.update__setting(data);
-    const info = await this.chatservice.get__setting(data.channelId);
-    client.emit('setting info', info);
-    this.updateChannelRequest('update channel request', cName);
-  }
+  //@SubscribeMessage('update setting')
+  //async handleUpdateSetting(
+  //  @MessageBody() data: updateChannel,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
+  //  await this.chatservice.update__setting(data);
+  //  const info = await this.chatservice.get__setting(data.channelId);
+  //  client.emit('setting info', info);
+  //  this.updateChannelRequest('update channel request', cName);
+  //}
 
-  @SubscribeMessage('mute user')
-  async handleMuteUser(@MessageBody() data: mute) {
-    await this.chatservice.new__mute(data);
-  }
+  //@SubscribeMessage('mute user')
+  //async handleMuteUser(@MessageBody() data: mute) {
+  //  await this.chatservice.new__mute(data);
+  //}
 
-  @SubscribeMessage('add friend')
-  async addFriend(
-    @MessageBody() data: updateUser,
-    // @ConnectedSocket() client: Socket,
-  ) {
-    const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-    await this.userService.addFriend(id, data.otherId);
-  }
+  //@SubscribeMessage('add friend')
+  //async addFriend(
+  //  @MessageBody() data: updateUser,
+  //  // @ConnectedSocket() client: Socket,
+  //) {
+  //  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
+  //  await this.userService.addFriend(id, data.otherId);
+  //}
 
-  @SubscribeMessage('block user')
-  async blockUser(
-    @MessageBody() data: updateUser,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-    await this.userService.blockUser(id, data.otherId);
-    client.emit('update channel request');
-  }
+  //@SubscribeMessage('block user')
+  //async blockUser(
+  //  @MessageBody() data: updateUser,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
+  //  await this.userService.blockUser(id, data.otherId);
+  //  client.emit('update channel request');
+  //}
 
-  @SubscribeMessage('unblock user')
-  async unblockUser(
-    @MessageBody() data: updateUser,
-    @ConnectedSocket() client: Socket,
-  ) {
-    const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-    await this.userService.unblockUser(id, data.otherId);
-    client.emit('update channel request');
-  }
+  //@SubscribeMessage('unblock user')
+  //async unblockUser(
+  //  @MessageBody() data: updateUser,
+  //  @ConnectedSocket() client: Socket,
+  //) {
+  //  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
+  //  await this.userService.unblockUser(id, data.otherId);
+  //  client.emit('update channel request');
+  //}
 }
