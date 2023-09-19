@@ -1,12 +1,11 @@
-import { GameCmd, GameMode, GameStatus, ServerMsg, Sound } from './common.js';
+import { GameMode, GameStatus, ServerMsg, Sound } from './common.js';
 import { Controls, Selector } from './controls.js';
 import { Score, Image, Sounds } from './image.js';
-import { PongOptions } from './options.js';
+import { ControlOptions } from './options.js';
 
 var socket = io();
 var nickname = '';
 var renderTimer = 0;
-var serverPollTimer = 0;
 var browserState = new ServerMsg();
 const image = new Image('canvas');
 const controls = new Controls(socket, image);
@@ -79,15 +78,13 @@ socket.on('partner unavailable', function() {
 });
 
 // Pong events
-socket.on('pong launched', function() {
+socket.on('pong launched', function(cmd) {
 	if (image.valid()) {
-		if (controls.lastCmd == GameCmd.TRNNG || 
-			controls.lastCmd == GameCmd.AUTO)
-		{
-			setTimeout(function() {
-			controls.emitCmd(controls.lastCmd);
-			}, PongOptions.calculation_period );
-		}
+
+		setTimeout(function() {
+			controls.emitCmd(cmd);
+		}, ControlOptions.game_startTimeout );
+
 		renderTimer = setInterval(function() {
 			sounds.play(browserState);
 			controls.colorizeButtons(browserState);
@@ -102,7 +99,6 @@ socket.on('state', function(state) {
 	}
 });
 socket.on('pong deleted', function() {
-	console.log('pong deleted');//FIXME
 	sounds.playSound(Sound.SPEEDUP);
 	controls.normalizeButtons();
 	score.clear();

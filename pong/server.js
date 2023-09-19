@@ -49,19 +49,33 @@ io.on('connection', (socket) => {
         gebugPprinting(player === null || player === void 0 ? void 0 : player.name, reason);
     });
     socket.on('get partners list', () => {
+        var _a;
         const partnersList = games.getPartnersList(socket.id);
         socket.emit('partners list', partnersList);
-        gebugPprinting(games.getPlayer(socket.id), 'partnersList:' + partnersList);
+        gebugPprinting(((_a = games.getPlayer(socket.id)) === null || _a === void 0 ? void 0 : _a.name) + ' partnersList: ', partnersList);
     });
     socket.on('controls', (msg) => {
-        var _a;
-        const playerNames = games.controls(socket.id, msg);
-        if (playerNames) {
-            socket.emit('players', playerNames);
-            socket.emit('pong launched');
+        const player = games.getPlayer(socket.id);
+        if (player) {
+            let pong = games.getPong(player.socketId);
+            if (pong) {
+                if (msg.cmd == GameCmd.NEW && !pong.partner) {
+                }
+                else {
+                    pong.setControls(msg, player.side);
+                    if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+                        socket.emit('players', pong.getPlayerNames());
+                    }
+                }
+            }
+            else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+                pong = games.nwePong(player);
+                //pong.setControls(msg, player.side);//FIXME
+                socket.emit('pong launched', msg.cmd);
+            }
         }
-        if (msg.paddle_y == 0 || msg.cmd != GameCmd.MOUSE) {
-            gebugPprinting((_a = games.getPlayer(socket.id)) === null || _a === void 0 ? void 0 : _a.name, GameCommand[msg.cmd] + ' controls');
+        if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
+            gebugPprinting(player === null || player === void 0 ? void 0 : player.name, GameCommand[msg.cmd] + ' controls');
         }
     });
     socket.on('partner choosed', (socket_id) => {
@@ -71,7 +85,10 @@ io.on('connection', (socket) => {
             if (choosedOwner) {
                 const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
                 if (choosedOwnerSocket) {
-                    choosedOwnerSocket.emit('confirm partner', [partner.socketId, partner.name]);
+                    setTimeout(function () {
+                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit('confirm partner', [socket.id, partner.name]); //FIXME
+                    }, 2000); //FIXME
+                    //choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
                     return;
                 }
             }
@@ -85,7 +102,7 @@ io.on('connection', (socket) => {
         if (partner && pong) {
             (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong launched');
             socket.emit('players', pong.getPlayerNames);
-            (_b = io.sockets.sockets.get(partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('players', pong.getPlayerNames);
+            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('players', pong.getPlayerNames);
         }
         else {
             socket.emit('partner unavailable');
@@ -123,5 +140,6 @@ setInterval(function () {
     }
     if (socketIdForDelete) {
         deletePongAndNotifyPlayers(socketIdForDelete);
+        socketIdForDelete = undefined;
     }
 }, Pong.calculation_period);

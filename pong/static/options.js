@@ -3,7 +3,7 @@ export class Options {
 }
 _a = Options;
 Options.port = 5000;
-Options.host = 'http://localhost';
+Options.host = 'http://10.12.4.10';
 Options.pong_server = _a.host + ':' + _a.port.toString();
 Options.width = 800;
 Options.maxWins = 6;
@@ -53,6 +53,7 @@ ControlOptions.key_arrowUp = 38;
 ControlOptions.key_arrowDown = 40;
 ControlOptions.paddle_keyMove = Math.round(_c.paddle_height / 8);
 ControlOptions.key_interval = 1000 / 100;
+ControlOptions.game_startTimeout = 100;
 export class ImageOptions extends Options {
 }
 _d = ImageOptions;

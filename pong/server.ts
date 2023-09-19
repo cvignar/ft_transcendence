@@ -2,10 +2,11 @@ import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';``
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
-import { Options } from './static/options.js';
+import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
+import { getPositionOfLineAndCharacter } from 'typescript';
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
@@ -55,17 +56,28 @@ io.on('connection', (socket) => {
 	socket.on('get partners list', () => {
 		const partnersList = games.getPartnersList(socket.id);
 		socket.emit('partners list', partnersList);
-		gebugPprinting(games.getPlayer(socket.id), 'partnersList:'+partnersList);
+		gebugPprinting(games.getPlayer(socket.id)?.name+' partnersList: ', partnersList);
 	});
 
 	socket.on('controls', (msg) => {
-		const playerNames = games.controls(socket.id, msg);
-		if (playerNames) {
-			socket.emit('players', playerNames);
-			socket.emit('pong launched');
+		const player = games.getPlayer(socket.id);
+		if (player) {
+			let pong = games.getPong(player.socketId);
+			if (pong) {
+				if (msg.cmd == GameCmd.NEW && !pong.partner) {
+				} else {
+					pong.setControls(msg, player.side);
+					if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+						socket.emit('players', pong.getPlayerNames());
+					}
+				}
+			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
+				pong = games.nwePong(player);
+				socket.emit('pong launched', msg.cmd);
+			}
 		}
-		if (msg.paddle_y == 0 || msg.cmd != GameCmd.MOUSE) {
-			gebugPprinting(games.getPlayer(socket.id)?.name, GameCommand[msg.cmd]+' controls');
+		if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
+			gebugPprinting(player?.name, GameCommand[msg.cmd]+' controls');
 		}
 	});
 
@@ -76,7 +88,10 @@ io.on('connection', (socket) => {
 			if (choosedOwner) {
 				const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
 				if (choosedOwnerSocket) {
-					choosedOwnerSocket.emit('confirm partner', [ partner.socketId, partner.name ]);
+					setTimeout(function() {//FIXME
+						choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
+					}, 2000 );//FIXME
+					//choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
 					return;
 				}
 			}
@@ -90,7 +105,7 @@ io.on('connection', (socket) => {
 		if (partner && pong) {
 			io.sockets.sockets.get(partner.socketId)?.emit('pong launched');
 			socket.emit('players', pong.getPlayerNames);
-			io.sockets.sockets.get(partner.socketId)?.emit('players', pong.getPlayerNames);
+			io.sockets.sockets.get(socket_id)?.emit('players', pong.getPlayerNames);
 		} else {
 			socket.emit('partner unavailable');
 			io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
@@ -127,5 +142,6 @@ setInterval(function() {
 	}
 	if (socketIdForDelete) {
 		deletePongAndNotifyPlayers(socketIdForDelete);
+		socketIdForDelete = undefined;
 	}
 }, Pong.calculation_period);
