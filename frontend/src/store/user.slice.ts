@@ -7,14 +7,11 @@ import { loadState } from './storage';
 //import { RootState } from './store';
 
 export const JWT_PERSISTENT_STATE = 'userToken';
-export interface UserPersistantState {
-	//id42: string | null;
-	//username: string | null;
-	token: string | null;
-}
+export const EMAIL_PERSISTENT_STATE = 'userEmail';
 
 export interface UserState {
 	token: string | null;
+	email: string;
 	//id42: string | null;
 	authErrorMessage?: string;
 	//username?: string | null;
@@ -25,19 +22,19 @@ export interface UserState {
 
 
 const initialState: UserState = {
-	token: loadState<UserPersistantState>(JWT_PERSISTENT_STATE)?.token ?? null
+	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
+	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? ''
 };
 
 export const auth = createAsyncThunk('auth/login',
 	async (params: {email: string, username: string, password: string}) => {
 		try {
-			console.log(params);
 			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/auth/login`, {
 				email: params.email,
 				username: params.username,
 				password: params.password
 			});
-			return data;
+			return {data: data, email: params.email};
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				throw new Error(e.response?.data.message);
@@ -68,26 +65,20 @@ export const userSlice = createSlice({
 	name: 'user',
 	initialState,
 	reducers: {
-		//logout: (state) => {
-		//	state.token = null;
-		//},
+		logout: (state) => {
+			state.token = null;
+		},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
 		}
-		//clearRegisterError: (state) => {
-		//	state.registerError = undefined;
-		//}
-
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
 			if (!action.payload) {
 				return;
 			}
-			state.token = action.payload.access_token;
-			console.log(action
-				.payload);
-			console.log(state.token);
+			state.token = action.payload.data.access_token;
+			state.email = action.payload.email;
 		});
 		builder.addCase(auth.rejected, (state, action) => {
 			state.authErrorMessage = action.error.message;

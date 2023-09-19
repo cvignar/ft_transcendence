@@ -6,11 +6,11 @@ import styles from './ChannelPreview.module.css';
 import { ChannelPreviewProps } from './ChannelPreview.props';
 //import { ChannelPreviewProps } from './ChannelPreview.props';
 
-function ChannelPreview({key, props}: ChannelPreviewProps) {
-	const	formatedDate = new Intl.DateTimeFormat('lt-LT').format(new Date(props.updatedAt));
+function ChannelPreview(props: ChannelPreviewProps) {
+	const	formatedDate = new Intl.DateTimeFormat('lt-LT').format(new Date(props.data.updatedAt));
 	return (
 		<div className={styles['preview']}>
-			<ChannelShortInfo appearence='list' avatar={props.picture} name={props.name} membersCount={2}/>
+			<ChannelShortInfo appearence='list' props={props.data}/>
 			<div className={styles['time']}>{formatedDate}</div>
 		</div>
 	);

@@ -15,27 +15,35 @@ import ChatWindow from './ChatWindow/ChatWindow';
 import { ChannelPreview } from '../../interfaces/channel.interface';
 import { io } from 'socket.io-client';
 import { INITIAL_CHANNEL, socket } from '../../helpers/ChatInit';
+//import {RootState} from '../../store/store'
 
 
-socket.emit('hello', 1);
 
-socket.on('message', (data) => {
+socket.on('update-status', (data) => {
 	console.log(data);
 });
-export function Chat() {
+socket.emit('hello', (data: any) => {
+	console.log(data);
+});
+export default function Chat() {
+	const email = useSelector((s: RootState) => s.user.email);
 	const dispatch = useDispatch<AppDispatch>();
 	const [channels, setChannels] = useState<ChannelPreview[]>();
 	//const channels = useSelector((s: RootState) => s.channel.items);
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 
 	useEffect(() => {
-		socket.emit('get preview', 'uryvaeva.anna@gmail.com', (previews: ChannelPreview[]) => {
+		socket.emit('get preview', email, (previews: ChannelPreview[]) => {
 			if(previews) {
 				setChannels(previews);
 			}
-			console.log(previews);
 		});
-	}, []);
+		socket.on('update preview', (previews) => {
+			if(previews) {
+				setChannels(previews);
+			}
+		});
+	}, [email]);
 
 
 	return (

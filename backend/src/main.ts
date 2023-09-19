@@ -8,6 +8,7 @@ import {
   SwaggerDocumentOptions,
 } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -28,6 +29,10 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ZodValidationPipe());
   app.enableCors();
+  app.use(function (request: Request, response: Response, next: NextFunction) {
+    response.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
+    next();
+  });
 
   //const { httpAdapter } = app.get(HttpAdapterHost);
   //app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -6,13 +6,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import { PongChat } from './pages/PongChat/PongChat';
-import { Chat } from './pages/Chat/Chat';
+//import { Chat } from './pages/Chat/Chat';
 import { Pong } from './pages/Pong/pong';
-import { io } from 'socket.io-client';
 import { AuthForm } from './pages/Auth/Auth';
 import { RequireAuth } from './helpers/RequireAuth';
 
+const Chat = lazy(() => import('./pages/Chat/Chat'));
 const router = createBrowserRouter([
+	{ // FIXME!!!! FAKE AUTH
+		path: '/',
+		element: <AuthForm/>
+	},
 	{
 		path: '/Chat',
 		element: <RequireAuth><Chat/></RequireAuth>
@@ -21,10 +25,6 @@ const router = createBrowserRouter([
 	//	path: '/',
 	//	element: <Pong/>
 	//},
-	{ // FIXME!!!! FAKE AUTH
-		path: '/',
-		element: <AuthForm/>
-	},
 	{
 		path: '/PongChat',
 		element: <PongChat/>
