@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client';
 import { typeEnum } from '../../../contracts/enums';
+import { BACK_SOCKET_PREFIX } from './API';
 
 export const INITIAL_CHANNEL = {
 	id: -1,
@@ -14,14 +15,15 @@ export const INITIAL_CHANNEL = {
 };
 
 const sockOpt = {
+	transposts: ['websocket'],
 	transportOptions: {
 		polling: {
 			extraHeaders: {
-				Token: localStorage.getItem('userToken')
+				Token: localStorage.getItem('userToken')?.replace(/"/g, '')
 			}
 		}
 	}
 };
 
 
-export const socket = io('ws://127.0.0.1:3000', sockOpt);//FIXME!!!
+export const socket = io(`${BACK_SOCKET_PREFIX}`, sockOpt);//FIXME!!!

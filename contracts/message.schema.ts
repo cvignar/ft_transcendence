@@ -18,7 +18,7 @@ export const MessageSchema = zod.object({
 
 
 const NewMessageSchema = zod.object({
-	id: zod.number().int(),
+	//id: zod.number().int(),
 	message: zod.string(),
 	email: zod.string().email(),
 	channelId: zod.number().int(),

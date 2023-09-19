@@ -16,7 +16,7 @@
 }
 
 .chat-area {
-	margin: 44px;	
+	margin: 44px;
 }
 
 .messages {
@@ -25,4 +25,5 @@
 
 .text-area {
 	margin-top: auto;
+	width: -webkit-fill-available;
 }

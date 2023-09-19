@@ -41,7 +41,6 @@ export const messagesSlice = createSlice({
 			}
 			action.payload.map(i => state.items.push(i));
 			state = action.payload;
-			console.log(action.payload);
 		});
 		builder.addCase(getMessages.rejected, () => {
 			//state.authErrorMessage = action.error.message;
