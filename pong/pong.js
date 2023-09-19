@@ -226,8 +226,9 @@ export class Pong extends PongOptions {
                 if (!this.isBallHit(this.leftPaddle)) {
                     this.rightScore++;
                     this.status = GameStatus.INACTIVE;
-                    if (this.ballSpeedUp < 2)
+                    if (this.ballSpeedUp < 3)
                         this.setSound(Sound.BALL_LOSS_LEFT);
+                    console.log('left:', this.ball.center, this.status, this.mode); //FIXME
                     this.setSound(Sound.SIREN_LEFT);
                     return;
                 }
@@ -243,6 +244,7 @@ export class Pong extends PongOptions {
                     this.status = GameStatus.INACTIVE;
                     if (this.ballSpeedUp < 3)
                         this.setSound(Sound.BALL_LOSS_RIGHT);
+                    console.log('right:', this.ball.center, this.status, this.mode); //FIXME
                     this.setSound(Sound.SIREN_RIGHT);
                     return;
                 }
@@ -390,7 +392,7 @@ export class Pong extends PongOptions {
         }
     }
     getSound(side) {
-        let sound;
+        let sound = undefined;
         if (this.mode == GameMode.PARTNER_GAME) {
             if (side == Side.RIGHT) {
                 sound = this.soundQueue.shift();
@@ -466,6 +468,9 @@ export class Pong extends PongOptions {
         return null;
     }
     getPlayerNames() {
+        if (this.mode == GameMode.AUTO_GAME) {
+            return ['auto', 'auto'];
+        }
         const left = this.getLeftPlayer();
         const right = this.getRightPlayer();
         return [left ? left.name : 'auto', right ? right.name : 'auto'];

@@ -1,6 +1,7 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
 import { BrowserMsg, GameCmd, GameCommand, GameMode, Side } from './static/common.js';
+import { ControlOptions } from './static/options.js';
 
 
 export class Player {
@@ -100,7 +101,7 @@ export class GamesSet {
 					deletePongAndNotifyPlayers(partner.socketId);
 				}
 				pong.setPartner(partner);
-				this.pongs.set(partner.socketId, pong);
+				this.pongsIdx.set(partner.socketId, pong);
 				return partner;
 			}
 		}
@@ -120,22 +121,5 @@ export class GamesSet {
 			}
 		}
 		return partnersList;
-	}
-	controls(socketId: string, msg: BrowserMsg): [ leftPlayerName: string, rightPlayerName: string ] | undefined {
-		const player = this.getPlayer(socketId);
-		if (player) {
-			let pong = this.getPong(player.socketId);
-			if (pong) {
-				pong.setControls(msg, player.side);
-				if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-					return pong.getPlayerNames();
-				}
-			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-				pong = this.nwePong(player);
-				pong.setControls(msg, player.side);
-				return pong.getPlayerNames();
-			}
-		}
-		return undefined;
 	}
 }

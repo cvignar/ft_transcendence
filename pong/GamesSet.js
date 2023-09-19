@@ -1,6 +1,6 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
-import { GameCmd, GameMode, Side } from './static/common.js';
+import { GameMode, Side } from './static/common.js';
 export class Player {
     constructor(socketId, user) {
         this.socketId = socketId;
@@ -91,7 +91,7 @@ export class GamesSet {
                     deletePongAndNotifyPlayers(partner.socketId);
                 }
                 pong.setPartner(partner);
-                this.pongs.set(partner.socketId, pong);
+                this.pongsIdx.set(partner.socketId, pong);
                 return partner;
             }
         }
@@ -111,23 +111,5 @@ export class GamesSet {
             }
         }
         return partnersList;
-    }
-    controls(socketId, msg) {
-        const player = this.getPlayer(socketId);
-        if (player) {
-            let pong = this.getPong(player.socketId);
-            if (pong) {
-                pong.setControls(msg, player.side);
-                if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-                    return pong.getPlayerNames();
-                }
-            }
-            else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-                pong = this.nwePong(player);
-                pong.setControls(msg, player.side);
-                return pong.getPlayerNames();
-            }
-        }
-        return undefined;
     }
 }

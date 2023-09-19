@@ -7,7 +7,6 @@ export class Controls extends ControlOptions {
 	socket: any;
 	image: Image;
 	interval: any = 0;
-	lastCmd: GameCmd = GameCmd.NOCMD;
 	gameMode: GameMode = GameMode.WAITING;
 	gameStatus: GameStatus = GameStatus.INACTIVE;
 	gameIsOn: boolean = false;
@@ -49,41 +48,40 @@ export class Controls extends ControlOptions {
 			{
 				return;
 			} else {
-				this.lastCmd = this.keyup(event.keyCode);
+				this.keyup(event.keyCode);
 			}
 		});
 
 		// Button controls
-
 		this.bttnNew = document.getElementById('NEW');
 		if (this.bttnNew) {
 			this.bttnNew.addEventListener('click', () => {
-				this.lastCmd = this.click(this.bttnNew.id);
+				this.click(this.bttnNew.id);
 			});
 		}
 		this.bttnTrnng = document.getElementById('TRNNG');
 		if (this.bttnTrnng) {
 			this.bttnTrnng.addEventListener('click', () => {
-				this.lastCmd = this.click(this.bttnTrnng.id);
+				this.click(this.bttnTrnng.id);
 			});
 		}
 		this.bttnAuto = document.getElementById('AUTO');
 		if (this.bttnAuto) {
 			this.bttnAuto.addEventListener('click', () => {
-				this.lastCmd = this.click(this.bttnAuto.id);
+				this.click(this.bttnAuto.id);
 			});
 		}
 		this.bttnPause = document.getElementById('PAUSE');
 		if (this.bttnPause) {
 			this.bttnPause.addEventListener('click', () => {
-				this.lastCmd = this.click(this.bttnPause.id);
+				this.click(this.bttnPause.id);
 			});
 		}
 		this.bttnStop = document.getElementById('STOP');
 		if (this.bttnStop) {
 			this.bttnStop.addEventListener('click', () => {
 				if (!this.isStopBlocking()) {
-					this.lastCmd = this.click(this.bttnStop.id);
+					this.click(this.bttnStop.id);
 				}
 			});
 		}
