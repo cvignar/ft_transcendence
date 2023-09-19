@@ -150,11 +150,11 @@ export class ChannelGateway {
     const search = await this.channelService.getSearchPreviews(
       channelData.email,
     );
-    client.emit('search update', search);
-    client.emit('fetch owner', []);
-    client.emit('fetch admins', []);
-    client.emit('fetch members', []);
-    client.emit('fetch inviteds', []);
+    client.emit('update search', search);
+    client.emit('get owners', []);
+    client.emit('get admins', []);
+    client.emit('get members', []);
+    client.emit('get inviteds', []);
     this.server.in(channelName).emit('update channel request');
   }
 
@@ -172,11 +172,11 @@ export class ChannelGateway {
     const search = await this.channelService.getSearchPreviews(
       channelData.email,
     );
-    client.emit('search update', search);
-    client.emit('fetch owner', []);
-    client.emit('fetch admins', []);
-    client.emit('fetch members', []);
-    client.emit('fetch inviteds', []);
+    client.emit('update search', search);
+    client.emit('get owners', []);
+    client.emit('get admins', []);
+    client.emit('get members', []);
+    client.emit('get inviteds', []);
     this.server.in(channelName).emit('update channel request');
   }
 
@@ -224,7 +224,7 @@ export class ChannelGateway {
     const search = await this.channelService.getSearchPreviews(
       channelData.email,
     );
-    client.emit('search update', search);
+    client.emit('update search', search);
     this.server.in(channelName).emit('update channel request');
   }
 
@@ -326,19 +326,19 @@ export class ChannelGateway {
   ) {
     const user = await this.userService.getUserByEmail(data.email);
     const owners = await this.channelService.getOwners(user.id, data.channelId);
-    client.emit('fetch owner', owners);
+    client.emit('get owner', owners);
     const admins = await this.channelService.getAdmins(user.id, data.channelId);
-    client.emit('fetch admins', admins);
+    client.emit('get admins', admins);
     const members = await this.channelService.getMembers(
       user.id,
       data.channelId,
     );
-    client.emit('fetch members', members);
+    client.emit('get members', members);
     const inviteds = await this.channelService.getInviteds(
       user.id,
       data.channelId,
     );
-    client.emit('fetch inviteds', inviteds);
+    client.emit('get inviteds', inviteds);
     const role = await this.getRole(
       data.email,
       owners,
@@ -346,7 +346,7 @@ export class ChannelGateway {
       members,
       inviteds,
     );
-    client.emit('fetch role', role);
+    client.emit('get role', role);
   }
 
   @SubscribeMessage('get search update')
@@ -355,7 +355,7 @@ export class ChannelGateway {
     @ConnectedSocket() client: Socket,
   ) {
     const search = await this.channelService.getSearchPreviews(email);
-    client.emit('search update', search);
+    client.emit('update search', search);
   }
 
   //@SubscribeMessage('get user tags')
@@ -387,7 +387,7 @@ export class ChannelGateway {
     );
     await this.channelService.deleteMessage(messageData);
     const fetch = await this.channelService.getMessages(messageData.channelId);
-    client.emit('fetch msgs', fetch);
+    client.emit('get messages', fetch);
     const previews = await this.channelService.getPreviews(messageData.email);
     client.emit('update preview', previews);
     this.server.in(channelName).emit('update channel request');

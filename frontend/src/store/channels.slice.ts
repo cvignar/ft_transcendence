@@ -3,28 +3,44 @@ import axios, { AxiosError } from 'axios';
 import { Socket } from 'socket.io-client';
 import { BACK_PREFIX } from '../helpers/API';
 import { ChannelPreview } from '../interfaces/channel.interface';
+import CreateChannel from '../interfaces/createChannel.interface';
+import Message from '../interfaces/message.interface';
 import { loadState } from './storage';
 
 
-enum ChannelEvent {
-  SendMessage = 'send_message',
-  RequestAllMessages = 'request_all_messages',
-  SendAllMessages = 'send_all_messages',
-  ReceiveMessage = 'receive_message'
+export enum ChannelsEvent {
+	AddPreview = 'add preview', // add channel
+	getBlocked = 'get blocked',
+	getError = 'exception',
+	update = 'update channel request',
+	updatePreview = 'update preview',
+	getPreview = 'get preview',
+	getMembers = 'get members',
+	updateSearch = 'update search',
+	getOwners = 'get owners',
+	getAdmins = 'get admins',
+	getInvoteds = 'get inviteds',
+	getOwner = 'get owner',
+	filter = 'filter',
+	getMessages = 'get messages',
+	getRole = 'get role'
+
 }
 
-export interface ChannelState {
-  isEstablishingConnection: boolean;
-  isConnected: boolean;
+export interface ChannelsState {
+	channels: ChannelPreview[];
+	isEstablishingConnection: boolean;
+	isConnected: boolean;
 }
  
-const initialState: ChannelState = {
+const initialState: ChannelsState = {
+	channels: [],
 	isEstablishingConnection: false,
 	isConnected: false
 };
  
 const channelSlice = createSlice({
-	name: 'channel',
+	name: 'channels',
 	initialState,
 	reducers: {
 		startConnecting: (state => {
@@ -33,13 +49,25 @@ const channelSlice = createSlice({
 		connectionEstablished: (state => {
 			state.isConnected = true;
 			state.isEstablishingConnection = true;
+		}),
+		getChannel: ((state, action: PayloadAction<{
+			channel: ChannelPreview
+		}>) => {
+			state.channels.push(action.payload.channel);
+		}),
+		getChannels: ((state, action: PayloadAction<{channels: ChannelPreview[]}>) => {
+			state.channels = state.channels.concat(action.payload.channels);
 		})
+		//createChannel: ((state, action: PayloadAction<{ content: CreateChannel }>) => {
+		//	return;
+		//})
+
 	}
 });
  
 export const channelActions = channelSlice.actions;
  
-export default channelSlice;
+export default channelSlice.reducer;
 
 //export const CART_PERSISTENT_STATE = 'cartData';
 //export interface ChatState {

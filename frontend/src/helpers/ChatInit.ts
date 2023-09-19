@@ -26,4 +26,4 @@ const sockOpt = {
 };
 
 
-export const socket = io(`${BACK_SOCKET_PREFIX}`, sockOpt);//FIXME!!!
+//export const socket = io(`${BACK_SOCKET_PREFIX}`, sockOpt);//FIXME!!!
