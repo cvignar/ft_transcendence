@@ -44,7 +44,7 @@ export class Score {
 				this.windowLeft.textContent = this.leftPlayer;
 			} else {
 				this.windowLeft.style.fontWeight = 'normal';
-				//this.windowLeft.textContent = 'auto';
+				this.windowLeft.textContent = 'auto';
 			}
 		}
 		if (this.windowRight) {
@@ -53,7 +53,7 @@ export class Score {
 				this.windowRight.textContent = this.rightPlayer;
 			} else {
 				this.windowRight.style.fontWeight = 'normal';
-				//this.windowRight.textContent = 'auto';
+				this.windowRight.textContent = 'auto';
 			}
 		}
 	}
@@ -74,13 +74,6 @@ export class Score {
 	}
 	getRight() {
 		return this.right;
-	}
-	setPlayer(player: any) {
-		if (player[1] == Side.RIGHT) {
-			this.rightPlayer = player[0];
-		} else if (player[1] == Side.LEFT) {
-			this.leftPlayer = player[0];
-		}
 	}
 	clear() {
 		this.left = 0;

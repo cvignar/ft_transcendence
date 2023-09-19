@@ -1,6 +1,6 @@
 export class Options {
 	static port: number = 5000;
-	static host: string = 'http://localhost'
+	static host: string = 'http://10.12.4.10'
 	static pong_server: string = this.host + ':' + this.port.toString();
 	static width: number = 800;
 	static maxWins: number = 6;
@@ -55,6 +55,7 @@ export class ControlOptions extends Options {
 	static key_arrowDown: number = 40;
 	static paddle_keyMove: number = Math.round(this.paddle_height / 8);
 	static key_interval: number = 1000 / 100;
+	static game_startTimeout: number = 100;
 
 }
 
