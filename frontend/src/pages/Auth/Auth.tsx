@@ -25,7 +25,6 @@ export function AuthForm() {
 		dispatch(userActions.clearAuthError());
 		const target = e.target as typeof e.target & AuthForm;
 		const {username, email, password} = target;
-		console.log(username.value, email.value, password.value);
 		dispatch(auth({ username: username.value, email: email.value, password: password.value }));
 	};
 

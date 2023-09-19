@@ -50,6 +50,11 @@ export class ChannelGateway {
     return previews;
   }
 
+  @SubscribeMessage('hello')
+  async sayHello() {
+    return 'hello!';
+  }
+
   @SubscribeMessage('add preview')
   async addPreview(
     @MessageBody() data: any,

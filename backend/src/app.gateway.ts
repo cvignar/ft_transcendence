@@ -21,13 +21,7 @@ import { ChannelGateway } from './channel/channel.gateway';
 import { ChannelService } from './channel/channel.service';
 import { UserService } from './user/user.service';
 
-@WebSocketGateway({
-  cors: {
-    origin: 'http://localhost:5173',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type', 'Accept'],
-  },
-})
+@WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly jwtService: JwtService,
@@ -43,10 +37,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   server: Server;
 
   async handleConnection(client: Socket) {
+    console.log('client connected');
     try {
       client.setMaxListeners(20); //FIXME!!!!
-      console.log(`client connected: ${client.id}`);
-      console.log(client.handshake.headers.token);
       const UserId: number = this.jwtService.verify(
         String(client.handshake.headers.token),
         { secret: jwtConstants.secret },
@@ -75,6 +68,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const serializedMap = [...this.userStatusMap.entries()];
       client.emit('update-status', serializedMap);
       this.clientSocket.delete(client.data.id);
+      console.log('disconnect userId', client.data.id, client.id);
     }
     //if (IN A GAME) //FIXME!!!
     client.removeAllListeners();

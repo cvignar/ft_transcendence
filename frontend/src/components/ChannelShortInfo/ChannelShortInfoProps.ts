@@ -1,6 +1,6 @@
+import { ChannelPreview } from '../../interfaces/channel.interface';
+
 export interface ChannelShortInfoProps {
-	avatar?: string;
-	name: string;
-	appearence: 'list' | 'chat';
-	membersCount: number;
+appearence: 'list' | 'chat';
+props: ChannelPreview;
 }

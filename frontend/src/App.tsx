@@ -20,7 +20,6 @@ function App() {
 		e.preventDefault();
 		const target = e.target as typeof e.target & UserData;
 		const {username, email, password} = target;
-		console.log(username.value, email.value, password.value);
 		setUsername(username.value);
 	};
 
