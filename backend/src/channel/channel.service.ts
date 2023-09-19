@@ -291,6 +291,7 @@ export class ChannelService {
 
   async getChannelsListById(email: string) {
     try {
+      console.log(email);
       const channelsList = await this.prismaService.user.findUnique({
         where: { email: email },
         select: {
@@ -387,8 +388,8 @@ export class ChannelService {
       });
       return channelsList;
     } catch (e) {
-      console.log(e.message);
-      throw new WsException(e);
+      //console.log(e.message);
+      //throw new WsException(e);
     }
   }
 
