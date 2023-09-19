@@ -9,43 +9,30 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { auth, userActions } from '../../store/user.slice';
 import Search from '../../components/Search/Search';
-import { getChannels } from '../../store/channel.slice';
+import { channelActions } from '../../store/channels.slice';
 import { ChannelList } from './ChannelList/ChannelList';
 import ChatWindow from './ChatWindow/ChatWindow';
 import { ChannelPreview } from '../../interfaces/channel.interface';
-import { io } from 'socket.io-client';
-import { INITIAL_CHANNEL, socket } from '../../helpers/ChatInit';
+import { INITIAL_CHANNEL } from '../../helpers/ChatInit';
 //import {RootState} from '../../store/store'
 
 
 
-socket.on('update-status', (data) => {
-	console.log(data);
-});
-socket.emit('hello', (data: any) => {
-	console.log(data);
-});
 export default function Chat() {
 	const email = useSelector((s: RootState) => s.user.email);
 	const dispatch = useDispatch<AppDispatch>();
-	const [channels, setChannels] = useState<ChannelPreview[]>();
+	const channelState = useSelector((s: RootState) => s.channel);
+	//const [channels, setChannels] = useState<ChannelPreview[]>();
 	//const channels = useSelector((s: RootState) => s.channel.items);
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 
 	useEffect(() => {
-		socket.emit('get preview', email, (previews: ChannelPreview[]) => {
-			if(previews) {
-				setChannels(previews);
-			}
-		});
-		socket.on('update preview', (previews) => {
-			if(previews) {
-				setChannels(previews);
-			}
-		});
-	}, [email]);
-
-
+		console.log(email);
+		const timerId = setTimeout(() => {
+			dispatch(channelActions.startConnecting());
+		}, 0);
+		return () => clearTimeout(timerId);
+	}, [dispatch, email]);
 	return (
 		<div className={styles['page']}>
 			<div className={styles['left-panel']}>
@@ -53,7 +40,7 @@ export default function Chat() {
 					<Headling>Channels</Headling>
 					<Search placeholder='Search'></Search>
 				</div>
-				<ChannelList channels={channels} setChannel={setSelectedChannel}/>
+				<ChannelList channels={channelState.channels} setChannel={setSelectedChannel}/>
 			</div>
 			<ChatWindow data={selectedChannel}/>
 		</div>

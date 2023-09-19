@@ -4,7 +4,6 @@ import Headling from '../../../components/Headling/Headling';
 import { ChannelShortInfo } from '../../../components/ChannelShortInfo/ChannelShortInfo';
 import Input from '../../../components/Input/Input';
 import { useState } from 'react';
-import { socket } from '../../../helpers/ChatInit';
 import { CreateMessage } from '../../../interfaces/createMessage.interface';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
@@ -20,7 +19,7 @@ function ChatWindow({ data }: ChatWindowProps) {
 			<div className={styles['chat-area']}>
 				<div className={styles['messages']}>
 				</div>
-				{data.id === -1 ? <></> : <Input className={styles['text-area']} placeholder='Enter your message...' onChange={(e) => {
+				{/*{data.id === -1 ? <></> : <Input className={styles['text-area']} placeholder='Enter your message...' onChange={(e) => {
 					setMessage(e.target.value);
 				}} onKeyDown={(event) => {
 					if (event.key == 'Enter') {
@@ -33,7 +32,7 @@ function ChatWindow({ data }: ChatWindowProps) {
 						socket.emit('new message', newMessage);
 						console.log(`Send message: ${message}`);
 					}
-				}}/>}
+				}}/>}*/}
 			</div>
 		</div>
 	);
