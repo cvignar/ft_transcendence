@@ -260,9 +260,9 @@ export class ChannelService {
     }
   }
 
-  async getMessages(channelId: number) {
+  async getMessages(channelId: number): Promise<MessagePreview.Response[]> {
     try {
-      const messages = await this.prismaService.channel.findUnique({
+      const channel = await this.prismaService.channel.findUnique({
         where: { id: channelId },
         select: {
           messages: {
@@ -282,7 +282,8 @@ export class ChannelService {
           },
         },
       });
-      return messages;
+      //console.log(channel.messages);
+      return channel.messages;
     } catch (error) {
       console.log(`inviteMember error: ${error}`);
       // throw new WsException(error.message)
@@ -291,7 +292,7 @@ export class ChannelService {
 
   async getChannelsListById(email: string) {
     try {
-      console.log(email);
+      console.log('email: ', email);
       const channelsList = await this.prismaService.user.findUnique({
         where: { email: email },
         select: {
@@ -388,7 +389,7 @@ export class ChannelService {
       });
       return channelsList;
     } catch (e) {
-      //console.log(e.message);
+      console.log(e.message);
       //throw new WsException(e);
     }
   }
