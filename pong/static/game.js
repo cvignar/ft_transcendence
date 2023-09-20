@@ -55,6 +55,7 @@ socket.on('confirm partner', function(partner) {
 	if (yes) {
 		socket.emit('partner confirmation', partner[0]);
 		controls.new();
+		controls.gameIsOn = false;
 	} else {
 		if (!pauseBefor) {
 			controls.pause();
@@ -77,13 +78,35 @@ socket.on('partner unavailable', function() {
 	}
 });
 
+// Confirm start partner game
+socket.on('start partner game', function() {
+	sounds.playSound(Sound.SPEEDUP);
+	const yes = window.confirm('Start new game?');
+	if (yes) {
+		setTimeout(function() {
+			controls.new();
+		}, ControlOptions.game_startTime );
+	} else {
+		socket.emit('partner refused');
+		controls.stop();
+	}
+});
+
+// Alert 'partner refused'
+socket.on('partner refused', function() {
+	sounds.playSound(Sound.SPEEDUP);
+	alert('Sorry, partner refused');
+});
+
 // Pong events
 socket.on('pong launched', function(cmd) {
 	if (image.valid()) {
 
-		setTimeout(function() {
-			controls.emitCmd(cmd);
-		}, ControlOptions.game_startTimeout );
+		if (cmd) {
+			setTimeout(function() {
+				controls.emitCmd(cmd);
+			}, ControlOptions.game_startTime );
+		}
 
 		renderTimer = setInterval(function() {
 			sounds.play(browserState);
@@ -100,6 +123,7 @@ socket.on('state', function(state) {
 });
 socket.on('pong deleted', function() {
 	sounds.playSound(Sound.SPEEDUP);
+	controls.gameIsOn = false;
 	controls.normalizeButtons();
 	score.clear();
 	clearInterval(renderTimer);
@@ -108,4 +132,6 @@ socket.on('pong deleted', function() {
 
 socket.on('disconnect', function() {
 	clearInterval(renderTimer);
+	alert('Disconnected');
+	sounds.playSound(Sound.SPEEDUP);
 });

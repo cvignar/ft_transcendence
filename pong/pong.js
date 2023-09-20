@@ -108,7 +108,7 @@ export class Pong extends PongOptions {
             this.atGameStart = true;
             this.newGame = false;
         }
-        else if (this.leftScore || this.rightScore) {
+        else if (!this.atGameStart) {
             if (this.limitField.pointInside(this.ball.center)) {
                 this.ball.visibility = true;
                 const dt = (Date.now() - this.pathStartTime) / 1000;
@@ -203,6 +203,7 @@ export class Pong extends PongOptions {
         if (this.atGameStart) {
             this.setSound(Sound.SERVE);
             this.setSound(Sound.GAME_START);
+            this.pathStartTime = Date.now();
             this.atGameStart = false;
         }
         this.ball.visibility = true;
@@ -228,7 +229,6 @@ export class Pong extends PongOptions {
                     this.status = GameStatus.INACTIVE;
                     if (this.ballSpeedUp < 3)
                         this.setSound(Sound.BALL_LOSS_LEFT);
-                    console.log('left:', this.ball.center, this.status, this.mode); //FIXME
                     this.setSound(Sound.SIREN_LEFT);
                     return;
                 }
@@ -244,7 +244,6 @@ export class Pong extends PongOptions {
                     this.status = GameStatus.INACTIVE;
                     if (this.ballSpeedUp < 3)
                         this.setSound(Sound.BALL_LOSS_RIGHT);
-                    console.log('right:', this.ball.center, this.status, this.mode); //FIXME
                     this.setSound(Sound.SIREN_RIGHT);
                     return;
                 }
@@ -296,7 +295,7 @@ export class Pong extends PongOptions {
                     this.rightPaddle.set_y0(msg.paddle_y);
                 }
             }
-            else {
+            else if (msg.cmd == GameCmd.NOCMD) {
                 if (side == Side.LEFT) {
                     this.leftPaddle.set_dy0(msg.paddle_y);
                 }
@@ -305,53 +304,55 @@ export class Pong extends PongOptions {
                 }
             }
         }
-        if (this.mode == GameMode.WAITING) {
-            if (msg.cmd == GameCmd.NEW) {
-                this.mode = GameMode.PARTNER_GAME;
-                this.status = GameStatus.PLAYING;
-                this.ballSpeedUp = 1;
+        if (msg.cmd != GameCmd.NOCMD && msg.cmd != GameCmd.MOUSE) {
+            if (this.mode == GameMode.WAITING) {
+                if (msg.cmd == GameCmd.NEW) {
+                    this.mode = GameMode.PARTNER_GAME;
+                    this.status = GameStatus.PLAYING;
+                    this.ballSpeedUp = 1;
+                }
+                else if (msg.cmd == GameCmd.TRNNG) {
+                    this.mode = GameMode.TRNNG_GAME;
+                    this.status = GameStatus.PLAYING;
+                    this.ballSpeedUp = 1;
+                }
+                else if (msg.cmd == GameCmd.AUTO) {
+                    this.mode = GameMode.AUTO_GAME;
+                    this.status = GameStatus.PLAYING;
+                    this.ballSpeedUp = 1;
+                }
             }
-            else if (msg.cmd == GameCmd.TRNNG) {
-                this.mode = GameMode.TRNNG_GAME;
-                this.status = GameStatus.PLAYING;
-                this.ballSpeedUp = 1;
-            }
-            else if (msg.cmd == GameCmd.AUTO) {
-                this.mode = GameMode.AUTO_GAME;
-                this.status = GameStatus.PLAYING;
-                this.ballSpeedUp = 1;
-            }
-        }
-        else if (this.mode == GameMode.PARTNER_GAME) {
-            if (msg.cmd == GameCmd.NEW && this.atGameStart) {
-                this.status = GameStatus.PLAYING;
-            }
-        }
-        else if (this.mode == GameMode.TRNNG_GAME || this.mode == GameMode.AUTO_GAME) {
-            if (msg.cmd == GameCmd.NEW) {
-                this.mode = GameMode.PARTNER_GAME;
-                this.status = GameStatus.INACTIVE;
-                this.newGame = true;
-                this.atGameStart = false;
-                this.ballSpeedUp = 1;
-            }
-            else if (msg.cmd == GameCmd.PAUSE &&
-                this.status != GameStatus.INACTIVE) {
-                this.status =
-                    this.status == GameStatus.PAUSED
-                        ? GameStatus.PLAYING
-                        : GameStatus.PAUSED;
-            }
-            else if (msg.cmd == GameCmd.TRNNG) {
-                this.mode = GameMode.TRNNG_GAME;
-                if (this.atGameStart) {
+            else if (this.mode == GameMode.PARTNER_GAME) {
+                if (msg.cmd == GameCmd.NEW && this.atGameStart) {
                     this.status = GameStatus.PLAYING;
                 }
             }
-            else if (msg.cmd == GameCmd.AUTO) {
-                this.mode = GameMode.AUTO_GAME;
-                if (this.atGameStart) {
-                    this.status = GameStatus.PLAYING;
+            else if (this.mode == GameMode.TRNNG_GAME || this.mode == GameMode.AUTO_GAME) {
+                if (msg.cmd == GameCmd.NEW) {
+                    this.mode = GameMode.PARTNER_GAME;
+                    this.status = GameStatus.INACTIVE;
+                    this.newGame = true;
+                    this.atGameStart = false;
+                    this.ballSpeedUp = 1;
+                }
+                else if (msg.cmd == GameCmd.PAUSE &&
+                    this.status != GameStatus.INACTIVE) {
+                    this.status =
+                        this.status == GameStatus.PAUSED
+                            ? GameStatus.PLAYING
+                            : GameStatus.PAUSED;
+                }
+                else if (msg.cmd == GameCmd.TRNNG) {
+                    this.mode = GameMode.TRNNG_GAME;
+                    if (this.atGameStart) {
+                        this.status = GameStatus.PLAYING;
+                    }
+                }
+                else if (msg.cmd == GameCmd.AUTO) {
+                    this.mode = GameMode.AUTO_GAME;
+                    if (this.atGameStart) {
+                        this.status = GameStatus.PLAYING;
+                    }
                 }
             }
         }

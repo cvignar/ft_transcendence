@@ -122,4 +122,20 @@ export class GamesSet {
 		}
 		return partnersList;
 	}
+	getOpposer(socketId: string): string | undefined {
+		let player = this.getPlayer(socketId);
+		if (player) {
+			let pong = this.getPong(socketId);
+			if (pong && pong.partner && pong.partner == player) {
+				if (pong.owner) {
+					return pong.owner.socketId;
+				}
+			} else if (pong && pong.owner && pong.owner == player) {
+				if (pong.partner) {
+					return pong.partner.socketId;
+				}
+			}
+		}
+		return undefined;
+	}
 }
