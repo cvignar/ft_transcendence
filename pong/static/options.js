@@ -2,7 +2,7 @@ var _a, _b, _c, _d;
 export class Options {
 }
 _a = Options;
-Options.port = 5080;
+Options.port = 12080;
 Options.host = 'http://mclam.info';
 Options.pong_server = _a.host + ':' + _a.port.toString();
 Options.width = 800;
