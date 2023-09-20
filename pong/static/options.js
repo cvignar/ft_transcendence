@@ -3,7 +3,7 @@ export class Options {
 }
 _a = Options;
 Options.port = 12080;
-Options.host = 'http://10.12.4.10';
+Options.host = 'http://localhost';
 Options.pong_server = _a.host + ':' + _a.port.toString();
 Options.width = 800;
 Options.maxWins = 6;
