@@ -1,6 +1,6 @@
 export class Options {
 	static port: number = 12080;
-	static host: string = 'http://localhost'
+	static host: string = 'http://mclam.info'
 	static pong_server: string = this.host + ':' + this.port.toString();
 	static width: number = 800;
 	static maxWins: number = 6;
