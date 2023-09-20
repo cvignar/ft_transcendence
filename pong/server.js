@@ -1,7 +1,6 @@
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
-``;
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
 import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';

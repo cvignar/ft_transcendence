@@ -1,12 +1,11 @@
 import http from 'http';
 import * as socketIO from 'socket.io';
-import express from 'express';``
+import express from 'express';
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
 import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
-import { getPositionOfLineAndCharacter } from 'typescript';
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
