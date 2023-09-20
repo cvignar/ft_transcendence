@@ -271,7 +271,7 @@ export class ChannelGateway {
     } else
       client.emit(
         'exception',
-        "you currently don't have the right to talk in this channel",
+        "you currently don't have the right to talk in this channel ",
       );
   }
 

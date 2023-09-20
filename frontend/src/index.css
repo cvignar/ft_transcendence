@@ -10,6 +10,9 @@
 
   --primary-color: #2bd7d7;
   --primary-color-filter:  invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);
+  
+  --secondary-color: #9effff;
+  --secondary-color-filter:  invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);
 
   /*--primary-color: #61677A;
   --primary-color-filter:  invert(36%) sepia(35%) saturate(211%) hue-rotate(187deg) brightness(101%) contrast(89%);*/
@@ -53,6 +56,8 @@
   --error-color-filter: invert(74%) sepia(47%) saturate(5111%) hue-rotate(316deg) brightness(98%) contrast(119%);
 
   --star-color-filter: invert(84%) sepia(61%) saturate(2773%) hue-rotate(334deg) brightness(103%) contrast(101%);
+
+  --m-r: 10px; 
 }
 
 body {

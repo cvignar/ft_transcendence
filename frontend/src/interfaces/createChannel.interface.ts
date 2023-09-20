@@ -1,6 +1,6 @@
 import { typeEnum } from '../../../contracts/enums';
 
-export default interface CreateChannel {
+export interface CreateChannel {
 	name: string,
 	type: typeEnum,
 	password?: string,
@@ -9,4 +9,4 @@ export default interface CreateChannel {
 		id: number,
 		name: string,
 	},
-};
+}

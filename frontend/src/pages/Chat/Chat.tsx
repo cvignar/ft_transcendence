@@ -19,7 +19,7 @@ import { INITIAL_CHANNEL } from '../../helpers/ChatInit';
 
 
 export default function Chat() {
-	const email = useSelector((s: RootState) => s.user.email);
+	const {email, token} = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
 	const channelState = useSelector((s: RootState) => s.channel);
 	//const [channels, setChannels] = useState<ChannelPreview[]>();
@@ -27,12 +27,13 @@ export default function Chat() {
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 
 	useEffect(() => {
-		console.log(email);
 		const timerId = setTimeout(() => {
-			dispatch(channelActions.startConnecting());
+			if (token) {
+				dispatch(channelActions.startConnecting());
+			}
 		}, 0);
 		return () => clearTimeout(timerId);
-	}, [dispatch, email]);
+	}, [dispatch, token]);
 	return (
 		<div className={styles['page']}>
 			<div className={styles['left-panel']}>

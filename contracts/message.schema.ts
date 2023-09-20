@@ -6,10 +6,10 @@ import { ChannelSchema } from './channel.schema';
 export const MessageSchema = zod.object({
 	id: zod.number().int(),
 	msg: zod.string(),
-	history: zod.string().array(),
-	unsent: zod.boolean().default(false),
+	//history: zod.string().array(),
+	//unsent: zod.boolean().default(false),
 	createdAt: zod.date().default(new Date('now')),
-	updatedAt: zod.date(),
+	//updatedAt: zod.date(),
 	owner: UserSchema,
 	userId: zod.number().int(),
 	channel: ChannelSchema,

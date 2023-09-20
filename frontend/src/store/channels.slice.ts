@@ -4,7 +4,8 @@ import { Socket } from 'socket.io-client';
 import { BACK_PREFIX } from '../helpers/API';
 import { ChannelPreview } from '../interfaces/channel.interface';
 import CreateChannel from '../interfaces/createChannel.interface';
-import Message from '../interfaces/message.interface';
+import { CreateMessage } from '../interfaces/createMessage.interface';
+import { Message } from '../interfaces/message.interface';
 import { loadState } from './storage';
 
 
@@ -23,18 +24,21 @@ export enum ChannelsEvent {
 	getOwner = 'get owner',
 	filter = 'filter',
 	getMessages = 'get messages',
-	getRole = 'get role'
-
+	getRole = 'get role',
+	sendMessage = 'new message',
+	recieveMessage = 'broadcast'
 }
 
 export interface ChannelsState {
 	channels: ChannelPreview[];
+	messages: Message[];
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
 }
  
 const initialState: ChannelsState = {
 	channels: [],
+	messages: [],
 	isEstablishingConnection: false,
 	isConnected: false
 };
@@ -55,13 +59,22 @@ const channelSlice = createSlice({
 		}>) => {
 			state.channels.push(action.payload.channel);
 		}),
-		getChannels: ((state, action: PayloadAction<{channels: ChannelPreview[]}>) => {
-			state.channels = state.channels.concat(action.payload.channels);
+		getChannels: ((state, action: PayloadAction<{ channels: ChannelPreview[] }>) => {
+			state.channels = action.payload.channels;
+		}),
+		sendMessage: ((state, action: PayloadAction<CreateMessage>) => {
+			return;
+		}),
+		getMessages: ((state, action: PayloadAction<number>) => {
+			return;			
+		}),
+		setMessages: ((state, action: PayloadAction<Message[]>) => {
+			console.log('state messages: ', action.payload);
+			state.messages = action.payload;
+		}),
+		recieveMessage: ((state, action: PayloadAction<Message>) => {
+			state.messages.push(action.payload);
 		})
-		//createChannel: ((state, action: PayloadAction<{ content: CreateChannel }>) => {
-		//	return;
-		//})
-
 	}
 });
  
