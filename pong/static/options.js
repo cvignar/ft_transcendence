@@ -2,7 +2,7 @@ var _a, _b, _c, _d;
 export class Options {
 }
 _a = Options;
-Options.port = 5080;
+Options.port = 12080;
 Options.host = 'http://10.12.4.10';
 Options.pong_server = _a.host + ':' + _a.port.toString();
 Options.width = 800;
