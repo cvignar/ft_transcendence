@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, forwardRef, useEffect, useState } from 'react';
 //import { Chat } from './Chat.props';
 import styles from './MessageHolder.module.css';
 import Headling from '../../components/Headling/Headling';
@@ -20,13 +20,18 @@ import classNames from 'classnames';
 
 
 
-export default function MessageHolder({message, appearence = 'self'}: MessageHolderProps) {
+const MessageHolder
+= forwardRef<HTMLDivElement, MessageHolderProps>(
+	function MessageHolder({message, appearence = 'self', ...props}, ref
+	) {
 
-	return (
-		<>
-			<div className={classNames(styles['message'], styles[appearence])}>
-				{message.msg}
-			</div>
-		</>
-	);
-}
+		return (
+			<>
+				<div {...props} ref={ref} className={classNames(styles['message'], styles[appearence])}>
+					{message.msg}
+				</div>
+			</>
+		);
+	});
+
+export default MessageHolder;

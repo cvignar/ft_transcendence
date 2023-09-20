@@ -26,7 +26,8 @@ export enum ChannelsEvent {
 	getMessages = 'get messages',
 	getRole = 'get role',
 	sendMessage = 'new message',
-	recieveMessage = 'broadcast'
+	recieveMessage = 'broadcast',
+	createChannel = 'create channel'
 }
 
 export interface ChannelsState {
@@ -74,6 +75,9 @@ const channelSlice = createSlice({
 		}),
 		recieveMessage: ((state, action: PayloadAction<Message>) => {
 			state.messages.push(action.payload);
+		}),
+		createChannel: ((state, action: PayloadAction<CreateChannel>) => {
+			return;
 		})
 	}
 });
