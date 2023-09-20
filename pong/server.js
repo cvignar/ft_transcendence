@@ -3,7 +3,7 @@ import * as socketIO from 'socket.io';
 import express from 'express';
 ``;
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
-import { Options } from './static/options.js';
+import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet } from './GamesSet.js';
@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
         gebugPprinting(((_a = games.getPlayer(socket.id)) === null || _a === void 0 ? void 0 : _a.name) + ' partnersList: ', partnersList);
     });
     socket.on('controls', (msg) => {
+        var _a, _b, _c, _d;
         const player = games.getPlayer(socket.id);
         if (player) {
             let pong = games.getPong(player.socketId);
@@ -64,13 +65,17 @@ io.on('connection', (socket) => {
                 else {
                     pong.setControls(msg, player.side);
                     if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-                        socket.emit('players', pong.getPlayerNames());
+                        if ((_a = pong.owner) === null || _a === void 0 ? void 0 : _a.socketId) {
+                            (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('players', pong.getPlayerNames());
+                        }
+                        if ((_c = pong.partner) === null || _c === void 0 ? void 0 : _c.socketId) {
+                            (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('players', pong.getPlayerNames());
+                        }
                     }
                 }
             }
             else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
                 pong = games.nwePong(player);
-                //pong.setControls(msg, player.side);//FIXME
                 socket.emit('pong launched', msg.cmd);
             }
         }
@@ -86,9 +91,8 @@ io.on('connection', (socket) => {
                 const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
                 if (choosedOwnerSocket) {
                     setTimeout(function () {
-                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit('confirm partner', [socket.id, partner.name]); //FIXME
-                    }, 2000); //FIXME
-                    //choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
+                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit('confirm partner', [socket.id, partner.name]);
+                    }, ControlOptions.game_startTime);
                     return;
                 }
             }
@@ -96,23 +100,43 @@ io.on('connection', (socket) => {
         socket.emit('partner unavailable');
     });
     socket.on('partner confirmation', (socket_id) => {
-        var _a, _b, _c;
+        var _a, _b;
         const partner = games.setPartner(socket.id, socket_id);
         const pong = games.getPong(socket.id);
         if (partner && pong) {
             (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong launched');
-            socket.emit('players', pong.getPlayerNames);
-            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('players', pong.getPlayerNames);
         }
         else {
             socket.emit('partner unavailable');
-            (_c = io.sockets.sockets.get(socket_id)) === null || _c === void 0 ? void 0 : _c.emit('partner unavailable');
+            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('partner unavailable');
         }
     });
     socket.on('refusal', (socket_id) => {
         var _a;
         if (games.getPlayer(socket.id)) {
             (_a = io.sockets.sockets.get(socket_id)) === null || _a === void 0 ? void 0 : _a.emit('partner unavailable');
+        }
+    });
+    socket.on('start partner game', () => {
+        let opposer = games.getOpposer(socket.id);
+        if (opposer) {
+            let opposerSocket = io.sockets.sockets.get(opposer);
+            if (opposerSocket) {
+                setTimeout(function () {
+                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('start partner game');
+                }, ControlOptions.game_startTime);
+            }
+        }
+    });
+    socket.on('partner refused', () => {
+        let opposer = games.getOpposer(socket.id);
+        if (opposer) {
+            let opposerSocket = io.sockets.sockets.get(opposer);
+            if (opposerSocket) {
+                setTimeout(function () {
+                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('partner refused');
+                }, ControlOptions.game_startTime);
+            }
         }
     });
 });

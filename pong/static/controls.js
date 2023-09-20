@@ -41,7 +41,7 @@ export class Controls extends ControlOptions {
         this.bttnNew = document.getElementById('NEW');
         if (this.bttnNew) {
             this.bttnNew.addEventListener('click', () => {
-                this.click(this.bttnNew.id);
+                this.startPartnerGame();
             });
         }
         this.bttnTrnng = document.getElementById('TRNNG');
@@ -248,6 +248,10 @@ export class Controls extends ControlOptions {
                 this.bttnPause.style.color = 'black';
             }
         }
+        else {
+            this.bttnPause.style.fontWeight = 'normal';
+            this.bttnPause.style.color = 'black';
+        }
         // STOP
         if (!this.isStopBlocking()) {
             this.bttnStop.style.fontWeight = 'bold';
@@ -319,6 +323,11 @@ export class Controls extends ControlOptions {
         this.msg.clear();
         this.msg.cmd = GameCmd.STOP;
         this.socket.emit('controls', this.msg);
+    }
+    startPartnerGame() {
+        if (this.gameMode == GameMode.PARTNER_GAME) {
+            this.socket.emit('start partner game');
+        }
     }
 }
 export class Selector {
