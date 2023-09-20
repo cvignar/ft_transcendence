@@ -1,7 +1,8 @@
+
 .info {
 	display: flex;
 	flex-direction: row;
-	align-items: center;
+	align-items: stretch
 }
 
 .header {
@@ -16,6 +17,10 @@
 	font-style: normal;
 	font-weight: 400;
 	line-height: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 34px;
+
 }
 
 .avatar {

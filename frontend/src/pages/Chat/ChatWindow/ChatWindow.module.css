@@ -20,7 +20,11 @@
 }
 
 .messages {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
 	height: 835px;
+	overflow: auto;
 }
 
 .text-area {
