@@ -1,4 +1,9 @@
 .message {
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	/*line-height: 20px; 142.857%*/
+
 	display: flex;
 	min-width: fit-content;
 	/*min-height: fit-content;*/
@@ -7,6 +12,7 @@
 	word-break: break-all;
 	/*overflow-wrap: break-all;*/
 	max-width: 250px;
+	margin-top: 5px;
 }
 
 .self {
