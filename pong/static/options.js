@@ -53,7 +53,7 @@ ControlOptions.key_arrowUp = 38;
 ControlOptions.key_arrowDown = 40;
 ControlOptions.paddle_keyMove = Math.round(_c.paddle_height / 8);
 ControlOptions.key_interval = 1000 / 100;
-ControlOptions.game_startTimeout = 100;
+ControlOptions.game_startTime = 1000;
 export class ImageOptions extends Options {
 }
 _d = ImageOptions;

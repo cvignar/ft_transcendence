@@ -68,7 +68,12 @@ io.on('connection', (socket) => {
 				} else {
 					pong.setControls(msg, player.side);
 					if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
-						socket.emit('players', pong.getPlayerNames());
+						if (pong.owner?.socketId) {
+							io.sockets.sockets.get(pong.owner.socketId)?.emit('players', pong.getPlayerNames());
+						}
+						if (pong.partner?.socketId) {
+							io.sockets.sockets.get(pong.partner.socketId)?.emit('players', pong.getPlayerNames());
+						}
 					}
 				}
 			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
@@ -88,10 +93,9 @@ io.on('connection', (socket) => {
 			if (choosedOwner) {
 				const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
 				if (choosedOwnerSocket) {
-					setTimeout(function() {//FIXME
-						choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
-					}, 2000 );//FIXME
-					//choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);//FIXME
+					setTimeout(function() {
+						choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);
+					}, ControlOptions.game_startTime );
 					return;
 				}
 			}
@@ -104,8 +108,6 @@ io.on('connection', (socket) => {
 		const pong = games.getPong(socket.id);
 		if (partner && pong) {
 			io.sockets.sockets.get(partner.socketId)?.emit('pong launched');
-			socket.emit('players', pong.getPlayerNames);
-			io.sockets.sockets.get(socket_id)?.emit('players', pong.getPlayerNames);
 		} else {
 			socket.emit('partner unavailable');
 			io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
@@ -115,6 +117,30 @@ io.on('connection', (socket) => {
 	socket.on('refusal', (socket_id) => {
 		if (games.getPlayer(socket.id)) {
 			io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
+		}
+	});
+
+	socket.on('start partner game', () => {
+		let opposer = games.getOpposer(socket.id);
+		if (opposer) {
+			let opposerSocket = io.sockets.sockets.get(opposer);
+			if (opposerSocket) {
+				setTimeout(function() {
+					opposerSocket?.emit('start partner game');
+				}, ControlOptions.game_startTime );
+			}
+		}
+	});
+
+	socket.on('partner refused', () => {
+		let opposer = games.getOpposer(socket.id);
+		if (opposer) {
+			let opposerSocket = io.sockets.sockets.get(opposer);
+			if (opposerSocket) {
+				setTimeout(function() {
+					opposerSocket?.emit('partner refused');
+				}, ControlOptions.game_startTime );
+			}
 		}
 	});
 });
