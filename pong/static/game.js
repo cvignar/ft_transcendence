@@ -132,6 +132,4 @@ socket.on('pong deleted', function() {
 
 socket.on('disconnect', function() {
 	clearInterval(renderTimer);
-	alert('Disconnected');
-	sounds.playSound(Sound.SPEEDUP);
 });
