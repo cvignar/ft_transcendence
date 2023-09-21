@@ -1,7 +1,7 @@
 import { GameCmd, GameMode, GameStatus, ServerMsg, Sound } from '../../../../pong/static/common';
 import { Controls, Selector } from '../../../../pong/static/controls';
 import { Score, Image, Sounds } from '../../../../pong/static/image';
-import { PongOptions } from '../../../../pong/static/options';
+import { ControlOptions } from '../../../../pong/static/options';
 
 
 export function game(socket: any) {
@@ -17,16 +17,16 @@ export function game(socket: any) {
 
 	// Player
 	socket.emit('new player');
-	socket.on('player not crated', function() {
+	socket.on('player not created', function() {
 		while(!nickname) {
 			nickname = window.prompt('Enter Your Nickname:');
 		}
-		socket.emit('new player', {name: nickname, id: -1});
+		socket.emit('new player', ({name: nickname, id: -1}));
 	});
 	socket.on('player created', function(nick_name: string | null) {
 		nickname = nick_name;
 	});
-	socket.on('players', function(players: [string, string]) {
+	socket.on('players', function(players: string[]) {
 		score.setPlayers(players[0], players[1]);
 		score.showPlayers();
 	});
@@ -40,13 +40,13 @@ export function game(socket: any) {
 		selector.fill(partnersList);
 		sounds.playSound(Sound.SPEEDUP);
 	});
-	selector.select.addEventListener('change', function(socket_id: { target: { value: unknown; }; }) {
+	selector.select.addEventListener('change', function(socket_id: { target: { value: any; }; }) {
 		socket.emit('partner choosed', socket_id.target.value);
 		sounds.playSound(Sound.SPEEDUP);
 	});
 
 	// Confirm partner
-	socket.on('confirm partner', function(partner: [string, string]) {
+	socket.on('confirm partner', function(partner: any[]) {
 		let pauseBefor = true;
 		if (controls.gameStatus != GameStatus.PAUSED) {
 			pauseBefor = false;
@@ -57,6 +57,7 @@ export function game(socket: any) {
 		if (yes) {
 			socket.emit('partner confirmation', partner[0]);
 			controls.new();
+			controls.gameIsOn = false;
 		} else {
 			if (!pauseBefor) {
 				controls.pause();
@@ -64,7 +65,7 @@ export function game(socket: any) {
 			socket.emit('refusal', partner[0]);
 		}
 	});
-
+	
 	// Alert 'partner unavailable'
 	socket.on('partner unavailable', function() {
 		let pauseBefor = true;
@@ -79,16 +80,36 @@ export function game(socket: any) {
 		}
 	});
 
+	// Confirm start partner game
+	socket.on('start partner game', function() {
+		sounds.playSound(Sound.SPEEDUP);
+		const yes = window.confirm('Start new game?');
+		if (yes) {
+			setTimeout(function() {
+				controls.new();
+			}, ControlOptions.game_startTime );
+		} else {
+			socket.emit('partner refused');
+			controls.stop();
+		}
+	});
+
+	// Alert 'partner refused'
+	socket.on('partner refused', function() {
+		sounds.playSound(Sound.SPEEDUP);
+		alert('Sorry, partner refused');
+	});
+
 	// Pong events
-	socket.on('pong launched', function() {
+	socket.on('pong launched', function(cmd: GameCmd) {
 		if (image.valid()) {
-			if (controls.lastCmd == GameCmd.TRNNG || 
-			controls.lastCmd == GameCmd.AUTO)
-			{
+
+			if (cmd) {
 				setTimeout(function() {
-					controls.emitCmd(controls.lastCmd);
-				}, PongOptions.calculation_period );
+					controls.emitCmd(cmd);
+				}, ControlOptions.game_startTime );
 			}
+
 			renderTimer = setInterval(function() {
 				sounds.play(browserState);
 				controls.colorizeButtons(browserState);
@@ -104,12 +125,13 @@ export function game(socket: any) {
 	});
 	socket.on('pong deleted', function() {
 		sounds.playSound(Sound.SPEEDUP);
+		controls.gameIsOn = false;
 		controls.normalizeButtons();
 		score.clear();
 		clearInterval(renderTimer);
 		image.clear();
 	});
-
+	
 	socket.on('disconnect', function() {
 		clearInterval(renderTimer);
 	});
