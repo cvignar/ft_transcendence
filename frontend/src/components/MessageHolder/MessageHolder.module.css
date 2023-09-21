@@ -1,0 +1,28 @@
+.message {
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	/*line-height: 20px; 142.857%*/
+
+	display: flex;
+	min-width: fit-content;
+	/*min-height: fit-content;*/
+	align-items: center;
+	padding: 10px;
+	word-break: break-all;
+	/*overflow-wrap: break-all;*/
+	max-width: 250px;
+	margin-top: 5px;
+}
+
+.self {
+	border-radius: var(--m-r) var(--m-r) 0px var(--m-r);
+	background: var(--secondary-color);
+	margin-left: auto;
+}
+
+.other {
+	border-radius: 0px var(--m-r) var(--m-r) var(--m-r);
+	background: var(--primary-color);
+	margin-right: auto;
+}

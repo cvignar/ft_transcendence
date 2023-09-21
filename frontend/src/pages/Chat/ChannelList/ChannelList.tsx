@@ -2,21 +2,14 @@ import { ChannelListProps } from './ChannelList.props';
 import ChannelPreview from '../../../components/ChannelPreview/ChannelPreview';
 import CardButton from '../../../components/CardButton/CardButton';
 import styles from './ChannelList.module.css';
-export function ChannelList({ channels }: ChannelListProps) {
-	console.log(channels);
+export function ChannelList({ channels, setChannel }: ChannelListProps) {
 	return (
 		<div className={styles['list']} >
-			{channels.map(c => (
-				<CardButton className='staff'>
+			{channels?.map(c => (
+				<CardButton key={c.id} className={styles['preview-button']} onClick={() => setChannel(c)}>
 					<ChannelPreview
-						key={c.id}
-						id={c.id}
-						name={c.name}
-						createdAt={c.createdAt}
-						updatedAt={c.updatedAt}
-						type={c.type}
+						data={c}
 					/>
-
 				</CardButton>
 			))}
 		</div>

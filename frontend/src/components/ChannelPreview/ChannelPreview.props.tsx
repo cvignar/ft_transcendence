@@ -1,5 +1,5 @@
+import { ChannelPreview } from '../../interfaces/channel.interface';
+
 export interface ChannelPreviewProps {
-	id: number;
-	name: string;
-	updatedAt: string;
+	data: ChannelPreview;
 }
