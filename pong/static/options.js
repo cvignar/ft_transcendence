@@ -3,8 +3,9 @@ export class Options {
 }
 _a = Options;
 Options.port = 12080;
-Options.host = 'http://mclam.info';
-Options.pong_server = _a.host + ':' + _a.port.toString();
+Options.host = '10.12.4.10';
+Options.pong_server = 'ws://' + _a.host + ':' + _a.port.toString();
+Options.pong_httpServer = 'http://' + _a.host + ':' + _a.port.toString();
 Options.width = 800;
 Options.maxWins = 6;
 Options.serveNum = 2;

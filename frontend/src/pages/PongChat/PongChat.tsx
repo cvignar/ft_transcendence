@@ -1,4 +1,4 @@
-//import Chat from '../Chat/Chat';
+import Chat from '../Chat/Chat';
 import { Pong } from '../Pong/pong';
 import styles from './PongChat.module.css';
 
@@ -16,7 +16,7 @@ export function PongChat() {
 			<Pong/>
 		</div>
 		<div>
-			{/*<Chat/>*/}
+			<Chat/>
 		</div>
 		{/*<div className='pong-div'>
 			{userName ? <iframe className='pong' src={`http://localhost:5000/?nickname=${userName}`} title="pong72"/> : <></>}

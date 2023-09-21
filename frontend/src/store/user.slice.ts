@@ -8,13 +8,14 @@ import { loadState } from './storage';
 
 export const JWT_PERSISTENT_STATE = 'userToken';
 export const EMAIL_PERSISTENT_STATE = 'userEmail';
+export const USERNAME_PERSISTENT_STATE = 'userName';
 
 export interface UserState {
 	token: string | null;
 	email: string;
 	//id42: string | null;
 	authErrorMessage?: string;
-	//username?: string | null;
+	username?: string | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -23,7 +24,8 @@ export interface UserState {
 
 const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
-	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? ''
+	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
+	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? ''
 };
 
 export const auth = createAsyncThunk('auth/login',
@@ -34,7 +36,7 @@ export const auth = createAsyncThunk('auth/login',
 				username: params.username,
 				password: params.password
 			});
-			return {data: data, email: params.email};
+			return {data: data, email: params.email, username: params.username};
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				throw new Error(e.response?.data.message);
@@ -79,6 +81,7 @@ export const userSlice = createSlice({
 			}
 			state.token = action.payload.data.access_token;
 			state.email = action.payload.email;
+			state.username = action.payload.username;
 		});
 		builder.addCase(auth.rejected, (state, action) => {
 			state.authErrorMessage = action.error.message;
