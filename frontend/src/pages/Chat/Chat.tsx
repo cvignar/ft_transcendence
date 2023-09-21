@@ -40,7 +40,7 @@ export default function Chat() {
 	//const [channels, setChannels] = useState<ChannelPreview[]>();
 	//const channels = useSelector((s: RootState) => s.channel.items);
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
-
+	const [isProtected, setIsProtected] = useState<boolean>(false);
 
 	let subtitle;
 	const [modalIsOpen, setIsOpen] = useState(false);
@@ -69,6 +69,15 @@ export default function Chat() {
 		return () => clearTimeout(timerId);
 	}, [dispatch, token]);
 
+	const onChange = (e: FormEvent) => {
+		if (e.target.name === 'type') {
+			if (e.target.value === 'protected') {
+				setIsProtected(true);
+			} else {
+				setIsProtected(false);
+			}
+		}
+	};
 	return (
 		<div className={styles['page']}>
 			<div className={styles['left-panel']}>
@@ -90,22 +99,22 @@ export default function Chat() {
 							<button className={styles['remove-button']} onClick={closeModal}>
 								<img className={styles['remove-svg']} src='/remove.svg' alt='Remove all'/>
 							</button>
-							<form onSubmit={onSubmit}>
-								<Input placeholder='Name' className={styles['settings-input']}/>
+							<form onChange={onChange} onSubmit={onSubmit}>
+								<Input name="name" placeholder='Name' className={styles['settings-input']}/>
 								<fieldset>
 									<legend>Type of your channel:</legend>
 									<div>
-										<input type="radio" id="public" name="contact" value="public" />
+										<input type="radio" id="public" name="type" value="public" defaultChecked />
 										<label htmlFor="public">public</label>
 
-										<input type="radio" id="private" name="contact" value="private" />
+										<input type="radio" id="private" name="type" value="private" />
 										<label htmlFor="private">private</label>
 
-										<input type="radio" id="protected" name="contact" value="protected" />
+										<input type="radio" id="protected" name="type" value="protected" />
 										<label htmlFor="protected">protected</label>
 									</div>
 								</fieldset>
-								<Input type='password' placeholder='Password' className={styles['settings-input']}/>
+								{isProtected && <Input type='password' placeholder='Password' className={styles['settings-input']}/>}
 								<Button>Create</Button>
 							</form>
 						</Modal>
