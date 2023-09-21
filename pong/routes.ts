@@ -6,7 +6,7 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export function routes(app: any) {
 
-	app.set('port', Options.port);
+	app.set('port', Options.pong_port);
 	app.use('/', express.static(__dirname + '/html'));
 	app.use('/static', express.static(__dirname + '/static'));
 	app.use('/sounds', express.static(__dirname + '/sounds'));

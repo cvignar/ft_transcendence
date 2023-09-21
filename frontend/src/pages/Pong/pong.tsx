@@ -9,7 +9,7 @@ import { Options } from '../../../../pong/static/options';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
-const	socket = io(`${Options.pong_server}`, { transports : ['websocket'] });
+const	socket = io(`${Options.pong_wsServer}`, { transports : ['websocket'] });
 
 export function Pong() {
 
