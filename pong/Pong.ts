@@ -61,6 +61,10 @@ export class Paddle extends geometry.Rectangle {
 export class Pong extends PongOptions {
 	owner: Player | undefined = undefined;
 	partner: Player | undefined = undefined;
+	gameStartTime: number = 0;
+	gameEndTime: number = 0;
+	gameResult: any = undefined;
+	gameResultOn: boolean = false;
 	mode: GameMode = GameMode.WAITING;
 	status: GameStatus = GameStatus.INACTIVE;
 	leftScore: number = 0;
@@ -159,6 +163,7 @@ export class Pong extends PongOptions {
 					this.rightScore >= Pong.maxWins
 				) {
 					this.setSound(Sound.APPLAUSE);
+					this.gameEndTime = Date.now();
 					this.ball.visibility = false;
 					this.newGame = true;
 					this.status = GameStatus.INACTIVE;
@@ -265,6 +270,7 @@ export class Pong extends PongOptions {
 		if (this.atGameStart) {
 			this.setSound(Sound.SERVE);
 			this.setSound(Sound.GAME_START);
+			this.gameStartTime = Date.now()
 			this.pathStartTime = Date.now();
 			this.atGameStart = false;
 		}
@@ -478,7 +484,7 @@ export class Pong extends PongOptions {
 			}
 		}
 	}
-	getLeftPlayer(): Player | null {
+	getLeftPlayer(): Player | undefined {
 		if (this.owner) {
 			if (this.owner.side == Side.LEFT && this.mode != GameMode.AUTO_GAME) {
 				return this.owner;
@@ -488,9 +494,9 @@ export class Pong extends PongOptions {
 				}
 			}
 		}
-		return null;
+		return undefined;
 	}
-	getRightPlayer(): Player | null {
+	getRightPlayer(): Player | undefined {
 		if (this.owner) {
 			if (this.owner.side == Side.RIGHT && this.mode != GameMode.AUTO_GAME) {
 				return this.owner;
@@ -500,7 +506,7 @@ export class Pong extends PongOptions {
 				}
 			}
 		}
-		return null;
+		return undefined;
 	}
 	getPlayerNames(): [ left: string, right: string ] {
 		if (this.mode == GameMode.AUTO_GAME) {
@@ -509,5 +515,33 @@ export class Pong extends PongOptions {
 		const left = this.getLeftPlayer();
 		const right = this.getRightPlayer();
 		return [ left ? left.name : 'auto', right ? right.name : 'auto' ]
+	}
+	setGameResult() {
+		if (this.mode == GameMode.PARTNER_GAME) {
+			this.gameResult = {
+				player1: this.getLeftPlayer()?.id,
+				player2: this.getRightPlayer()?.id,
+				score1: this.leftScore,
+				score2: this.rightScore,
+				startTime: this.gameStartTime,
+				endTime: this.gameEndTime,
+				duration: this.gameEndTime - this.gameStartTime
+			};
+			this.gameResultOn = true;
+		}
+	}
+	getGameResult(): {
+				player1: number | undefined,
+				player2: number | undefined,
+				score1: number,
+				score2: number,
+				startTime: number,
+				endTime: number,
+				duration: number
+			} | undefined
+	{
+
+
+	return this.gameResult;
 	}
 }
