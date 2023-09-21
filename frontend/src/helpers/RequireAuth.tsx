@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { RootState } from '../store/store';
 export const RequireAuth = ({ children }: { children: ReactNode }) => {
-	const id42 = useSelector((s: RootState) => s.user.id42);
+	const token = useSelector((s: RootState) => s.user.token);
 
-	if (!id42) {
+	if (!token) {
 		return <Navigate to='/' replace />;
 	}
 	return <>{children}</>;

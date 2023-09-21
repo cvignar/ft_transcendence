@@ -6,16 +6,15 @@ import { AuthResponse } from '../interfaces/auth.interface';
 import { loadState } from './storage';
 //import { RootState } from './store';
 
-export const ID42_PERSISTENT_STATE = 'userData';
-export interface UserPersistantState {
-	id42: string | null;
-	username: string | null;
-}
+export const JWT_PERSISTENT_STATE = 'userToken';
+export const EMAIL_PERSISTENT_STATE = 'userEmail';
 
 export interface UserState {
-	id42: string | null;
+	token: string | null;
+	email: string;
+	//id42: string | null;
 	authErrorMessage?: string;
-	username?: string | null;
+	//username?: string | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -23,20 +22,19 @@ export interface UserState {
 
 
 const initialState: UserState = {
-	id42: loadState<UserPersistantState>(ID42_PERSISTENT_STATE)?.id42 ?? null
+	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
+	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? ''
 };
 
-export const auth = createAsyncThunk('user/create',
-	async (params: {username: string, id42: string, email: string, hash: string}) => {
+export const auth = createAsyncThunk('auth/login',
+	async (params: {email: string, username: string, password: string}) => {
 		try {
-			console.log(params);
-			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/user/create`, {
-				username: params.username,
-				id42: params.id42,
+			const { data } = await axios.post<AuthResponse>(`${BACK_PREFIX}/auth/login`, {
 				email: params.email,
-				hash: params.hash
+				username: params.username,
+				password: params.password
 			});
-			return data;
+			return {data: data, email: params.email};
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				throw new Error(e.response?.data.message);
@@ -68,25 +66,23 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		logout: (state) => {
-			state.id42 = null;
+			state.token = null;
 		},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
 		}
-		//clearRegisterError: (state) => {
-		//	state.registerError = undefined;
-		//}
-
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
 			if (!action.payload) {
 				return;
 			}
-			state.id42 = action.payload.id42;
+			state.token = action.payload.data.access_token;
+			state.email = action.payload.email;
 		});
 		builder.addCase(auth.rejected, (state, action) => {
 			state.authErrorMessage = action.error.message;
+			console.log(action.error);
 		});
 		//builder.addCase(register.fulfilled, (state, action) => {
 		//	if (!action.payload) {

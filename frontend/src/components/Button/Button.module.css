@@ -5,7 +5,7 @@
 	cursor: pointer;
 	transition: backgound 0.25s;
 	border: none;
-	color: var(--white-color);
+	color: var(--text-color);
 	border-radius: 29px;
 }
 
