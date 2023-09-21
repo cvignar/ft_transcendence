@@ -31,8 +31,8 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 }
 
 routes(app);
-server.listen(Options.port, () => {
-	console.log('Server starts on port', Options.port);
+server.listen(Options.pong_port, () => {
+	console.log('Server starts on port', Options.pong_port);
 });
 
 io.on('connection', (socket) => {
