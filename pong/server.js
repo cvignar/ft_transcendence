@@ -34,6 +34,7 @@ server.listen(Options.port, () => {
 });
 io.on('connection', (socket) => {
     socket.on('new player', (user) => {
+        console.log("socket username: ", user === null || user === void 0 ? void 0 : user.name); //FIXME!!!
         const player = games.newPlayer(socket.id, user);
         if (player) {
             socket.emit('player created', player.name);

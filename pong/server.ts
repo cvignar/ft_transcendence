@@ -38,6 +38,7 @@ server.listen(Options.port, () => {
 io.on('connection', (socket) => {
 
 	socket.on('new player', (user: {name: string, id: number} | undefined) => {
+		console.log("socket username: ", user?.name); //FIXME!!!
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
 			socket.emit('player created', player.name);
