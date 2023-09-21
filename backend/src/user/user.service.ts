@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { User, Prisma } from '@prisma/client';
 import * as argon from 'argon2';
 // import { ChannelService } from './channel.service';
-import { CreateUser,CreateUser42, UpdateAvatar, UpdateEmail, UpdateUsername } from '../../../contracts/user.schema';
+import { CreateUser,CreateUser42, UpdateAvatar, UpdateEmail, UpdateTwoFA, UpdateUsername } from '../../../contracts/user.schema';
 
 @Injectable()
 export class UserService {
@@ -137,40 +137,53 @@ export class UserService {
 }
 
 async has2FA(id: number): Promise<boolean> {
-	let user = await this.getUser(id);
-	if (!user) {
-		return false;
+	try
+	{
+		const user = await this.prisma.user.findUnique({
+			where: { id: id },
+		});
+		return user.twoFA;
 	}
-	return user.twoFactorAuth? true : false;
+	catch (error)
+	{
+		console.log(`has2FA error: ${error}`);
+	}
 }
 
-async activate2FA(id: number): Promise<User | null> {
-	let user = await this.getUserById(id);
-	if (!user) {
-		return null;
+async deactivate2FA(updateData: UpdateTwoFA.Request): Promise<User> {
+	try {
+		const updateUser = await this.prisma.user.update({
+			where: { id: updateData.id },
+			data: { twoFA: false },
+		})
+		return updateUser;
 	}
-	user.twoFA = true;
-	// user.twoFactorAuthenticated = true;
-	return await this.userRepository.save(user);
+	catch (error) {
+		console.log(`deactivate2FA error: ${error}`);
+	}
 }
 
-async deactivate2FA(id: number): Promise<User | null> {
-	let user = await this.getUserById(id);
-	if (!user) {
-		return null;
+async activate2FA(updateData: UpdateTwoFA.Request): Promise<User> {
+	try {
+		const updateUser = await this.prisma.user.update({
+			where: { id: updateData.id },
+			data: { twoFA: true },
+		})
+		return updateUser;
 	}
-	user.twoFA = false;
-	return await this.userRepository.save(user);
+	catch (error) {
+		console.log(`activate2FA error: ${error}`);
+	}
 }
 
-async validate2FA(id: number): Promise<User | null> {
-	let user = await this.getUserById(id);
-	if (!user) {
-		return null;
-	}
-	// user.twoFactorAuthenticated = true;
-	return await this.userRepository.save(user);
-}
+// async validate2FA(id: number): Promise<User | null> {
+// 	let user = await this.getUserById(id);
+// 	if (!user) {
+// 		return null;
+// 	}
+// 	// user.twoFactorAuthenticated = true;
+// 	return await this.userRepository.save(user);
+// }
 
 //   async updateUser(params: {
 //     where: Prisma.UserWhereUniqueInput;
