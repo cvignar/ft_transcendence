@@ -8,5 +8,5 @@ export interface CreateChannel {
 	members: {
 		id: number,
 		name: string,
-	},
+	}[],
 }
