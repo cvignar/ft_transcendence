@@ -69,7 +69,7 @@ export default function Chat() {
 		return () => clearTimeout(timerId);
 	}, [dispatch, token]);
 
-	const onChange = (e: FormEvent) => {
+	const onChange = (e: FormEvent) => { //FIXME!
 		if (e.target.name === 'type') {
 			if (e.target.value === 'protected') {
 				setIsProtected(true);
