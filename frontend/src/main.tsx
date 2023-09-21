@@ -21,13 +21,9 @@ const router = createBrowserRouter([
 		path: '/Chat',
 		element: <RequireAuth><Chat/></RequireAuth>
 	},
-	//{
-	//	path: '/',
-	//	element: <Chat/>
-	//},
 	{
 		path: '/PongChat',
-		element: <PongChat/>
+		element:<RequireAuth><PongChat/></RequireAuth>
 	}
 ]);
 

@@ -6,11 +6,18 @@ import { io } from 'socket.io-client';
 import { game } from './game';
 import { useEffect } from 'react';
 import { Options } from '../../../../pong/static/options';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const	socket = io(`${Options.pong_server}`, { transports : ['websocket'] });
 
 export function Pong() {
+
+	const username = useSelector((s: RootState) => s.user.username);
+
 	useEffect(() => {
+		socket.emit('new player', {name: username, id: 1}); //FIXME!!!! change id!!!
+		console.log('socket emit username: ', username, 'socket.id: ', socket.id);
 		game(socket);
 	}, []);
 
