@@ -6,15 +6,15 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
-  @UsePipes(ZodValidationPipe)
-  //@ApiTags('user')
-  @Post('create')
-  //@ApiOperation({ summary: 'Create user' })
-  async createUser(
-    @Body()
-    userData: CreateUser.Request,
-  ): Promise<User> {
-    return this.userService.createUser(userData);
-  }
+	constructor(private readonly userService: UserService) {}
+	@UsePipes(ZodValidationPipe)
+	//@ApiTags('user')
+	@Post('create')
+	//@ApiOperation({ summary: 'Create user' })
+	async createUser(
+		@Body()
+		userData: CreateUser.Request,
+	): Promise<User> {
+		return this.userService.createUser(userData);
+	}
 }
