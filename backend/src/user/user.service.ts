@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUser } from '../../../contracts/user.schema--';
+import { async } from 'rxjs/internal/scheduler/async';
 
 @Injectable()
 export class UserService {
@@ -160,5 +161,68 @@ export class UserService {
       console.log('getUsers error:', e);
       throw new ForbiddenException('getUsers error: ' + e);
     }
+  }
+
+  async updatePlayTime(userId: number, duration: number) {
+    const user = await this.prismaService.user.update({
+      where: { id: userId },
+      data: { playTime: { increment: duration } },
+    });
+    return user;
+  }
+
+  async updateGamesWinPlayed(userId: number) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        gamesWon: { increment: 1 },
+        gamesPlayed: { increment: 1 },
+      },
+    });
+    return this.updateWinRate(userId);
+  }
+
+  async updateGamesLostPlayed(userId: number) {
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: {
+        gamesLost: { increment: 1 },
+        gamesPlayed: { increment: 1 },
+      },
+    });
+    return this.updateWinRate(userId);
+  }
+
+  async updateWinRate(userId: number) {
+    const user = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
+    const winRate = user.gamesWon / user.gamesPlayed;
+    return await this.prismaService.user.update({
+      where: { id: userId },
+      data: { winRate: winRate },
+    });
+  }
+
+  async updateRanks() {
+    const users = await this.prismaService.user.findMany({
+      orderBy: { score: 'desc' },
+      select: { id: true, score: true },
+    });
+    const userIds: number[] = [];
+    for (const user of users) {
+      if (user.score !== 1200) {
+        userIds.push(user.id);
+      }
+    }
+    let index = 1;
+    for (const id of userIds) {
+      await this.prismaService.user.update({
+        where: { id: id },
+        data: { rank: index },
+      });
+      index++;
+    }
+    return;
   }
 }
