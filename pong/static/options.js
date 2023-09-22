@@ -2,10 +2,10 @@ var _a, _b, _c, _d;
 export class Options {
 }
 _a = Options;
-Options.port = 12080;
-Options.host = '10.12.4.10';
-Options.pong_server = 'ws://' + _a.host + ':' + _a.port.toString();
-Options.pong_httpServer = 'http://' + _a.host + ':' + _a.port.toString();
+Options.pong_port = 12080;
+Options.pong_host = '10.12.4.10';
+Options.pong_wsServer = 'ws://' + _a.pong_host + ':' + _a.pong_port.toString();
+Options.pong_httpServer = 'http://' + _a.pong_host + ':' + _a.pong_port.toString();
 Options.width = 800;
 Options.maxWins = 6;
 Options.serveNum = 2;
@@ -42,6 +42,8 @@ PongOptions.ball_StartClicksForSpeedup = 12;
 PongOptions.ball_speedUp = 1.2;
 PongOptions.ball_speedUpMax = 6;
 PongOptions.calculation_period = 1000 / 60;
+PongOptions.sendResult_period = 1000;
+PongOptions.tokenRequest_period = 3000; //18000000;// 300 min
 export class ControlOptions extends Options {
 }
 _c = ControlOptions;

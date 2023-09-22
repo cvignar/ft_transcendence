@@ -63,7 +63,7 @@ export class Pong extends PongOptions {
 	partner: Player | undefined = undefined;
 	gameStartTime: number = 0;
 	gameEndTime: number = 0;
-	gameResult: Result | null = null;
+	gameResult: Result = new Result;
 	mode: GameMode = GameMode.WAITING;
 	status: GameStatus = GameStatus.INACTIVE;
 	leftScore: number = 0;
