@@ -1,4 +1,4 @@
-import { Player } from './GamesSet.js';
+import { Player, Result } from './GamesSet.js';
 import { PongOptions } from './static/options.js';
 import * as geometry from './static/geometry.js';
 import {
@@ -63,8 +63,7 @@ export class Pong extends PongOptions {
 	partner: Player | undefined = undefined;
 	gameStartTime: number = 0;
 	gameEndTime: number = 0;
-	gameResult: any = undefined;
-	gameResultOn: boolean = false;
+	gameResult: Result | null = null;
 	mode: GameMode = GameMode.WAITING;
 	status: GameStatus = GameStatus.INACTIVE;
 	leftScore: number = 0;
@@ -164,6 +163,7 @@ export class Pong extends PongOptions {
 				) {
 					this.setSound(Sound.APPLAUSE);
 					this.gameEndTime = Date.now();
+					this.gameResult.set(this);
 					this.ball.visibility = false;
 					this.newGame = true;
 					this.status = GameStatus.INACTIVE;
@@ -515,33 +515,5 @@ export class Pong extends PongOptions {
 		const left = this.getLeftPlayer();
 		const right = this.getRightPlayer();
 		return [ left ? left.name : 'auto', right ? right.name : 'auto' ]
-	}
-	setGameResult() {
-		if (this.mode == GameMode.PARTNER_GAME) {
-			this.gameResult = {
-				player1: this.getLeftPlayer()?.id,
-				player2: this.getRightPlayer()?.id,
-				score1: this.leftScore,
-				score2: this.rightScore,
-				startTime: this.gameStartTime,
-				endTime: this.gameEndTime,
-				duration: this.gameEndTime - this.gameStartTime
-			};
-			this.gameResultOn = true;
-		}
-	}
-	getGameResult(): {
-				player1: number | undefined,
-				player2: number | undefined,
-				score1: number,
-				score2: number,
-				startTime: number,
-				endTime: number,
-				duration: number
-			} | undefined
-	{
-
-
-	return this.gameResult;
 	}
 }
