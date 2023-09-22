@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { AppGateway } from './app.gateway';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AppGateway } from './app.gateway';
     }),
     ChannelModule,
     AuthModule,
+    GameModule,
     //JwtModule.register({
     //  global: true,
     //  secret: jwtConstants.secret,
