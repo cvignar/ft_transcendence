@@ -9,11 +9,54 @@ export class Player {
         this.side = Side.RIGHT;
     }
 }
+export class Result {
+    constructor() {
+        this.player1 = undefined;
+        this.player2 = undefined;
+        this.score1 = 0;
+        this.score2 = 0;
+        this.startTime = 0;
+        this.endTime = 0;
+        this.duration = 0;
+        this.isActual = false;
+    }
+    setIsActual(isActual) {
+        this.isActual = isActual;
+    }
+    getIsActual() {
+        return this.isActual;
+    }
+    set(pong) {
+        var _a, _b;
+        if (pong.mode == GameMode.PARTNER_GAME) {
+            this.player1 = (_a = pong.getLeftPlayer()) === null || _a === void 0 ? void 0 : _a.id;
+            this.player2 = (_b = pong.getRightPlayer()) === null || _b === void 0 ? void 0 : _b.id;
+            this.score1 = pong.leftScore;
+            this.score2 = pong.rightScore;
+            this.startTime = pong.gameStartTime;
+            this.endTime = pong.gameEndTime;
+            this.duration = pong.gameEndTime - pong.gameStartTime;
+            this.isActual = true;
+        }
+    }
+    get() {
+        return {
+            player1: this.player1,
+            player2: this.player2,
+            score1: this.score1,
+            score2: this.score2,
+            startTime: this.startTime,
+            endTime: this.endTime,
+            duration: this.duration
+        };
+    }
+}
 export class GamesSet {
     constructor() {
         this.players = new Map;
         this.pongs = new Map;
         this.pongsIdx = new Map;
+        this.resultQueue = new Array();
     }
     getPongs() {
         return this.pongs;
@@ -126,6 +169,18 @@ export class GamesSet {
                     return pong.partner.socketId;
                 }
             }
+        }
+        return undefined;
+    }
+    checkResult(pong) {
+        if (pong.gameResult.getIsActual()) {
+            this.resultQueue.push(pong.gameResult);
+            pong.gameResult.setIsActual(false);
+        }
+    }
+    getNextResult() {
+        if (this.resultQueue.length) {
+            return this.resultQueue.shift();
         }
         return undefined;
     }

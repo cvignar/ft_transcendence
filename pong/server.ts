@@ -6,10 +6,13 @@ import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
+import { config } from 'dotenv'
+config();
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
+let access_token: string = '';
 
 export function gebugPprinting(param1: any | undefined, param2: any | undefined) {
 	if (Options.debug) {
@@ -155,7 +158,7 @@ setInterval(function() {
 				if (!socketIdForDelete) {
 					socketIdForDelete = socketId;
 				}
-				break;
+				continue;
 			}
 			pong.calculate();
 			if (pong.owner) {
@@ -164,10 +167,7 @@ setInterval(function() {
 			if (pong.partner) {
 				io.sockets.sockets.get(pong.partner.socketId)?.emit('state', pong.getPongState(pong.partner.side));
 			}
-			if (pong.gameResult) {
-				//send gameResult
-				pong.gameResult = null;
-			}
+			games.checkResult(pong);
 		}
 	}
 	if (socketIdForDelete) {
@@ -175,3 +175,37 @@ setInterval(function() {
 		socketIdForDelete = undefined;
 	}
 }, Pong.calculation_period);
+
+// Send results loop
+setInterval(function() {
+	const result = games.getNextResult();
+	if (result) {
+		//send result.get();
+	}
+}, Pong.sendResult_period);
+
+
+// Token request
+
+async function tokenRequest() {
+	const pongAuth = {
+		email: process.env.PONG_EMAIL,
+		username: process.env.PONG_NAME,
+		password: process.env.PONG_PASS,
+	};
+	console.log(JSON.stringify(pongAuth)); //FIXME!!!
+	const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
+		method: "POST",
+		body: JSON.stringify(pongAuth),
+	});
+	try {
+		access_token = await (await fetch(request)).json();
+	} catch (e) {
+		console.log('cannot get token');
+	}
+	console.log('access_token: ', access_token); //FIXME!!!
+}
+
+tokenRequest();
+
+setInterval(tokenRequest, Pong.tokenRequest_period);
