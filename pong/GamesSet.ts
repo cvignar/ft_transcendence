@@ -17,6 +17,48 @@ export class Player {
 	}
 }
 
+export class Result {
+	private player1: number | undefined = undefined;
+	private player2: number | undefined = undefined;
+	private score1: number = 0;
+	private score2: number = 0;
+	private startTime: number = 0;
+	private endTime: number = 0;
+	private duration: number = 0;
+	set(pong: Pong) {
+		if (pong.mode == GameMode.PARTNER_GAME) {
+			this.player1 = pong.getLeftPlayer()?.id;
+			this.player2 = pong.getRightPlayer()?.id;
+			this.score1 = pong.leftScore;
+			this.score2 = pong.rightScore;
+			this.startTime = pong.gameStartTime;
+			this.endTime = pong.gameEndTime;
+			this.duration = pong.gameEndTime - pong.gameStartTime;
+		}
+	}
+	get(): {
+			player1: number | undefined,
+			player2: number | undefined,
+			score1: number,
+			score2: number,
+			startTime: number,
+			endTime: number,
+			duration: number
+			} {
+		return {
+			player1: this.player1,
+			player2: this.player2,
+			score1: this.score1,
+			score2: this.score2,
+			startTime: this.startTime,
+			endTime: this.endTime,
+			duration: this.duration
+		};
+	}
+}
+
+
+
 export class GamesSet {
 	private players:	Map<string, Player>;
 	private pongs:		Map<string, Pong>;

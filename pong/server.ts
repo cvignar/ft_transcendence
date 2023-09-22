@@ -164,6 +164,10 @@ setInterval(function() {
 			if (pong.partner) {
 				io.sockets.sockets.get(pong.partner.socketId)?.emit('state', pong.getPongState(pong.partner.side));
 			}
+			if (pong.gameResult) {
+				//send gameResult
+				pong.gameResult = null;
+			}
 		}
 	}
 	if (socketIdForDelete) {
