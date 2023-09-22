@@ -1,3 +1,12 @@
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
@@ -6,10 +15,13 @@ import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet } from './GamesSet.js';
+import { config } from 'dotenv';
+config();
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
+let access_token = '';
 export function gebugPprinting(param1, param2) {
     if (Options.debug) {
         console.log(param1, param2);
@@ -29,8 +41,8 @@ export function deletePongAndNotifyPlayers(socketId) {
     }
 }
 routes(app);
-server.listen(Options.port, () => {
-    console.log('Server starts on port', Options.port);
+server.listen(Options.pong_port, () => {
+    console.log('Server starts on port', Options.pong_port);
 });
 io.on('connection', (socket) => {
     socket.on('new player', (user) => {
@@ -151,7 +163,7 @@ setInterval(function () {
                 if (!socketIdForDelete) {
                     socketIdForDelete = socketId;
                 }
-                break;
+                continue;
             }
             pong.calculate();
             if (pong.owner) {
@@ -160,6 +172,7 @@ setInterval(function () {
             if (pong.partner) {
                 (_b = io.sockets.sockets.get(pong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('state', pong.getPongState(pong.partner.side));
             }
+            games.checkResult(pong);
         }
     }
     if (socketIdForDelete) {
@@ -167,3 +180,34 @@ setInterval(function () {
         socketIdForDelete = undefined;
     }
 }, Pong.calculation_period);
+// Send results loop
+setInterval(function () {
+    const result = games.getNextResult();
+    if (result) {
+        //send result.get();
+    }
+}, Pong.sendResult_period);
+// Token request
+function tokenRequest() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pongAuth = {
+            email: process.env.PONG_EMAIL,
+            username: process.env.PONG_NAME,
+            password: process.env.PONG_PASS,
+        };
+        console.log(JSON.stringify(pongAuth)); //FIXME!!!
+        const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
+            method: "POST",
+            body: JSON.stringify(pongAuth),
+        });
+        try {
+            access_token = yield (yield fetch(request)).json();
+        }
+        catch (e) {
+            console.log('cannot get token');
+        }
+        console.log('access_token: ', access_token); //FIXME!!!
+    });
+}
+tokenRequest();
+setInterval(tokenRequest, Pong.tokenRequest_period);

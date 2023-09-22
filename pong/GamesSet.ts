@@ -25,6 +25,13 @@ export class Result {
 	private startTime: number = 0;
 	private endTime: number = 0;
 	private duration: number = 0;
+	private isActual = false;
+	setIsActual(isActual: boolean) {
+		this.isActual = isActual;
+	}
+	getIsActual(): boolean {
+		return this.isActual;
+	}
 	set(pong: Pong) {
 		if (pong.mode == GameMode.PARTNER_GAME) {
 			this.player1 = pong.getLeftPlayer()?.id;
@@ -34,6 +41,7 @@ export class Result {
 			this.startTime = pong.gameStartTime;
 			this.endTime = pong.gameEndTime;
 			this.duration = pong.gameEndTime - pong.gameStartTime;
+			this.isActual = true;
 		}
 	}
 	get(): {
@@ -57,16 +65,17 @@ export class Result {
 	}
 }
 
-
-
 export class GamesSet {
-	private players:	Map<string, Player>;
-	private pongs:		Map<string, Pong>;
-	private pongsIdx:	Map<string, Pong>;
+	private players:		Map<string, Player>;
+	private pongs:			Map<string, Pong>;
+	private pongsIdx:		Map<string, Pong>;
+	private resultQueue:	Result[];
+
 	constructor() {
 		this.players = new Map<string, Player>;
 		this.pongs = new Map<string, Pong>;
 		this.pongsIdx = new Map<string, Pong>;
+		this.resultQueue = new Array();
 	}
 	getPongs() {
 		return this.pongs;
@@ -177,6 +186,18 @@ export class GamesSet {
 					return pong.partner.socketId;
 				}
 			}
+		}
+		return undefined;
+	}
+	checkResult(pong: Pong) {
+		if (pong.gameResult.getIsActual()) {
+			this.resultQueue.push(pong.gameResult);
+			pong.gameResult.setIsActual(false);
+		}
+	}
+	getNextResult():Result | undefined {
+		if (this.resultQueue.length) {
+			return this.resultQueue.shift();
 		}
 		return undefined;
 	}

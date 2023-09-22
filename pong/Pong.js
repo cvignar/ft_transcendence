@@ -1,3 +1,4 @@
+import { Result } from './GamesSet.js';
 import { PongOptions } from './static/options.js';
 import * as geometry from './static/geometry.js';
 import { GameMode, GameStatus, GameCmd, Side, Sound, ServerMsg, PONG_INFINITY, } from './static/common.js';
@@ -46,6 +47,9 @@ export class Pong extends PongOptions {
         super(...arguments);
         this.owner = undefined;
         this.partner = undefined;
+        this.gameStartTime = 0;
+        this.gameEndTime = 0;
+        this.gameResult = new Result;
         this.mode = GameMode.WAITING;
         this.status = GameStatus.INACTIVE;
         this.leftScore = 0;
@@ -118,6 +122,8 @@ export class Pong extends PongOptions {
                 if (this.leftScore >= Pong.maxWins ||
                     this.rightScore >= Pong.maxWins) {
                     this.setSound(Sound.APPLAUSE);
+                    this.gameEndTime = Date.now();
+                    this.gameResult.set(this);
                     this.ball.visibility = false;
                     this.newGame = true;
                     this.status = GameStatus.INACTIVE;
@@ -203,6 +209,7 @@ export class Pong extends PongOptions {
         if (this.atGameStart) {
             this.setSound(Sound.SERVE);
             this.setSound(Sound.GAME_START);
+            this.gameStartTime = Date.now();
             this.pathStartTime = Date.now();
             this.atGameStart = false;
         }
@@ -453,7 +460,7 @@ export class Pong extends PongOptions {
                 }
             }
         }
-        return null;
+        return undefined;
     }
     getRightPlayer() {
         if (this.owner) {
@@ -466,7 +473,7 @@ export class Pong extends PongOptions {
                 }
             }
         }
-        return null;
+        return undefined;
     }
     getPlayerNames() {
         if (this.mode == GameMode.AUTO_GAME) {
