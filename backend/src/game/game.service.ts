@@ -67,6 +67,13 @@ export class GameService {
 					gameHistory: { push: game.id },
 				},
 			});
+			await this.prismaService.user.update({
+				where: { id: looserId },
+				data: {
+					score: Math.floor(newScores[1]),
+					gameHistory: { push: game.id },
+				},
+			});
 			this.userService.updateRanks();
 		} catch (e) {
 			throw new ForbiddenException('saveGame error: ', e);
