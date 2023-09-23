@@ -110,4 +110,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.emit('update channel request');
     }
   }
+
+  @SubscribeMessage('save game')
+  async saveGame(@MessageBody() gameData: any) {
+    console.log(gameData);
+  }
 }

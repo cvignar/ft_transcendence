@@ -7,12 +7,13 @@ import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
 import { config } from 'dotenv'
+import {io as ioc} from 'socket.io-client'
 config();
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
-let access_token: string = '';
+let access_token: any = undefined;
 
 export function gebugPprinting(param1: any | undefined, param2: any | undefined) {
 	if (Options.debug) {
@@ -179,23 +180,35 @@ setInterval(function() {
 // Send results loop
 setInterval(function() {
 	const result = games.getNextResult();
-	if (result) {
-		//send result.get();
+	if (result && access_token) {
+		const sockOpt = {
+			transposts: ['websocket'],
+			transportOptions: {
+				polling: {
+					extraHeaders: {
+						Token: access_token.access_token
+					}
+				}
+			}
+		};
+		const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+		socket.emit('save game', result.get());
 	}
 }, Pong.sendResult_period);
 
 
 // Token request
-
 async function tokenRequest() {
 	const pongAuth = {
 		email: process.env.PONG_EMAIL,
 		username: process.env.PONG_NAME,
 		password: process.env.PONG_PASS,
 	};
-	console.log(JSON.stringify(pongAuth)); //FIXME!!!
+	const headers = new Headers();
+	headers.append("Content-Type", "application/json")
 	const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
 		method: "POST",
+		headers: headers,
 		body: JSON.stringify(pongAuth),
 	});
 	try {
@@ -203,9 +216,7 @@ async function tokenRequest() {
 	} catch (e) {
 		console.log('cannot get token');
 	}
-	console.log('access_token: ', access_token); //FIXME!!!
+	gebugPprinting('access_token: ', access_token.access_token);
 }
-
 tokenRequest();
-
 setInterval(tokenRequest, Pong.tokenRequest_period);

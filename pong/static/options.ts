@@ -45,7 +45,7 @@ export class PongOptions extends Options {
 	static ball_speedUpMax: number = 6;
 	static calculation_period: number = 1000 / 60;
 	static sendResult_period: number = 1000;
-	static tokenRequest_period: number = 3000;//18000000;// 300 min
+	static tokenRequest_period: number = 179990000;// 300 min
 }
 
 export class ControlOptions extends Options {
