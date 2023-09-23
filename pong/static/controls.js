@@ -25,16 +25,20 @@ export class Controls extends ControlOptions {
         });
         // Keys controls
         document.addEventListener('keydown', (event) => {
-            this.keydown(event.keyCode);
+            if (!this.blockPongHotKeys()) {
+                this.keydown(event.keyCode);
+            }
         });
         document.addEventListener('keyup', (event) => {
-            if (event.keyCode == Controls.key_s &&
-                this.gameMode == GameMode.PARTNER_GAME &&
-                this.gameIsOn) {
-                return;
-            }
-            else {
-                this.keyup(event.keyCode);
+            if (!this.blockPongHotKeys()) {
+                if (event.keyCode == Controls.key_s &&
+                    this.gameMode == GameMode.PARTNER_GAME &&
+                    this.gameIsOn) {
+                    return;
+                }
+                else {
+                    this.keyup(event.keyCode);
+                }
             }
         });
         // Button controls
@@ -84,6 +88,14 @@ export class Controls extends ControlOptions {
         this.bttnDown.addEventListener('mouseup', () => {
             this.keyup(Controls.key_arrowDown);
         });
+    }
+    blockPongHotKeys() {
+        const active = document.activeElement;
+        if (active instanceof HTMLElement && (active.isContentEditable
+            || active.tagName === 'INPUT'
+            || active.tagName === 'TEXTAREA'))
+            return true;
+        return false;
     }
     keydown(key) {
         if (!this.interval) {
