@@ -6,11 +6,11 @@ const SaveGameSchema = zod.object({
 	player2: zod.number().int(),
 	score1: zod.number().int(),
 	score2: zod.number().int(),
-	startTime: zod.date(),
-	endTime: zod.date(),
-	duration: zod.number().int()
+	startTime: zod.number(),
+	endTime: zod.number(),
+	duration: zod.number()
 });
 
 export namespace SaveGame {
-	export class request extends createZodDto(SaveGameSchema) {}
+	export class Request extends createZodDto(SaveGameSchema) {}
 }
