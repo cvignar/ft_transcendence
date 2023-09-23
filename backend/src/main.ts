@@ -3,40 +3,48 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 //import {Z} from 'nestjs-zod';
 import {
-  SwaggerModule,
-  DocumentBuilder,
-  SwaggerDocumentOptions,
+	SwaggerModule,
+	DocumentBuilder,
+	SwaggerDocumentOptions,
 } from '@nestjs/swagger';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle('ft_transcendence')
-    .setDescription('The ft_transcendence description')
-    .setVersion('1.0')
-    .addTag('pong72')
-    .build();
+	const config = new DocumentBuilder()
+		.setTitle('ft_transcendence')
+		.setDescription('The ft_transcendence description')
+		.setVersion('1.0')
+		.addTag('pong72')
+		.build();
 
-  const options: SwaggerDocumentOptions = {
-    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
-  };
+	const options: SwaggerDocumentOptions = {
+		operationIdFactory: (controllerKey: string, methodKey: string) =>
+			methodKey,
+	};
 
-  const document = SwaggerModule.createDocument(app, config, options);
-  SwaggerModule.setup('api', app, document);
+	const document = SwaggerModule.createDocument(app, config, options);
+	SwaggerModule.setup('api', app, document);
 
-  app.useGlobalPipes(new ZodValidationPipe());
-  app.enableCors();
-  app.use(function (request: Request, response: Response, next: NextFunction) {
-    response.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-    next();
-  });
+	app.useGlobalPipes(new ZodValidationPipe());
+	app.enableCors();
+	app.use(function (
+		request: Request,
+		response: Response,
+		next: NextFunction,
+	) {
+		response.setHeader(
+			'Access-Control-Allow-Origin',
+			'http://localhost:5173',
+		);
+		next();
+	});
 
-  //const { httpAdapter } = app.get(HttpAdapterHost);
-  //app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
-  //app.get(PrismaService);
-  await app.listen(3000);
+	//const { httpAdapter } = app.get(HttpAdapterHost);
+	//app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+	//app.get(PrismaService);
+	await app.listen(3000);
 }
 bootstrap();

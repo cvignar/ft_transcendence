@@ -9,27 +9,29 @@ import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { AppGateway } from './app.gateway';
+import { GameModule } from './game/game.module';
 
 @Module({
-  imports: [
-    UserModule,
-    ConfigModule.forRoot({
-      // set path to .env file
-      envFilePath: '../.env',
-      // global import
-      isGlobal: true,
-      // expand variables
-      expandVariables: true,
-    }),
-    ChannelModule,
-    AuthModule,
-    //JwtModule.register({
-    //  global: true,
-    //  secret: jwtConstants.secret,
-    //  signOptions: { expiresIn: '300m' },
-    //}),
-  ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService, AppGateway],
+	imports: [
+		UserModule,
+		ConfigModule.forRoot({
+			// set path to .env file
+			envFilePath: '../.env',
+			// global import
+			isGlobal: true,
+			// expand variables
+			expandVariables: true,
+		}),
+		ChannelModule,
+		AuthModule,
+		GameModule,
+		//JwtModule.register({
+		//  global: true,
+		//  secret: jwtConstants.secret,
+		//  signOptions: { expiresIn: '300m' },
+		//}),
+	],
+	controllers: [AppController],
+	providers: [AppService, PrismaService, AppGateway],
 })
 export class AppModule {}
