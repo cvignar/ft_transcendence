@@ -146,7 +146,7 @@ export class UserService {
 
 	async getUsers(): Promise<
 		{ id: number; username: string; avatar: string }[]
-	> {
+		> {
 		try {
 			const users = await this.prismaService.user.findMany({
 				select: {
