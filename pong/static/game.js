@@ -5,7 +5,7 @@ import { ControlOptions } from './options.js';
 
 var socket = io();
 var nickname = '';
-var renderTimer = 0;
+// var renderTimer = 0;
 var browserState = new ServerMsg();
 const image = new Image('canvas');
 const controls = new Controls(socket, image);
@@ -108,11 +108,11 @@ socket.on('pong launched', function(cmd) {
 			}, ControlOptions.game_startTime );
 		}
 
-		renderTimer = setInterval(function() {
-			sounds.play(browserState);
-			controls.colorizeButtons(browserState);
-			image.render(browserState, score.get(browserState));
-		}, Image.rendering_period);
+		// renderTimer = setInterval(function() {
+		// 	sounds.play(browserState);
+		// 	controls.colorizeButtons(browserState);
+		// 	image.render(browserState, score.get(browserState));
+		// }, Image.rendering_period);
 	}
 });
 socket.on('state', function(state) {
@@ -120,16 +120,21 @@ socket.on('state', function(state) {
 	if (score.mode == GameMode.STOPPING) {
 		controls.stop();
 	}
+
+	sounds.play(browserState);// This blok from pong launched
+	controls.colorizeButtons(browserState);
+	image.render(browserState, score.get(browserState));
+
 });
 socket.on('pong deleted', function() {
 	sounds.playSound(Sound.SPEEDUP);
 	controls.gameIsOn = false;
 	controls.normalizeButtons();
 	score.clear();
-	clearInterval(renderTimer);
+	// clearInterval(renderTimer);
 	image.clear();
 });
 
-socket.on('disconnect', function() {
-	clearInterval(renderTimer);
-});
+// socket.on('disconnect', function() {
+// 	clearInterval(renderTimer);
+// });

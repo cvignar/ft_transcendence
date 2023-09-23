@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
         else {
             socket.emit('player not created');
         }
-        gebugPprinting(player, player ? 'new player' : 'new player not created');
+        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? 'new player' : 'new player not created');
     });
     socket.on('disconnect', (reason) => {
         const player = games.deletePlayer(socket.id);
@@ -180,24 +180,6 @@ setInterval(function () {
         socketIdForDelete = undefined;
     }
 }, Pong.calculation_period);
-// Send results loop
-setInterval(function () {
-    const result = games.getNextResult();
-    if (result && access_token) {
-        const sockOpt = {
-            transposts: ['websocket'],
-            transportOptions: {
-                polling: {
-                    extraHeaders: {
-                        Token: access_token.access_token
-                    }
-                }
-            }
-        };
-        const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-        socket.emit('save game', result.get());
-    }
-}, Pong.sendResult_period);
 // Token request
 function tokenRequest() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -217,10 +199,38 @@ function tokenRequest() {
             access_token = yield (yield fetch(request)).json();
         }
         catch (e) {
-            console.log('cannot get token');
+            if (access_token) {
+                console.log('cannot get new token');
+            }
         }
-        gebugPprinting('access_token: ', access_token.access_token);
+        if (access_token) {
+            gebugPprinting('access_token: ', access_token.access_token);
+        }
     });
 }
-tokenRequest();
-setInterval(tokenRequest, Pong.tokenRequest_period);
+if (access_token) {
+    setInterval(tokenRequest, Pong.tokenRequest_period);
+}
+// Send game results loop
+setInterval(function () {
+    const result = games.getNextResult();
+    if (access_token) {
+        if (result) {
+            const sockOpt = {
+                transposts: ['websocket'],
+                transportOptions: {
+                    polling: {
+                        extraHeaders: {
+                            Token: access_token.access_token
+                        }
+                    }
+                }
+            };
+            const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+            socket.emit('save game', result.get());
+        }
+    }
+    else {
+        tokenRequest();
+    }
+}, Pong.sendResult_period);
