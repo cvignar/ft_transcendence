@@ -14,12 +14,14 @@ const	socket = io(`${Options.pong_wsServer}`, { transports : ['websocket'] });
 export function Pong() {
 
 	const username = useSelector((s: RootState) => s.user.username);
+	const userId = useSelector((s: RootState) => s.user.userId);
 
 	useEffect(() => {
-		socket.emit('new player', {name: username, id: 1}); //FIXME!!!! change id!!!
+		console.log('userId: ', userId);
+		socket.emit('new player', {name: username, id: userId}); //FIXME!!!! change id!!!
 		console.log('socket emit username: ', username, 'socket.id: ', socket.id);
 		game(socket);
-	}, []);
+	}, [userId, username]);
 
 	return (
 		<div className={styles['pong-page']}>

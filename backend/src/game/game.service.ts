@@ -25,15 +25,15 @@ export class GameService {
 		return [newScore(a, 1), newScore(b, 0)];
 	}
 
-	async saveGame(gameData: SaveGame.request) {
+	async saveGame(gameData: SaveGame.Request) {
 		const game = await this.prismaService.game.create({
 			data: {
 				player1: gameData.player1,
 				player2: gameData.player2,
 				score1: gameData.score1,
 				score2: gameData.score2,
-				startTime: gameData.startTime,
-				endTime: gameData.endTime,
+				startTime: new Date(gameData.startTime),
+				endTime: new Date(gameData.endTime),
 				duration: gameData.duration,
 			},
 		});

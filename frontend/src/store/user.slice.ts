@@ -9,13 +9,15 @@ import { loadState } from './storage';
 export const JWT_PERSISTENT_STATE = 'userToken';
 export const EMAIL_PERSISTENT_STATE = 'userEmail';
 export const USERNAME_PERSISTENT_STATE = 'userName';
+export const USERID_PERSISTENT_STATE = 'userId';
 
 export interface UserState {
 	token: string | null;
-	email: string;
+	email?: string;
 	//id42: string | null;
 	authErrorMessage?: string;
-	username?: string | null;
+	username?: string;
+	userId: number | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -25,7 +27,8 @@ export interface UserState {
 const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
 	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
-	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? ''
+	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? '',
+	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null
 };
 
 export const auth = createAsyncThunk('auth/login',
@@ -68,7 +71,10 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		logout: (state) => {
+			state.email = '';
 			state.token = null;
+			state.username = '';
+			console.log('logout!');
 		},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
@@ -79,6 +85,7 @@ export const userSlice = createSlice({
 			if (!action.payload) {
 				return;
 			}
+			state.userId = action.payload.data.id;
 			state.token = action.payload.data.access_token;
 			state.email = action.payload.email;
 			state.username = action.payload.username;

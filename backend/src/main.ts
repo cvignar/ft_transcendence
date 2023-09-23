@@ -37,7 +37,7 @@ async function bootstrap() {
 	) {
 		response.setHeader(
 			'Access-Control-Allow-Origin',
-			'http://localhost:5173',
+			'*',
 		);
 		next();
 	});

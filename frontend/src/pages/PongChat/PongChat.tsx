@@ -1,8 +1,13 @@
+import { useDispatch } from 'react-redux';
+import Button from '../../components/Button/Button';
 import Chat from '../Chat/Chat';
 import { Pong } from '../Pong/pong';
 import styles from './PongChat.module.css';
+import { AppDispatch } from '../../store/store';
+import { userActions } from '../../store/user.slice';
 
 export function PongChat() {
+	const dispatch = useDispatch<AppDispatch>();
 	//let userName: string = '';
 
 	//setTimeout(() => {userName = 'anka';} );
@@ -11,18 +16,22 @@ export function PongChat() {
 
 	//};
 
-	return ( <div className={styles['body']}>
+	const logout = () => {
+		console.log('logout ?');
+		dispatch(userActions.logout());
+	};
+
+	return (
 		<div>
-			<Pong/>
+			<div className={styles['body']}>
+				<div>
+					<Pong/>
+				</div>
+				<div>
+					<Chat/>
+				</div>
+			</div>
+			<Button onClick={logout}>Logout</Button>
 		</div>
-		<div>
-			<Chat/>
-		</div>
-		{/*<div className='pong-div'>
-			{userName ? <iframe className='pong' src={`http://localhost:5000/?nickname=${userName}`} title="pong72"/> : <></>}
-		</div>
-		<div className='chat-div'>
-		</div>*/}
-	</div>
 	);
 }
