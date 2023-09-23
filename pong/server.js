@@ -16,12 +16,13 @@ import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet } from './GamesSet.js';
 import { config } from 'dotenv';
+import { io as ioc } from 'socket.io-client';
 config();
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
-let access_token = '';
+let access_token = undefined;
 export function gebugPprinting(param1, param2) {
     if (Options.debug) {
         console.log(param1, param2);
@@ -182,8 +183,30 @@ setInterval(function () {
 }, Pong.calculation_period);
 // Send results loop
 setInterval(function () {
-    const result = games.getNextResult();
-    if (result) {
+    //const result = games.getNextResult();
+    const result = {
+        player1: 1,
+        player2: 0,
+        score1: 99,
+        score2: 77,
+        startTime: 0,
+        endTime: 50,
+        duration: 50
+    };
+    if (result && access_token) {
+        const sockOpt = {
+            transposts: ['websocket'],
+            transportOptions: {
+                polling: {
+                    extraHeaders: {
+                        Token: access_token.access_token
+                    }
+                }
+            }
+        };
+        const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+        socket.emit('save game', result);
+        console.log("Socket ?");
         //send result.get();
     }
 }, Pong.sendResult_period);
@@ -195,9 +218,11 @@ function tokenRequest() {
             username: process.env.PONG_NAME,
             password: process.env.PONG_PASS,
         };
-        console.log(JSON.stringify(pongAuth)); //FIXME!!!
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
         const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
             method: "POST",
+            headers: headers,
             body: JSON.stringify(pongAuth),
         });
         try {
@@ -206,7 +231,7 @@ function tokenRequest() {
         catch (e) {
             console.log('cannot get token');
         }
-        console.log('access_token: ', access_token); //FIXME!!!
+        gebugPprinting('access_token: ', access_token.access_token);
     });
 }
 tokenRequest();
