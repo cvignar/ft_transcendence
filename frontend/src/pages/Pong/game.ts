@@ -16,7 +16,7 @@ export function game(socket: any) {
 	const score = new Score();
 
 	// Player
-	socket.emit('new player');
+	// socket.emit('new player');
 	socket.on('player not created', function() {
 		while(!nickname) {
 			nickname = window.prompt('Enter Your Nickname:');

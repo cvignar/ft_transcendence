@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './auth/constants';
 import { AppGateway } from './app.gateway';
 import { GameModule } from './game/game.module';
+import { GameService } from './game/game.service';
 
 @Module({
 	imports: [
@@ -32,6 +33,6 @@ import { GameModule } from './game/game.module';
 		//}),
 	],
 	controllers: [AppController],
-	providers: [AppService, PrismaService, AppGateway],
+	providers: [AppService, PrismaService, AppGateway, GameService],
 })
 export class AppModule {}

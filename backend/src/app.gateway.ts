@@ -20,6 +20,8 @@ import { jwtConstants } from './auth/constants';
 import { ChannelGateway } from './channel/channel.gateway';
 import { ChannelService } from './channel/channel.service';
 import { UserService } from './user/user.service';
+import { SaveGame } from 'contracts/game.schema';
+import { GameService } from './game/game.service';
 
 @WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -28,6 +30,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly userService: UserService,
 		private readonly channelGateway: ChannelGateway,
 		private readonly channelService: ChannelService,
+    private readonly gameService: GameService
 	) {}
 
 	userStatusMap = new Map<number, Status>();
@@ -37,7 +40,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	server: Server;
 
 	async handleConnection(client: Socket) {
-		console.log('client connected');
 		try {
 			client.setMaxListeners(20); //FIXME!!!!
 			const UserId: number = this.jwtService.verify(
@@ -112,7 +114,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('save game')
-  async saveGame(@MessageBody() gameData: any) {
-    console.log(gameData);
+  async saveGame(@MessageBody() gameData: SaveGame.Request) {
+    await this.gameService.saveGame(gameData);
   }
 }

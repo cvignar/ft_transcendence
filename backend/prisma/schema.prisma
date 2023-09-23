@@ -111,6 +111,7 @@ model Game {
 	startTime	DateTime
 	endTime		DateTime
 	duration	Int? //in milliseconds
+	@@unique([id])
 }
 
 model Mute {

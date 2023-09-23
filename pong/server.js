@@ -47,7 +47,6 @@ server.listen(Options.pong_port, () => {
 });
 io.on('connection', (socket) => {
     socket.on('new player', (user) => {
-        console.log("socket username: ", user === null || user === void 0 ? void 0 : user.name); //FIXME!!!
         const player = games.newPlayer(socket.id, user);
         if (player) {
             socket.emit('player created', player.name);
@@ -55,7 +54,7 @@ io.on('connection', (socket) => {
         else {
             socket.emit('player not created');
         }
-        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? 'new player' : 'new player not created');
+        gebugPprinting(player, player ? 'new player' : 'new player not created');
     });
     socket.on('disconnect', (reason) => {
         const player = games.deletePlayer(socket.id);
@@ -183,16 +182,7 @@ setInterval(function () {
 }, Pong.calculation_period);
 // Send results loop
 setInterval(function () {
-    //const result = games.getNextResult();
-    const result = {
-        player1: 1,
-        player2: 0,
-        score1: 99,
-        score2: 77,
-        startTime: 0,
-        endTime: 50,
-        duration: 50
-    };
+    const result = games.getNextResult();
     if (result && access_token) {
         const sockOpt = {
             transposts: ['websocket'],
@@ -205,9 +195,7 @@ setInterval(function () {
             }
         };
         const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-        socket.emit('save game', result);
-        console.log("Socket ?");
-        //send result.get();
+        socket.emit('save game', result.get());
     }
 }, Pong.sendResult_period);
 // Token request

@@ -42,14 +42,13 @@ server.listen(Options.pong_port, () => {
 io.on('connection', (socket) => {
 
 	socket.on('new player', (user: {name: string, id: number} | undefined) => {
-		console.log("socket username: ", user?.name); //FIXME!!!
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
 			socket.emit('player created', player.name);
 		} else {
 			socket.emit('player not created');
 		}
-		gebugPprinting(player?.name, player ? 'new player' : 'new player not created');
+		gebugPprinting(player, player ? 'new player' : 'new player not created');
 	});
 
 	socket.on('disconnect', (reason) => {
