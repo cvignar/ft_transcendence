@@ -18,6 +18,7 @@ export class Controls extends ControlOptions {
 	bttnUp: any;
 	bttnDown: any;
 	bttnSnd: any;
+	pongArea: any;
 	constructor(socket: any, image: Image) {
 		super();
 		this.socket = socket;
@@ -39,19 +40,23 @@ export class Controls extends ControlOptions {
 
 		// Keys controls
 		document.addEventListener('keydown', (event) => {
-			this.keydown(event.keyCode);
-		});
-		document.addEventListener('keyup', (event) => {
-			if (event.keyCode == Controls.key_s &&
-				this.gameMode == GameMode.PARTNER_GAME &&
-				this.gameIsOn)
-			{
-				return;
-			} else {
-				this.keyup(event.keyCode);
+			if (!this.blockPongHotKeys()) {
+				this.keydown(event.keyCode);
 			}
 		});
-
+		document.addEventListener('keyup', (event) => {
+			if (!this.blockPongHotKeys()) {
+				if (event.keyCode == Controls.key_s &&
+					this.gameMode == GameMode.PARTNER_GAME &&
+					this.gameIsOn)
+				{
+					return;
+				} else {
+					this.keyup(event.keyCode);
+				}
+			}
+		});
+		
 		// Button controls
 		this.bttnNew = document.getElementById('NEW');
 		if (this.bttnNew) {
@@ -101,6 +106,16 @@ export class Controls extends ControlOptions {
 			this.keyup(Controls.key_arrowDown);
 		});
 	}
+
+	blockPongHotKeys(): boolean {
+		const active = document.activeElement;
+		if (active instanceof HTMLElement && (active.isContentEditable
+			|| active.tagName === 'INPUT'
+			|| active.tagName === 'TEXTAREA'))
+			return true;
+		return false;
+	}
+
 	keydown(key: number) {
 		if (!this.interval) {
 			let requiredKey: boolean = true;

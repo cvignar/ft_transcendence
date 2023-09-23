@@ -39,7 +39,9 @@ export default function Chat() {
 	const channelState = useSelector((s: RootState) => s.channel);
 	//const [channels, setChannels] = useState<ChannelPreview[]>();
 	//const channels = useSelector((s: RootState) => s.channel.items);
+
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
+	
 	const [isProtected, setIsProtected] = useState<boolean>(false);
 
 	let subtitle;
