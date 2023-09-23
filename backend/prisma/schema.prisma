@@ -101,7 +101,7 @@ model Message {
 }
 
 model Game {
-	id	Int			@id @unique
+	id	Int			@id @default(autoincrement())
 
 	player1	Int
 	player2 Int

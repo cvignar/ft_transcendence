@@ -23,6 +23,7 @@ const channelsMiddleware: Middleware = store => {
 			});
  
 			socket.on(ChannelsEvent.getMessages, (messages: Message[]) => {
+				console.log('get messages ');
 				store.dispatch(channelActions.setMessages(messages));
 			});
 			socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
