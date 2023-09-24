@@ -57,7 +57,7 @@ function ChatWindow({ data }: ChatWindowProps) {
 					))}
 				</div>
 				{data.id === -1
-					? <></>
+					? <div></div>
 					: <textarea
 						name='messageInput'
 						placeholder='Enter your message...'

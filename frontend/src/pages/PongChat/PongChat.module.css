@@ -1,5 +1,27 @@
 .body {
 	display: flex;
 	flex-direction: row;
-	
+	justify-content: center;
+	max-height: 679px;
+}
+
+.pong {
+	display: flex;
+}
+
+.chat {
+	border: 1px solid red;
+	min-width: 400px;
+	max-width: 800px;
+	width: 800px;
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	/*height: 100%*/
+}
+
+.pong-ratings {
+	display: flex;
+	flex-direction: column;
+	max-height: -webkit-fill-available;
 }

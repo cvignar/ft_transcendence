@@ -6,13 +6,14 @@ import { ControlOptions } from '../../../../pong/static/options';
 
 export function game(socket: any) {
 
+	const pong_path = 'http://' + import.meta.env.VITE_PONG_HOST + ':' + import.meta.env.VITE_PONG_PORT + '/';
 	let nickname: string | null = '';
 	let renderTimer = 0;
 	const browserState = new ServerMsg();
 	const image = new Image('canvas');
 	const controls = new Controls(socket, image);
 	const selector = new Selector('PARTNERS');
-	const sounds = new Sounds();
+	const sounds = new Sounds(pong_path);
 	const score = new Score();
 
 	// Player

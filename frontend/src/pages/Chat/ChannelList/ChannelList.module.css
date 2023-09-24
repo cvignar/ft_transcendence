@@ -1,9 +1,12 @@
 .list {
 	display: flex;
 	flex-direction: column;
+	width: 50%;
+	height: auto;
+	overflow: hidden;
 }
 .preview-button {
-	height: 70px;
+	height: 55px;
 	display: flex;
 	align-items: top;
 }
