@@ -4,9 +4,9 @@ import express, { Request, Response, request } from 'express';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-export function routes(app: any) {
+export function routes(app: any, port: number) {
 
-	app.set('port', Options.pong_port);
+	app.set('port', port);
 	app.use('/', express.static(__dirname + '/html'));
 	app.use('/static', express.static(__dirname + '/static'));
 	app.use('/sounds', express.static(__dirname + '/sounds'));

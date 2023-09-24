@@ -8,7 +8,7 @@
 	min-width: fit-content;
 	/*min-height: fit-content;*/
 	align-items: center;
-	padding: 10px;
+	padding: 5px;
 	word-break: break-all;
 	/*overflow-wrap: break-all;*/
 	max-width: 250px;
@@ -17,12 +17,13 @@
 
 .self {
 	border-radius: var(--m-r) var(--m-r) 0px var(--m-r);
-	background: var(--secondary-color);
+	background: #FFF;
 	margin-left: auto;
 }
 
 .other {
 	border-radius: 0px var(--m-r) var(--m-r) var(--m-r);
-	background: var(--primary-color);
+	background: var(--white-color);
 	margin-right: auto;
+	margin-left: 3px;
 }

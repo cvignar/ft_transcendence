@@ -1,10 +1,14 @@
 .window{
-	width: 400px;
+	/*width: 400px;*/
 	/*border: 1px solid black;*/
 	/*min-height: 80vh;*/
-	min-width: max-content;
+	/*min-width: -webkit-fill-available;*/
 	background: var(--white-hover-color);
 	border-top-left-radius: 7px;
+	width: 50%;
+	display: flex;
+	flex-direction: column;
+	max-height: -webkit-fill-available;
 }
 
 .head {
@@ -21,15 +25,19 @@ hr {
 }
 
 .chat-area {
-	margin: 0px 45px 14px 45px;
+	height: -webkit-fill-available;
+	margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+	height: 100%;
 }
 
 .messages {
 	display: flex;
 	flex-direction: column;
-	height: 835px;
 	overflow: scroll;
-	
+	margin-bottom: auto;
 }
 
 ::-webkit-scrollbar {
@@ -54,7 +62,7 @@ hr {
 	border: 1px solid #FFF;
 	background-color: #FFF;
 	box-shadow: 15px 20px 45px 0px rgba(233, 233, 233, 0.25);
-	padding: 20px;
+	padding-left: 20px;
 	height: fit-content;
 	word-break: break-all;
 }
