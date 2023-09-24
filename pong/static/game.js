@@ -10,7 +10,7 @@ var browserState = new ServerMsg();
 const image = new Image('canvas');
 const controls = new Controls(socket, image);
 const selector = new Selector('PARTNERS');
-const sounds = new Sounds();
+const sounds = new Sounds('/');
 const score = new Score();
 
 // Player

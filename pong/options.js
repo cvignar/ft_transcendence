@@ -1,9 +1,11 @@
 var _a, _b, _c, _d;
-//import { config } from 'dotenv'
-//config();
 export class Options {
 }
 _a = Options;
+Options.pong_port = 12080;
+Options.pong_host = '10.12.4.10';
+Options.pong_wsServer = 'ws://' + _a.pong_host + ':' + _a.pong_port.toString();
+Options.pong_httpServer = 'http://' + _a.pong_host + ':' + _a.pong_port.toString();
 Options.width = 800;
 Options.maxWins = 6;
 Options.serveNum = 2;

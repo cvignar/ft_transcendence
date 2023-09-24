@@ -1,14 +1,15 @@
+import { config } from 'dotenv'
+config();
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
-import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
-import { config } from 'dotenv'
 import {io as ioc} from 'socket.io-client'
-config();
+import { ControlOptions, Options } from './static/options.js';
+const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
@@ -34,10 +35,15 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 	}
 }
 
-routes(app);
-server.listen(Options.pong_port, () => {
-	console.log('Server starts on port', Options.pong_port);
-});
+routes(app, port);
+if (port) {
+	server.listen(port, () => {
+		console.log('Server starts on port', port);
+	});
+} else {
+	console.log('port is not assigned');
+	process.exit(1);
+}
 
 io.on('connection', (socket) => {
 
@@ -201,12 +207,13 @@ async function tokenRequest() {
 		gebugPprinting('access_token: ', access_token.access_token);
 	}
 }
+
 if (access_token) {
 	setInterval(tokenRequest, Pong.tokenRequest_period);
 }
 
 // Send game results loop
-setInterval(function() {
+setInterval(async function() {
 	const result = games.getNextResult();
 	if (access_token) {
 		if (result) {
@@ -224,6 +231,6 @@ setInterval(function() {
 			socket.emit('save game', result.get());
 		}
 	} else {
-		tokenRequest();
+		await tokenRequest();
 	}
 }, Pong.sendResult_period);

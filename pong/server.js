@@ -7,17 +7,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { config } from 'dotenv';
+config();
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
 import { GameCmd, GameCommand, GameMode } from './static/common.js';
-import { ControlOptions, Options } from './static/options.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet } from './GamesSet.js';
-import { config } from 'dotenv';
 import { io as ioc } from 'socket.io-client';
-config();
+import { ControlOptions, Options } from './static/options.js';
+const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
 const server = new http.Server(app);
 const io = new socketIO.Server(server);
@@ -41,10 +42,16 @@ export function deletePongAndNotifyPlayers(socketId) {
         }
     }
 }
-routes(app);
-server.listen(Options.pong_port, () => {
-    console.log('Server starts on port', Options.pong_port);
-});
+routes(app, port);
+if (port) {
+    server.listen(port, () => {
+        console.log('Server starts on port', port);
+    });
+}
+else {
+    console.log('port is not assigned');
+    process.exit(1);
+}
 io.on('connection', (socket) => {
     socket.on('new player', (user) => {
         const player = games.newPlayer(socket.id, user);
@@ -213,24 +220,26 @@ if (access_token) {
 }
 // Send game results loop
 setInterval(function () {
-    const result = games.getNextResult();
-    if (access_token) {
-        if (result) {
-            const sockOpt = {
-                transposts: ['websocket'],
-                transportOptions: {
-                    polling: {
-                        extraHeaders: {
-                            Token: access_token.access_token
+    return __awaiter(this, void 0, void 0, function* () {
+        const result = games.getNextResult();
+        if (access_token) {
+            if (result) {
+                const sockOpt = {
+                    transposts: ['websocket'],
+                    transportOptions: {
+                        polling: {
+                            extraHeaders: {
+                                Token: access_token.access_token
+                            }
                         }
                     }
-                }
-            };
-            const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-            socket.emit('save game', result.get());
+                };
+                const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+                socket.emit('save game', result.get());
+            }
         }
-    }
-    else {
-        tokenRequest();
-    }
+        else {
+            yield tokenRequest();
+        }
+    });
 }, Pong.sendResult_period);

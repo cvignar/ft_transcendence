@@ -26,11 +26,9 @@ const MessageHolder
 	) {
 
 		return (
-			<>
-				<div {...props} ref={ref} className={classNames(styles['message'], styles[appearence])}>
-					{message.msg}
-				</div>
-			</>
+			<div {...props} ref={ref} className={classNames(styles['message'], styles[appearence])}>
+				{message.msg}
+			</div>
 		);
 	});
 

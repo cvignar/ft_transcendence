@@ -9,7 +9,7 @@ import { Options } from '../../../../pong/static/options';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
-export const	socket = io(`${Options.pong_wsServer}`, { transports : ['websocket'] });
+export const	socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
 
 export function Pong() {
 
@@ -25,7 +25,7 @@ export function Pong() {
 
 	return (
 		<div className={styles['pong-page']}>
-			<div id="PARTNERS">Choose Your Partner: </div>
+			<div id="PARTNERS" className={styles['choose']}>Choose Your Partner: </div>
 			<hr/>
 			<button id="LEFT" className={classNames(styles['button'], styles['left_player'])}>|</button>
 			<button id="RIGHT" className={classNames(styles['button'], styles['right_player'])}>|</button>

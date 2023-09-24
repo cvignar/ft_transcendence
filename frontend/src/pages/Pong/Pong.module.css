@@ -1,5 +1,5 @@
 .pong-page {
-	margin-left: 10px;
+	min-width: fit-content;
 }
 
 .canvas {
@@ -24,4 +24,9 @@
 
 button {
 	margin: 2px;
+}
+
+.choose {
+	font-size: 14px;
+	padding: 6px
 }

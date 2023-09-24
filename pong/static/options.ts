@@ -1,8 +1,6 @@
+//import { config } from 'dotenv'
+//config();
 export class Options {
-	static pong_port: number = 12080;
-	static pong_host: string = '10.12.4.10'
-	static pong_wsServer: string = 'ws://' + this.pong_host + ':' + this.pong_port.toString();
-	static pong_httpServer: string = 'http://' + this.pong_host + ':' + this.pong_port.toString();
 	static width: number = 800;
 	static maxWins: number = 6;
 	static serveNum: number = 2;

@@ -120,7 +120,6 @@ export default function Chat() {
 								<Button>Create</Button>
 							</form>
 						</Modal>
-
 					</div>
 				</div>
 				<ChannelList channels={channelState.channels} setChannel={setSelectedChannel}/>

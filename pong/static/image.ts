@@ -101,7 +101,7 @@ export class Sounds {
 	speedup: any;
 	applause:  any;
 	bttnSnd = document.getElementById('SOUND');
-	constructor() {
+	constructor(path: string) {
 		this.on = true;
 		this.deadloc_on = false;
 
@@ -115,7 +115,7 @@ export class Sounds {
 
 		this.game_start = new Audio();
 		this.game_start.preload = 'auto';
-		this.game_start.src = `${Options.pong_httpServer}/sounds/game_start.mp3`;
+		this.game_start.src = `${path}sounds/game_start.mp3`;
 
 		// First start sounds fo Safari policy
 		document.addEventListener('focusin', () => {
@@ -135,45 +135,45 @@ export class Sounds {
 
 		this.ball = new Audio();
 		this.ball.preload = 'auto';
-		this.ball.src = `${Options.pong_httpServer}/sounds/ball.mp3`;
+		this.ball.src = `${path}sounds/ball.mp3`;
 
 		this.ball_loss_left = new Audio();
 		this.ball_loss_left.preload = 'auto';
-		this.ball_loss_left.src = `${Options.pong_httpServer}/sounds/ball_loss_left.mp3`;
+		this.ball_loss_left.src = `${path}sounds/ball_loss_left.mp3`;
 		this.ball_loss_right = new Audio();
 		this.ball_loss_right.preload = 'auto';
-		this.ball_loss_right.src = `${Options.pong_httpServer}/sounds/ball_loss_right.mp3`;
+		this.ball_loss_right.src = `${path}sounds/ball_loss_right.mp3`;
 
 		this.ball_left = new Audio();
 		this.ball_left.preload = 'auto';
-		this.ball_left.src = `${Options.pong_httpServer}/sounds/ball_left.mp3`;
+		this.ball_left.src = `${path}sounds/ball_left.mp3`;
 		this.ball_right = new Audio();
 		this.ball_right.preload = 'auto';
-		this.ball_right.src = `${Options.pong_httpServer}/sounds/ball_right.mp3`;
+		this.ball_right.src = `${path}sounds/ball_right.mp3`;
 
 		this.siren_left = new Audio();
 		this.siren_left.preload = 'auto';
-		this.siren_left.src = `${Options.pong_httpServer}/sounds/siren_left.mp3`;
+		this.siren_left.src = `${path}sounds/siren_left.mp3`;
 
 		this.siren_right = new Audio();
 		this.siren_right.preload = 'auto';
-		this.siren_right.src = `${Options.pong_httpServer}/sounds/siren_right.mp3`;
+		this.siren_right.src = `${path}sounds/siren_right.mp3`;
 
 		this.deadlock = new Audio();
 		this.deadlock.preload = 'auto';
-		this.deadlock.src = `${Options.pong_httpServer}/sounds/deadlock.mp3`;
+		this.deadlock.src = `${path}sounds/deadlock.mp3`;
 
 		this.serve = new Audio();
 		this.serve.preload = 'auto';
-		this.serve.src = `${Options.pong_httpServer}/sounds/serve.mp3`;
+		this.serve.src = `${path}sounds/serve.mp3`;
 
 		this.speedup = new Audio();
 		this.speedup.preload = 'auto';
-		this.speedup.src = `${Options.pong_httpServer}/sounds/speedup.mp3`;
+		this.speedup.src = `${path}sounds/speedup.mp3`;
 
 		this.applause = new Audio();
 		this.applause.preload = 'auto';
-		this.applause.src = `${Options.pong_httpServer}/sounds/applause.mp3`;
+		this.applause.src = `${path}sounds/applause.mp3`;
 	}
 	playSound(sound: Sound): boolean {
 		if (this.on) {
