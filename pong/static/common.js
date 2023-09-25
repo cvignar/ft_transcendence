@@ -32,6 +32,11 @@ export const GameCommand = [
     'TRNNG',
     'AUTO',
 ];
+export var GameScheme;
+(function (GameScheme) {
+    GameScheme[GameScheme["GENERAL"] = 0] = "GENERAL";
+    GameScheme[GameScheme["REVERSE"] = 1] = "REVERSE";
+})(GameScheme || (GameScheme = {}));
 export function getGameCmd(command) {
     let cmd = 1;
     while (GameCommand[cmd]) {
@@ -62,17 +67,18 @@ export var Sound;
 (function (Sound) {
     Sound[Sound["HUSH"] = 0] = "HUSH";
     Sound[Sound["GAME_START"] = 1] = "GAME_START";
-    Sound[Sound["BALL"] = 2] = "BALL";
-    Sound[Sound["BALL_LOSS_LEFT"] = 3] = "BALL_LOSS_LEFT";
-    Sound[Sound["BALL_LOSS_RIGHT"] = 4] = "BALL_LOSS_RIGHT";
-    Sound[Sound["BALL_LEFT"] = 5] = "BALL_LEFT";
-    Sound[Sound["BALL_RIGHT"] = 6] = "BALL_RIGHT";
-    Sound[Sound["SIREN_LEFT"] = 7] = "SIREN_LEFT";
-    Sound[Sound["SIREN_RIGHT"] = 8] = "SIREN_RIGHT";
-    Sound[Sound["DEADLOCK"] = 9] = "DEADLOCK";
-    Sound[Sound["SERVE"] = 10] = "SERVE";
-    Sound[Sound["SPEEDUP"] = 11] = "SPEEDUP";
-    Sound[Sound["APPLAUSE"] = 12] = "APPLAUSE";
+    Sound[Sound["BALL_TOP"] = 2] = "BALL_TOP";
+    Sound[Sound["BALL_BOTTOM"] = 3] = "BALL_BOTTOM";
+    Sound[Sound["BALL_LOSS_LEFT"] = 4] = "BALL_LOSS_LEFT";
+    Sound[Sound["BALL_LOSS_RIGHT"] = 5] = "BALL_LOSS_RIGHT";
+    Sound[Sound["BALL_LEFT"] = 6] = "BALL_LEFT";
+    Sound[Sound["BALL_RIGHT"] = 7] = "BALL_RIGHT";
+    Sound[Sound["SIREN_LEFT"] = 8] = "SIREN_LEFT";
+    Sound[Sound["SIREN_RIGHT"] = 9] = "SIREN_RIGHT";
+    Sound[Sound["DEADLOCK"] = 10] = "DEADLOCK";
+    Sound[Sound["SERVE"] = 11] = "SERVE";
+    Sound[Sound["SPEEDUP"] = 12] = "SPEEDUP";
+    Sound[Sound["APPLAUSE"] = 13] = "APPLAUSE";
 })(Sound || (Sound = {}));
 export const PONG_INFINITY = 9999;
 export class BrowserMsg {

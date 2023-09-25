@@ -1,4 +1,4 @@
-import { GameMode, Side, Sound } from './common.js';
+import { GameMode, GameScheme, Side, Sound } from './common.js';
 import { Options, ImageOptions, PongOptions } from './options.js';
 export class Score {
     constructor() {
@@ -119,9 +119,12 @@ export class Sounds {
             }
         }, { once: true });
         // Sounds
-        this.ball = new Audio();
-        this.ball.preload = 'auto';
-        this.ball.src = `${path}sounds/ball.mp3`;
+        this.ball_top = new Audio();
+        this.ball_top.preload = 'auto';
+        this.ball_top.src = `${path}sounds/ball.mp3`;
+        this.ball_bottom = new Audio();
+        this.ball_bottom.preload = 'auto';
+        this.ball_bottom.src = `${path}sounds/ball.mp3`;
         this.ball_loss_left = new Audio();
         this.ball_loss_left.preload = 'auto';
         this.ball_loss_left.src = `${path}sounds/ball_loss_left.mp3`;
@@ -159,8 +162,11 @@ export class Sounds {
                 case Sound.GAME_START:
                     this.game_start.play();
                     break;
-                case Sound.BALL:
-                    this.ball.play();
+                case Sound.BALL_TOP:
+                    this.ball_top.play();
+                    break;
+                case Sound.BALL_BOTTOM:
+                    this.ball_bottom.play();
                     break;
                 case Sound.BALL_LOSS_LEFT:
                     this.ball_loss_left.play();
@@ -338,5 +344,21 @@ export class Image extends ImageOptions {
         this.context.beginPath();
         this.context.arc(x, Image.height - 1 - y, Image.ball_radius, 0, 2 * Math.PI);
         this.context.fill();
+    }
+    changeScheme(scheme) {
+        if (scheme = GameScheme.GENERAL) {
+            Image.color_back = 'black';
+            Image.color_dividingNet = 'Silver';
+            Image.color_ball = 'white';
+            Image.color_paddle = 'white';
+            Image.color_score = 'Silver';
+        }
+        else if (scheme = GameScheme.REVERSE) {
+            Image.color_back = 'white';
+            Image.color_dividingNet = 'Silver';
+            Image.color_ball = 'black';
+            Image.color_paddle = 'black';
+            Image.color_score = 'Silver';
+        }
     }
 }
