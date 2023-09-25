@@ -85,3 +85,31 @@ const MemberPreviewSchema = zod.object({
 export namespace MemberPreview {
   export class Response extends createZodDto(MemberPreviewSchema) {}
 }
+
+const ProfileSchema = zod.object({
+  id: zod.number().int(),
+	updatedAt: zod.date(),
+	email: zod.string().email(),
+	username: zod.string(),
+	avatar: zod.string(),
+	twoFA: zod.boolean(),
+	prefferedTableSide: zod.nativeEnum(Side),
+	pongColorScheme: zod.nativeEnum(GameScheme),
+	gamesWon: zod.number().int(),
+	gamesPlayed: zod.number().int(),
+	gameHistory: zod.array(zod.number()),
+	winRate: zod.number(),
+	playTime: zod.number(),
+	score: zod.number(),
+	rank: zod.number(),
+	friends: zod.array(zod.number()),
+	adding: zod.array(zod.number()),
+	added: zod.array(zod.number()),
+	blocks: zod.array(zod.number()),
+	blocking: zod.array(zod.number()),
+	blocked: zod.array(zod.number()),
+});
+
+export namespace Profile {
+  export class Response extends createZodDto(ProfileSchema) {}
+}
