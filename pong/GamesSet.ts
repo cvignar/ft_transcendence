@@ -9,11 +9,11 @@ export class Player {
 	name: string;
 	id: number;
 	side: Side;
-	constructor(socketId: string, user: {name: string, id: number}) {
+	constructor(socketId: string, user: {name: string, id: number, side: Side}) {
 		this.socketId = socketId;
 		this.name = user.name;
 		this.id = user.id;
-		this.side = Side.RIGHT;
+		this.side = user.side;
 	}
 }
 
@@ -105,8 +105,8 @@ export class GamesSet {
 		}
 		return undefined;
 	}
-	newPlayer(socketId: string, user: {name: string, id: number} | undefined): Player | undefined {
-		if (user && user.name) {
+	newPlayer(socketId: string, user: {name: string, id: number, side: Side} | undefined): Player | undefined {
+		if (user && user.name && user.side) {
 			const player = new Player(socketId, user);
 			this.players.set(socketId, player);
 			return player;
