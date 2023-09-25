@@ -288,11 +288,11 @@ export class Pong extends PongOptions {
 		const side: Side = this.fieldOfBallCenter.pointOutside(this.ball.center);
 		if (side) {
 			if (side == Side.BOTTOM) {
-				this.setSound(Sound.BALL);
+				this.setSound(Sound.BALL_BOTTOM);
 				if (!this.deadlocksFixing()) this.ballSpeed.y *= -1;
 				this.ball.center.y = this.fieldOfBallCenter.v0.y;
 			} else if (side == Side.TOP) {
-				this.setSound(Sound.BALL);
+				this.setSound(Sound.BALL_TOP);
 				if (!this.deadlocksFixing()) this.ballSpeed.y *= -1;
 				this.ball.center.y = this.fieldOfBallCenter.v1.y;
 			} else if (side == Side.LEFT) {

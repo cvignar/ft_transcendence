@@ -58,6 +58,8 @@ export class Pong extends PongOptions {
         this.serveCounter = 0;
         this.newGame = true;
         this.atGameStart = false;
+        this.partnerGameOn = false;
+        this.partnerGameOff = false;
         this.pathStartTime = 0;
         this.pathStart = new geometry.Vec(0, 0);
         this.ballSpeed = new geometry.Vec(0, 0);
@@ -125,6 +127,8 @@ export class Pong extends PongOptions {
                     this.gameEndTime = Date.now();
                     this.gameResult.set(this);
                     this.ball.visibility = false;
+                    this.partnerGameOn = false;
+                    this.partnerGameOff = true;
                     this.newGame = true;
                     this.status = GameStatus.INACTIVE;
                 }
@@ -211,6 +215,10 @@ export class Pong extends PongOptions {
             this.setSound(Sound.GAME_START);
             this.gameStartTime = Date.now();
             this.pathStartTime = Date.now();
+            if (this.mode == GameMode.PARTNER_GAME) {
+                this.partnerGameOn = true;
+                this.partnerGameOff = false;
+            }
             this.atGameStart = false;
         }
         this.ball.visibility = true;
@@ -219,13 +227,13 @@ export class Pong extends PongOptions {
         const side = this.fieldOfBallCenter.pointOutside(this.ball.center);
         if (side) {
             if (side == Side.BOTTOM) {
-                this.setSound(Sound.BALL);
+                this.setSound(Sound.BALL_BOTTOM);
                 if (!this.deadlocksFixing())
                     this.ballSpeed.y *= -1;
                 this.ball.center.y = this.fieldOfBallCenter.v0.y;
             }
             else if (side == Side.TOP) {
-                this.setSound(Sound.BALL);
+                this.setSound(Sound.BALL_TOP);
                 if (!this.deadlocksFixing())
                     this.ballSpeed.y *= -1;
                 this.ball.center.y = this.fieldOfBallCenter.v1.y;

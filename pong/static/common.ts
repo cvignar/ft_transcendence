@@ -69,7 +69,8 @@ export enum Side {
 export enum Sound {
 	HUSH,
 	GAME_START,
-	BALL,
+	BALL_TOP,
+	BALL_BOTTOM,
 	BALL_LOSS_LEFT,
 	BALL_LOSS_RIGHT,
 	BALL_LEFT,
