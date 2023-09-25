@@ -14,7 +14,7 @@ import {
 	//CreateDirectChannel,
 	UpdateChannel,
 } from 'contracts/channel.schema';
-import { Status } from 'contracts/user.schema';
+import { Status } from 'contracts/enums';
 import { Server, Socket } from 'socket.io';
 import { jwtConstants } from './auth/constants';
 import { ChannelGateway } from './channel/channel.gateway';
@@ -30,14 +30,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		private readonly userService: UserService,
 		private readonly channelGateway: ChannelGateway,
 		private readonly channelService: ChannelService,
-    private readonly gameService: GameService
+		private readonly gameService: GameService,
 	) {}
 
 	userStatusMap = new Map<number, Status>();
 	clientSocket = new Map<number, Socket>();
 
 	@WebSocketServer()
-	server: Server;
+		server: Server;
 
 	async handleConnection(client: Socket) {
 		try {
@@ -101,20 +101,20 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
-  @SubscribeMessage('get new invite')
-  async getNewInvite(@MessageBody() channelData: UpdateChannel.Request) {
-    if (this.clientSocket.has(channelData.memberId)) {
-      const client = this.clientSocket.get(channelData.memberId);
-      const channelName = await this.channelService.getChannelNameById(
-        channelData.id,
-      );
-      client.join(channelName);
-      client.emit('update channel request');
-    }
-  }
+	@SubscribeMessage('get new invite')
+	async getNewInvite(@MessageBody() channelData: UpdateChannel.Request) {
+		if (this.clientSocket.has(channelData.memberId)) {
+			const client = this.clientSocket.get(channelData.memberId);
+			const channelName = await this.channelService.getChannelNameById(
+				channelData.id,
+			);
+			client.join(channelName);
+			client.emit('update channel request');
+		}
+	}
 
-  @SubscribeMessage('save game')
-  async saveGame(@MessageBody() gameData: SaveGame.Request) {
-    await this.gameService.saveGame(gameData);
-  }
+	@SubscribeMessage('save game')
+	async saveGame(@MessageBody() gameData: SaveGame.Request) {
+		await this.gameService.saveGame(gameData);
+	}
 }

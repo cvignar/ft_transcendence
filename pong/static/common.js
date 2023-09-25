@@ -32,6 +32,11 @@ export const GameCommand = [
     'TRNNG',
     'AUTO',
 ];
+export var GameScheme;
+(function (GameScheme) {
+    GameScheme[GameScheme["GENERAL"] = 0] = "GENERAL";
+    GameScheme[GameScheme["REVERSE"] = 1] = "REVERSE";
+})(GameScheme || (GameScheme = {}));
 export function getGameCmd(command) {
     let cmd = 1;
     while (GameCommand[cmd]) {

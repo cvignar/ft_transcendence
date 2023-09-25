@@ -17,5 +17,17 @@ export enum Role {
   owner = 'owner',
   admin = 'admin',
   default = 'default'
+}
 
+export enum GameScheme {
+	GENERAL,
+	REVERSE,
+}
+
+export enum Side {
+	NO,
+	BOTTOM,
+	TOP,
+	RIGHT,
+	LEFT,
 }
