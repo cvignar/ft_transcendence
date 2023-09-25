@@ -89,7 +89,8 @@ export class Sounds {
 	on: boolean;
 	deadloc_on: boolean;
 	game_start: any;
-	ball: any;
+	ball_top: any;
+	ball_bottom: any;
 	ball_loss_left: any;
 	ball_loss_right: any;
 	ball_left: any;
@@ -133,9 +134,13 @@ export class Sounds {
 
 		// Sounds
 
-		this.ball = new Audio();
-		this.ball.preload = 'auto';
-		this.ball.src = `${path}sounds/ball.mp3`;
+		this.ball_top = new Audio();
+		this.ball_top.preload = 'auto';
+		this.ball_top.src = `${path}sounds/ball.mp3`;
+
+		this.ball_bottom = new Audio();
+		this.ball_bottom.preload = 'auto';
+		this.ball_bottom.src = `${path}sounds/ball.mp3`;
 
 		this.ball_loss_left = new Audio();
 		this.ball_loss_left.preload = 'auto';
@@ -181,8 +186,11 @@ export class Sounds {
 				case Sound.GAME_START:
 					this.game_start.play();
 					break;
-				case Sound.BALL:
-					this.ball.play();
+				case Sound.BALL_TOP:
+					this.ball_top.play();
+					break;
+				case Sound.BALL_BOTTOM:
+					this.ball_bottom.play();
 					break;
 				case Sound.BALL_LOSS_LEFT:
 					this.ball_loss_left.play();
@@ -372,11 +380,11 @@ export class Image extends ImageOptions {
 			Image.color_paddle = 'white';
 			Image.color_score = 'Silver';
 		} else if (scheme = GameScheme.REVERSE) {
-			Image.color_back = 'wite';
+			Image.color_back = 'white';
 			Image.color_dividingNet = 'Silver';
 			Image.color_ball = 'black';
 			Image.color_paddle = 'black';
-			Image.color_score = 'black';
+			Image.color_score = 'Silver';
 		}
 	}
 }
