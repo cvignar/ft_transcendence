@@ -1,12 +1,12 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
-import { GameMode, Side } from './static/common.js';
+import { GameMode } from './static/common.js';
 export class Player {
     constructor(socketId, user) {
         this.socketId = socketId;
         this.name = user.name;
         this.id = user.id;
-        this.side = Side.RIGHT;
+        this.side = user.side;
     }
 }
 export class Result {
@@ -88,7 +88,7 @@ export class GamesSet {
         return undefined;
     }
     newPlayer(socketId, user) {
-        if (user && user.name) {
+        if (user && user.name && user.side) {
             const player = new Player(socketId, user);
             this.players.set(socketId, player);
             return player;

@@ -30,15 +30,17 @@ export function gebugPprinting(param1, param2) {
     }
 }
 export function deletePongAndNotifyPlayers(socketId) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     const playersDeletedPong = games.deletePong(socketId);
     if (playersDeletedPong) {
         if (playersDeletedPong.owner) {
             (_a = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong deleted');
+            (_b = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner game off');
             gebugPprinting(playersDeletedPong.owner.name, 'pong deleted');
         }
         if (playersDeletedPong.partner) {
-            (_b = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('pong deleted');
+            (_c = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _c === void 0 ? void 0 : _c.emit('pong deleted');
+            (_d = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('partner game off');
         }
     }
 }
@@ -56,7 +58,7 @@ io.on('connection', (socket) => {
     socket.on('new player', (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
-            socket.emit('player created', player.name);
+            socket.emit('player created', user === null || user === void 0 ? void 0 : user.scheme);
         }
         else {
             socket.emit('player not created');

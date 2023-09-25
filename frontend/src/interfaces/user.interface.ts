@@ -22,9 +22,23 @@ export interface Profile {
 	pongColorScheme: GameScheme;
 	gamesWon: number;
 	gamesPlayed: number;
-	gameHistory: number;
+	gameHistory: number[];
 	winRate: number;
 	playTime: number;
 	score: number;
 	rank: number;
+	friends: number[];
+	adding: number[];
+	added: number[];
+	blocks: number[];
+	blocking: number[];
+	blocked: number[];
+}
+
+export interface UpdateUser {
+	id: number | null;
+	username: string | undefined;
+	avatar: string | undefined;
+	prefferedTableSide: Side;
+	pongColorScheme: GameScheme;
 }

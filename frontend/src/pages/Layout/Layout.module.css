@@ -42,6 +42,8 @@
 	width: 800px;
 	display: flex;
 	flex-direction: row;
+	align-items: center;
+	justify-content: center;
 	margin-left: 10px;
 	max-height: 677px;
 }
