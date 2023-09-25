@@ -3,7 +3,7 @@ config();
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
-import { GameCmd, GameCommand, GameMode } from './static/common.js';
+import { GameCmd, GameCommand, GameMode, GameScheme, Side } from './static/common.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
@@ -27,10 +27,12 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 	if (playersDeletedPong) {
 		if (playersDeletedPong.owner) {
 			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit('pong deleted');
+			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit('partner game off');
 			gebugPprinting(playersDeletedPong.owner.name, 'pong deleted');
 		}
 		if (playersDeletedPong.partner) {
 			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit('pong deleted');
+			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit('partner game off');
 		}
 	}
 }
@@ -47,10 +49,10 @@ if (port) {
 
 io.on('connection', (socket) => {
 
-	socket.on('new player', (user: {name: string, id: number} | undefined) => {
+	socket.on('new player', (user: {name: string, id: number, side: Side, scheme: GameScheme} | undefined) => {
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
-			socket.emit('player created', player.name);
+			socket.emit('player created', user?.scheme);
 		} else {
 			socket.emit('player not created');
 		}
