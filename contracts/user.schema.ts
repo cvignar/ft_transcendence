@@ -3,7 +3,8 @@ import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
 import { MessageSchema } from './Message.schema';
-import { GameScheme, Side, Status } from './enums';
+import { Status } from './enums';
+import { GameScheme, Side } from '../pong/static/common';
 
 export const CreateUserSchema = zod.object({
   id: zod.number().int(),

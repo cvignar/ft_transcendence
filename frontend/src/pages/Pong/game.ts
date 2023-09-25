@@ -24,9 +24,8 @@ export function game(socket: any) {
 		socket.emit('new player', ({name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL}));
 	});
 	socket.on('player created', function(scheme: GameScheme) {
-		if (scheme) {
-			image.changeScheme(scheme);
-		}
+		console.log('scheme: ', scheme);
+		image.changeScheme(scheme);
 	});
 	socket.on('players', function(players: string[]) {
 		score.setPlayers(players[0], players[1]);
