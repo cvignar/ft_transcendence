@@ -1,15 +1,4 @@
-export enum Side {
-	NO,
-	BOTTOM,
-	TOP,
-	RIGHT,
-	LEFT,
-}
-
-export enum GameScheme {
-	GENERAL,
-	REVERSE,
-}
+import { GameScheme, Side } from '../../../pong/static/common';
 
 export interface Profile {
 	id: number;

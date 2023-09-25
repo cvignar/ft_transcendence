@@ -89,6 +89,9 @@ export class GamesSet {
     }
     newPlayer(socketId, user) {
         if (user && user.name && user.side) {
+            if (this.players.has(socketId)) {
+                this.deletePlayer(socketId);
+            }
             const player = new Player(socketId, user);
             this.players.set(socketId, player);
             return player;

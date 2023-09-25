@@ -2,7 +2,8 @@ import styles from './Settings.module.css';
 import layoutStyles from '../Layout/Layout.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { GameScheme, Side, UpdateUser } from '../../interfaces/user.interface';
+import { UpdateUser } from '../../interfaces/user.interface';
+import { GameScheme, Side } from '../../../../pong/static/common';
 import Headling from '../../components/Headling/Headling';
 import { FormEvent, useEffect, useState } from 'react';
 import { getProfile, updateProfile, userActions } from '../../store/user.slice';
@@ -11,7 +12,6 @@ import { socket } from '../Pong/pong';
 export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
-	const [pongSet, setPongSet] = useState<number>(0);
 
 	const onSubmit = (e: FormEvent) => {
 		e.preventDefault();
@@ -24,18 +24,14 @@ export function Settings() {
 			prefferedTableSide: parseInt(e.target.side.value),
 			pongColorScheme: parseInt(e.target.scheme.value)
 		};
+		console.log('new player');
+		socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
 		dispatch(updateProfile(updateData));
-		setPongSet(u => u + 1);
 	};
 
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
 	}, [dispatch, user.userId]);
-
-	useEffect(() => {
-		console.log('new player');
-		socket.emit('new player', {name: user.username, id: user.userId, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
-	}, [pongSet]);
 
 	return (
 		<div className={layoutStyles['outlet']}>
