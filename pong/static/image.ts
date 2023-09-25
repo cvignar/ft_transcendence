@@ -1,4 +1,4 @@
-import { GameMode, GameStatus, ServerMsg, Side, Sound } from './common.js';
+import { GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from './common.js';
 import { Options, ImageOptions, PongOptions } from './options.js';
 
 export class Score {
@@ -363,5 +363,20 @@ export class Image extends ImageOptions {
 		this.context.beginPath();
 		this.context.arc(x, Image.height - 1 - y, Image.ball_radius, 0, 2 * Math.PI);
 		this.context.fill();
+	}
+	changeScheme(scheme: GameScheme) {
+		if (scheme = GameScheme.GENERAL) {
+			Image.color_back = 'black';
+			Image.color_dividingNet = 'Silver';
+			Image.color_ball = 'white';
+			Image.color_paddle = 'white';
+			Image.color_score = 'Silver';
+		} else if (scheme = GameScheme.REVERSE) {
+			Image.color_back = 'wite';
+			Image.color_dividingNet = 'Silver';
+			Image.color_ball = 'black';
+			Image.color_paddle = 'black';
+			Image.color_score = 'black';
+		}
 	}
 }

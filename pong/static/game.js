@@ -1,11 +1,9 @@
-import { GameMode, GameStatus, ServerMsg, Sound } from './common.js';
+import { GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from './common.js';
 import { Controls, Selector } from './controls.js';
 import { Score, Image, Sounds } from './image.js';
 import { ControlOptions } from './options.js';
 
 var socket = io();
-var nickname = '';
-// var renderTimer = 0;
 var browserState = new ServerMsg();
 const image = new Image('canvas');
 const controls = new Controls(socket, image);
@@ -16,13 +14,14 @@ const score = new Score();
 // Player
 socket.emit('new player');
 socket.on('player not created', function() {
+	var nickname = '';
 	while(!nickname) {
 		nickname = window.prompt('Enter Your Nickname:');
 	}
-	socket.emit('new player', ({name: nickname, id: -1}));
+	socket.emit('new player', ({name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL}));
 });
-socket.on('player created', function(nick_name) {
-	nickname = nick_name;
+socket.on('player created', function(scheme) {
+	image.changeScheme(scheme);
 });
 socket.on('players', function(players) {
 	score.setPlayers(players[0], players[1]);
@@ -101,18 +100,11 @@ socket.on('partner refused', function() {
 // Pong events
 socket.on('pong launched', function(cmd) {
 	if (image.valid()) {
-
 		if (cmd) {
 			setTimeout(function() {
 				controls.emitCmd(cmd);
 			}, ControlOptions.game_startTime );
 		}
-
-		// renderTimer = setInterval(function() {
-		// 	sounds.play(browserState);
-		// 	controls.colorizeButtons(browserState);
-		// 	image.render(browserState, score.get(browserState));
-		// }, Image.rendering_period);
 	}
 });
 socket.on('state', function(state) {
