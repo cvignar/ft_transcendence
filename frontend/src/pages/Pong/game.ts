@@ -1,4 +1,4 @@
-import { GameCmd, GameMode, GameStatus, ServerMsg, Sound } from '../../../../pong/static/common';
+import { GameCmd, GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from '../../../../pong/static/common';
 import { Controls, Selector } from '../../../../pong/static/controls';
 import { Score, Image, Sounds } from '../../../../pong/static/image';
 import { ControlOptions } from '../../../../pong/static/options';
@@ -7,8 +7,6 @@ import { ControlOptions } from '../../../../pong/static/options';
 export function game(socket: any) {
 
 	const pong_path = 'http://' + import.meta.env.VITE_PONG_HOST + ':' + import.meta.env.VITE_PONG_PORT + '/';
-	let nickname: string | null = '';
-	let renderTimer = 0;
 	const browserState = new ServerMsg();
 	const image = new Image('canvas');
 	const controls = new Controls(socket, image);
@@ -19,13 +17,14 @@ export function game(socket: any) {
 	// Player
 	// socket.emit('new player');
 	socket.on('player not created', function() {
+		let nickname: string | null = '';
 		while(!nickname) {
 			nickname = window.prompt('Enter Your Nickname:');
 		}
-		socket.emit('new player', ({name: nickname, id: -1}));
+		socket.emit('new player', ({name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL}));
 	});
-	socket.on('player created', function(nick_name: string | null) {
-		nickname = nick_name;
+	socket.on('player created', function(scheme: GameScheme) {
+		image.changeScheme(scheme);
 	});
 	socket.on('players', function(players: string[]) {
 		score.setPlayers(players[0], players[1]);
@@ -104,18 +103,11 @@ export function game(socket: any) {
 	// Pong events
 	socket.on('pong launched', function(cmd: GameCmd) {
 		if (image.valid()) {
-
 			if (cmd) {
 				setTimeout(function() {
 					controls.emitCmd(cmd);
 				}, ControlOptions.game_startTime );
 			}
-
-			renderTimer = setInterval(function() {
-				sounds.play(browserState);
-				controls.colorizeButtons(browserState);
-				image.render(browserState, score.get(browserState));
-			}, Image.rendering_period);
 		}
 	});
 	socket.on('state', function(state: ServerMsg) {
@@ -123,17 +115,19 @@ export function game(socket: any) {
 		if (score.mode == GameMode.STOPPING) {
 			controls.stop();
 		}
+		sounds.play(browserState);// This blok from pong launched
+		controls.colorizeButtons(browserState);
+		image.render(browserState, score.get(browserState));
 	});
 	socket.on('pong deleted', function() {
 		sounds.playSound(Sound.SPEEDUP);
 		controls.gameIsOn = false;
 		controls.normalizeButtons();
 		score.clear();
-		clearInterval(renderTimer);
 		image.clear();
 	});
-	
-	socket.on('disconnect', function() {
-		clearInterval(renderTimer);
-	});
+
+	// socket.on('disconnect', function() {
+	// 	clearInterval(renderTimer);
+	// });
 }

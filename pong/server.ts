@@ -169,9 +169,25 @@ setInterval(function() {
 			pong.calculate();
 			if (pong.owner) {
 				io.sockets.sockets.get(pong.owner.socketId)?.emit('state', pong.getPongState(pong.owner.side));
+				if (pong.partnerGameOn) {
+					io.sockets.sockets.get(pong.owner.socketId)?.emit('partner game on');
+					pong.partnerGameOn = false;
+				}
+				if (pong.partnerGameOff) {
+					io.sockets.sockets.get(pong.owner.socketId)?.emit('partner game off');
+					pong.partnerGameOff = false;
+				}
 			}
 			if (pong.partner) {
 				io.sockets.sockets.get(pong.partner.socketId)?.emit('state', pong.getPongState(pong.partner.side));
+				if (pong.partnerGameOn) {
+					io.sockets.sockets.get(pong.partner.socketId)?.emit('partner game on');
+					pong.partnerGameOn = false;
+				}
+				if (pong.partnerGameOff) {
+					io.sockets.sockets.get(pong.partner.socketId)?.emit('partner game off');
+					pong.partnerGameOff = false;
+				}
 			}
 			games.checkResult(pong);
 		}
