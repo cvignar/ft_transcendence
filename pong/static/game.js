@@ -21,7 +21,9 @@ socket.on('player not created', function() {
 	socket.emit('new player', ({name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL}));
 });
 socket.on('player created', function(scheme) {
-	image.changeScheme(scheme);
+	if (scheme) {
+		image.changeScheme(scheme);
+	}
 });
 socket.on('players', function(players) {
 	score.setPlayers(players[0], players[1]);
