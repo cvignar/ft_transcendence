@@ -9,17 +9,18 @@
 }
 
 .sidebar {
-	border-bottom: 1px solid var(--separator-color);
 	/*padding: 5px;*/
 	display: flex;
 	flex-direction: row;
-	border: 1px solid red;
 	background: var(--separator-color);
 	width: -webkit-fill-available;
 	height: 40px;
 	min-width: 1222px;
 	max-width: 1622px;
 	justify-content: flex-end;
+	align-items: center;
+	gap: 20px;
+	padding-right: 10px;
 }
 
 /*.avatar {
@@ -34,11 +35,21 @@
 .-btn {
 	/*margin-right: auto;*/
 }
-/*
-.svg {
-	filter: var(--svg-filter);
+
+.outlet {
+	min-width: 400px;
+	max-width: 800px;
+	width: 800px;
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	max-height: 677px;
 }
 
+.svg {
+	filter: var(--white-hover-color-filter);
+}
+/*
 .menu {
 	display: flex;
 	flex-direction: column;
@@ -94,5 +105,7 @@
 }*/
 
 .content {
+	display: flex;
+	flex-direction: row;
 	width: 100%;
 }
