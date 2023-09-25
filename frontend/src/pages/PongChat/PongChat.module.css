@@ -17,10 +17,35 @@
 	flex-direction: row;
 	margin-left: 10px;
 	max-height: 677px;
+	border: 1px solid red;
 }
 
 .pong-ratings {
 	display: flex;
 	flex-direction: column;
 	max-height: -webkit-fill-available;
+}
+
+.add-channel {
+	display: flex;
+	width: fit-content;
+	height: fit-content;
+	border: none;
+	background: var(--white-hover-color);
+	border-radius: 5px;
+	margin-left: auto;
+	padding: 2px;
+}
+
+.add-channel:hover {
+	background: var(--primary-color);
+}
+
+.search-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.head {
+	margin: 16px;
 }

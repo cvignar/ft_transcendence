@@ -1,4 +1,12 @@
-import { Body, Controller, ParseIntPipe, Post, UsePipes } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	Param,
+	ParseIntPipe,
+	Post,
+	UsePipes,
+} from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
 import { UserService } from './user.service';
 import { CreateUser } from '../../../contracts/user.schema--';
@@ -16,5 +24,18 @@ export class UserController {
 		userData: CreateUser.Request,
 	): Promise<User> {
 		return this.userService.createUser(userData);
+	}
+
+	@Get('getProfile/:id')
+	async getProfile(@Param('id', ParseIntPipe) userId: number) {
+		return await this.userService.getProfile(userId);
+	}
+
+	@Post('updateProfile/:id')
+	async updateProfile(
+		@Param('id', ParseIntPipe) userId: number,
+		@Body() userData: any,
+	) {
+		return await this.userService.updateUser(userId, userData);
 	}
 }
