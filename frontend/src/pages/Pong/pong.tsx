@@ -10,7 +10,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
 export const	socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
-
+//socket.on('disconnect' () => {
+//	// Something
+//});
 export function Pong() {
 
 	const username = useSelector((s: RootState) => s.user.username);

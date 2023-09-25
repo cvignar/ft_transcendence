@@ -1,0 +1,21 @@
+
+.settings {
+	min-width: 400px;
+	max-width: 800px;
+	width: 800px;
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	max-height: 677px;
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius:50%;
+
+	width: 50px;
+	height: 50px;
+	/*flex-shrink: 2;*/
+
+}
