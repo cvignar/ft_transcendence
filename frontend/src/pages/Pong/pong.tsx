@@ -20,7 +20,7 @@ export function Pong() {
 
 	useEffect(() => {
 		console.log('userId: ', userId);
-		socket.emit('new player', {name: username, id: userId}); //FIXME!!!! change id!!!
+		//socket.emit('new player', {name: username, id: userId, side: xxx, scheme: yyy}); //FIXME!!!! change id!!!
 		console.log('socket emit username: ', username, 'socket.id: ', socket.id);
 		game(socket);
 	}, []);

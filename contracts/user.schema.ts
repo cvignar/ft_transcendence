@@ -3,21 +3,7 @@ import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
 import { MessageSchema } from './Message.schema';
-
-export enum Status {
-  online = 'online',
-  offline = 'offline',
-  playing = 'playing'
-}
-
-export enum Role {
-  member = 'member',
-  invited = 'invited',
-  owner = 'owner',
-  admin = 'admin',
-  default = 'default'
-
-}
+import { GameScheme, Side, Status } from './enums';
 
 export const CreateUserSchema = zod.object({
   id: zod.number().int(),
@@ -54,6 +40,8 @@ export const UserSchema = zod.object({
   hashedRtoken: zod.string().optional(),
   twoFAsecret: zod.string().optional(),
   twoFA: zod.boolean().default(false),
+  prefferedTableSide: zod.nativeEnum(Side).default(Side.RIGHT),
+  pongColorScheme: zod.nativeEnum(GameScheme).default(GameScheme.GENERAL),
   gamesWon: zod.number().int().default(0),
   gamesLost: zod.number().int().default(0),
   gamesPlayed: zod.number().int().default(0),

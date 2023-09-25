@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 import { BACK_PREFIX } from '../helpers/API';
 import { AuthResponse } from '../interfaces/auth.interface';
-//import { Profile } from '../interfaces/user.interface';
+import { Profile } from '../interfaces/user.interface';
 import { loadState } from './storage';
 //import { RootState } from './store';
 
@@ -19,8 +19,7 @@ export interface UserState {
 	authErrorMessage?: string;
 	username?: string;
 	userId: number | null;
-	userAvatar: number | null;
-	//profile?: Profile;
+	profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
 }
@@ -30,8 +29,7 @@ const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
 	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
 	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? '',
-	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null,
-	userAvatar: loadState<number | null>(AVATAR_PERSISTENT_STATE) ?? null
+	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null
 };
 
 export const auth = createAsyncThunk('auth/login',
