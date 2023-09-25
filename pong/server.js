@@ -30,15 +30,17 @@ export function gebugPprinting(param1, param2) {
     }
 }
 export function deletePongAndNotifyPlayers(socketId) {
-    var _a, _b;
+    var _a, _b, _c, _d;
     const playersDeletedPong = games.deletePong(socketId);
     if (playersDeletedPong) {
         if (playersDeletedPong.owner) {
             (_a = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong deleted');
+            (_b = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner game off');
             gebugPprinting(playersDeletedPong.owner.name, 'pong deleted');
         }
         if (playersDeletedPong.partner) {
-            (_b = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('pong deleted');
+            (_c = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _c === void 0 ? void 0 : _c.emit('pong deleted');
+            (_d = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('partner game off');
         }
     }
 }
@@ -56,7 +58,7 @@ io.on('connection', (socket) => {
     socket.on('new player', (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
-            socket.emit('player created', player.name);
+            socket.emit('player created', user === null || user === void 0 ? void 0 : user.scheme);
         }
         else {
             socket.emit('player not created');
@@ -161,7 +163,7 @@ io.on('connection', (socket) => {
 });
 // Calculation loop
 setInterval(function () {
-    var _a, _b;
+    var _a, _b, _c, _d, _e, _f;
     let socketIdForDelete = undefined;
     for (const socketId of games.getPongs().keys()) {
         const pong = games.getPong(socketId);
@@ -175,9 +177,25 @@ setInterval(function () {
             pong.calculate();
             if (pong.owner) {
                 (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('state', pong.getPongState(pong.owner.side));
+                if (pong.partnerGameOn) {
+                    (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner game on');
+                    pong.partnerGameOn = false;
+                }
+                if (pong.partnerGameOff) {
+                    (_c = io.sockets.sockets.get(pong.owner.socketId)) === null || _c === void 0 ? void 0 : _c.emit('partner game off');
+                    pong.partnerGameOff = false;
+                }
             }
             if (pong.partner) {
-                (_b = io.sockets.sockets.get(pong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('state', pong.getPongState(pong.partner.side));
+                (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('state', pong.getPongState(pong.partner.side));
+                if (pong.partnerGameOn) {
+                    (_e = io.sockets.sockets.get(pong.partner.socketId)) === null || _e === void 0 ? void 0 : _e.emit('partner game on');
+                    pong.partnerGameOn = false;
+                }
+                if (pong.partnerGameOff) {
+                    (_f = io.sockets.sockets.get(pong.partner.socketId)) === null || _f === void 0 ? void 0 : _f.emit('partner game off');
+                    pong.partnerGameOff = false;
+                }
             }
             games.checkResult(pong);
         }
