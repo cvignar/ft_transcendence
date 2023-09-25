@@ -34,6 +34,11 @@ export const GameCommand: string[] = [
 	'AUTO',
 ];
 
+export enum GameScheme {
+	GENERAL,
+	REVERSE,
+}
+
 export function getGameCmd(command: string): GameCmd {
 	let cmd: GameCmd = 1;
 	while (GameCommand[cmd]) {
