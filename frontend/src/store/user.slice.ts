@@ -10,6 +10,7 @@ export const JWT_PERSISTENT_STATE = 'userToken';
 export const EMAIL_PERSISTENT_STATE = 'userEmail';
 export const USERNAME_PERSISTENT_STATE = 'userName';
 export const USERID_PERSISTENT_STATE = 'userId';
+export const AVATAR_PERSISTENT_STATE = 'userAvatar';
 
 export interface UserState {
 	token: string | null;
@@ -18,6 +19,7 @@ export interface UserState {
 	authErrorMessage?: string;
 	username?: string;
 	userId: number | null;
+	userAvatar: number | null;
 	//profile?: Profile;
 	//profileError?: string;
 	//registerError?: string;
@@ -28,7 +30,8 @@ const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
 	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
 	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? '',
-	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null
+	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null,
+	userAvatar: loadState<number | null>(AVATAR_PERSISTENT_STATE) ?? null
 };
 
 export const auth = createAsyncThunk('auth/login',

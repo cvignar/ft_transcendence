@@ -16,7 +16,7 @@ export function AuthForm() {
 
 	useEffect(() => {
 		if (token) {
-			navigate('/PongChat');
+			navigate('/Chat');
 		}
 	}, [token, navigate]);
 
