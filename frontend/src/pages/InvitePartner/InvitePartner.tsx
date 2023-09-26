@@ -3,7 +3,6 @@ import layoutStyles from '../Layout/Layout.module.css';
 export function InvitePartner() {
 
 	return (
-		<div className={layoutStyles['outlet']}>
-		</div>
+		<></>
 	);
 }
