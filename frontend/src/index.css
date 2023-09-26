@@ -50,7 +50,7 @@
   --separator-color-filter: invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);*/
 
   --separator-color: #635d4e;
-  --separator-color-filter: invert(36%) sepia(35%) saturate(211%) hue-rotate(187deg) brightness(101%) contrast(89%);
+  --separator-color-filter: invert(39%) sepia(5%) saturate(1339%) hue-rotate(5deg) brightness(90%) contrast(93%);
 
   --error-color: #ff816b;
   --error-color-filter: invert(74%) sepia(47%) saturate(5111%) hue-rotate(316deg) brightness(98%) contrast(119%);
@@ -65,4 +65,8 @@ body {
   color: var(--text-color);
   background: var(--white-color);
   margin: 0;
+}
+
+::-webkit-scrollbar{
+    display: none;
 }

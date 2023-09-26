@@ -10,6 +10,7 @@ export interface Profile {
 	prefferedTableSide: Side;
 	pongColorScheme: GameScheme;
 	gamesWon: number;
+	gamesLost: number;
 	gamesPlayed: number;
 	gameHistory: number[];
 	winRate: number;

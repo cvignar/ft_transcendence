@@ -15,8 +15,9 @@
 	height: 50px;
 	display: flex;
 	flex-direction: row;
-	margin: 9px 9px 0px 9px;
+	margin: 7px;
 	border: none;
+	align-items: center;
 }
 
 hr {
@@ -29,8 +30,19 @@ hr {
 	margin: 0;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    /*align-items: stretch;*/
 	height: 100%;
+	overflow: scroll;
+	justify-content: flex-start;
+
+	transform: rotate(180deg);
+
+}
+
+.rotate {
+	display: flex;
+	flex-direction: column;
+  	transform: rotate(180deg);
 }
 
 .messages {
@@ -38,15 +50,6 @@ hr {
 	flex-direction: column;
 	overflow: scroll;
 	margin-bottom: auto;
-}
-
-::-webkit-scrollbar {
-    width: 0;  /* Remove scrollbar space */
-    background: transparent;  /* Optional: just make scrollbar invisible */
-}
-/* Optional: show position indicator in red */
-::-webkit-scrollbar-thumb {
-    background: #FF0000;
 }
 
 .text-area {
@@ -65,4 +68,23 @@ hr {
 	padding-left: 20px;
 	height: fit-content;
 	word-break: break-all;
+}
+
+.see-members {
+	border: none;
+	background: var(--white-hover-color);
+	display: flex;
+	align-items: center;
+	border-radius: 3px;
+	padding: 0;
+	height: fit-content;
+	margin-left: auto;
+}
+
+.see-members:hover {
+	background: var(--white-color);
+}
+
+.svg {
+	filter: var(--separator-color-filter);
 }

@@ -81,7 +81,9 @@ export function Layout() {
 		</div>
 		<div className={styles['content']}>
 			<Pong/>
-			<Outlet/>
+			<div className={styles['outlet']}>
+				<Outlet/>
+			</div>
 		</div>
 	</div>;
 }
