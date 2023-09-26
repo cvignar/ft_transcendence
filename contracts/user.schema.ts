@@ -97,6 +97,7 @@ const ProfileSchema = zod.object({
 	prefferedTableSide: zod.nativeEnum(Side),
 	pongColorScheme: zod.nativeEnum(GameScheme),
 	gamesWon: zod.number().int(),
+  gamesLost: zod.number().int(),
 	gamesPlayed: zod.number().int(),
 	gameHistory: zod.array(zod.number()),
 	winRate: zod.number(),

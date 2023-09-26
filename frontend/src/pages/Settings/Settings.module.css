@@ -26,9 +26,15 @@
 	justify-content: center;
 	gap: 10px;
 	width: 50%;
-	border: 1px solid red;
+	/*border: 1px solid red;*/
 	height: 100%;
 	font-size: 14px;
+}
+
+.profile-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 fieldset {
@@ -58,14 +64,15 @@ legend {
 }
 
 .other {
+	background: var(--white-hover-color);
 	display: flex;
 	width: 50%;
 	height: 100%;
-	border: 1px solid red;
+	/*border: 1px solid red;*/
 }
 
 .done {
-	filter: var(--primary-color);
+	filter: var(--primary-color-filter);
 }
 
 .label-head {
@@ -85,6 +92,26 @@ legend {
 
 .done-button:hover {
 	background: var(--white-hover-color);
+}
+
+.stats {
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+	/*gap: 10px;*/
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 30px;
+	border-bottom: 1px solid var(--white-hover-color);
+}
+
+p {
+	padding-right: 10px;
 }
 /*input[type="radio"] {
 	-webkit-appearance: none;

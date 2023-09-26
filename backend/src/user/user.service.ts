@@ -45,6 +45,7 @@ export class UserService {
 				prefferedTableSide: true,
 				pongColorScheme: true,
 				gamesWon: true,
+				gamesLost: true,
 				gamesPlayed: true,
 				gameHistory: true,
 				winRate: true,
