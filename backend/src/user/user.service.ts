@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUser } from '../../../contracts/user.schema--';
+import { Profile } from 'contracts/user.schema';
 
 @Injectable()
 export class UserService {
@@ -19,20 +20,46 @@ export class UserService {
 
 	async getUserByEmail(userEmail: string): Promise<User> {
 		const user = await this.prismaService.user.findUnique({
-			where: {
-				email: userEmail,
-			},
+			where: { email: userEmail },
 		});
 		return user;
 	}
 
 	async getUserById(userId: number): Promise<User> {
 		const user = await this.prismaService.user.findUnique({
-			where: {
-				id: userId,
-			},
+			where: { id: userId },
 		});
 		return user;
+	}
+
+	async getProfile(userId: number): Promise<Profile.Response> {
+		return await this.prismaService.user.findUnique({
+			where: { id: userId },
+			select: {
+				id: true,
+				updatedAt: true,
+				email: true,
+				username: true,
+				avatar: true,
+				twoFA: true,
+				prefferedTableSide: true,
+				pongColorScheme: true,
+				gamesWon: true,
+				gamesLost: true,
+				gamesPlayed: true,
+				gameHistory: true,
+				winRate: true,
+				playTime: true,
+				score: true,
+				rank: true,
+				friends: true,
+				adding: true,
+				added: true,
+				blocks: true,
+				blocking: true,
+				blocked: true,
+			},
+		});
 	}
 
 	async getBlocks(id: number) {
@@ -223,5 +250,22 @@ export class UserService {
 			index++;
 		}
 		return;
+	}
+
+	async updateUser(userId: number, userData: any) {
+		try {
+			console.log(userData);
+			return await this.prismaService.user.update({
+				where: { id: userId },
+				data: {
+					username: userData.username,
+					avatar: userData.avatar,
+					prefferedTableSide: userData.prefferedTableSide,
+					pongColorScheme: userData.pongColorScheme,
+				},
+			});
+		} catch (e) {
+			console.log(e.message);
+		}
 	}
 }

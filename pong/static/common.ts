@@ -35,8 +35,8 @@ export const GameCommand: string[] = [
 ];
 
 export enum GameScheme {
-	GENERAL,
-	REVERSE,
+	GENERAL=1,
+	REVERSE=2,
 }
 
 export function getGameCmd(command: string): GameCmd {

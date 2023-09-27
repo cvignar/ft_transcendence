@@ -9,10 +9,11 @@
 	box-shadow: 15px 20px 45px 0px rgba(233, 233, 233, 0.25);
 	border-radius: 3px;
 	padding: 4px 11px 4px 0px;
-	/*width: 100%;*/
-	text-align: right;
-	min-width: 350px;
-	
+	text-align: center;
+	width: 100%;
+	/*min-width: 160px;
+	width: 360px;
+	max-width: 360px;*/
 }
 
 .input-wrapper {
@@ -21,7 +22,8 @@
 
 .icon {
 	position: absolute;
-	left: 5px;
-	top: 4px;
-	width: 20px;
+	left: 63%;
+	top: 5px;
+	width: 17px;
+	filter: var(--text-secondary-color-filter);
 }

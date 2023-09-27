@@ -71,12 +71,11 @@ export function PongChat() {
 	};
 
 	return (
-		<div className={styles['body']}>
-			<Pong/>
-			<div className={styles['chat']}>
-				<ChannelList channels={channelState.channels} setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
-				<ChatWindow data={selectedChannel}/>
-			</div>
-		</div>
+		//<div className={styles['chat']}>
+		<>
+			<ChannelList channels={channelState.channels} setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
+			<ChatWindow data={selectedChannel}/>
+		</>
+		//</div>
 	);
 }

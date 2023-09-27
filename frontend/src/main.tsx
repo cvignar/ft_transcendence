@@ -13,23 +13,38 @@ import { RequireAuth } from './helpers/RequireAuth';
 import { Layout } from './pages/Layout/Layout';
 import Chat from './pages/Chat/Chat';
 import { Settings } from './pages/Settings/Settings';
+import { InvitePartner } from './pages/InvitePartner/InvitePartner';
+import { Leaderboard } from './pages/Leaderboard/Leaderboard';
 
 const router = createBrowserRouter([
+	{
+		path: '/Auth',
+		element: <AuthForm></AuthForm>
+	},
 	{ // FIXME!!!! FAKE AUTH
 		path: '/',
-		element: <Layout/>,
+		element: <RequireAuth><Layout/></RequireAuth>,
 		children: [
 			{
-				path: '/',
-				element: <AuthForm></AuthForm>
-			},
-			{
-				path: '/PongChat',
-				element: <RequireAuth><PongChat/></RequireAuth>
+				path: '/Chat',
+				element: <RequireAuth><PongChat/></RequireAuth>,
+				children: [
+					{
+						
+					}
+				]
 			},
 			{
 				path: '/Settings',
 				element: <RequireAuth><Settings/></RequireAuth>
+			},
+			{
+				path: '/InvitePartner',
+				element: <RequireAuth><InvitePartner/></RequireAuth>
+			},
+			{
+				path: '/Leaderboard',
+				element: <RequireAuth><Leaderboard/></RequireAuth>
 			}
 		]
 	}

@@ -7,18 +7,19 @@ import Button from '../../components/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { auth, userActions } from '../../store/user.slice';
+import { auth, getProfile, userActions } from '../../store/user.slice';
 
 export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const { token, authErrorMessage } = useSelector((s: RootState) => s.user);
+	const { token, authErrorMessage, userId } = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
 		if (token) {
-			navigate('/PongChat');
+			dispatch(getProfile(userId));
+			navigate('/Chat');
 		}
-	}, [token, navigate]);
+	}, [token, navigate, dispatch, userId]);
 
 	const submit = async (e: FormEvent) => {
 		e.preventDefault();

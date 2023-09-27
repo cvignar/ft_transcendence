@@ -11,7 +11,6 @@ function ChannelPreview(props: ChannelPreviewProps) {
 	return (
 		<div className={styles['preview']}>
 			<ChannelShortInfo appearence='list' props={props.data}/>
-			<div className={styles['time']}>{formatedDate}</div>
 		</div>
 	);
 }
