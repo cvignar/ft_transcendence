@@ -18,4 +18,4 @@ RUN npm install \
 
 EXPOSE 12080
 
-CMD [ "npm run", "start:dev" ]
+CMD [ "npm", "run", "start:dev" ]
