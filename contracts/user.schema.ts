@@ -3,21 +3,8 @@ import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
 import { MessageSchema } from './Message.schema';
-
-export enum Status {
-  online = 'online',
-  offline = 'offline',
-  playing = 'playing'
-}
-
-export enum Role {
-  member = 'member',
-  invited = 'invited',
-  owner = 'owner',
-  admin = 'admin',
-  default = 'default'
-
-}
+import { Status } from './enums';
+import { GameScheme, Side } from '../pong/static/common';
 
 export const CreateUserSchema = zod.object({
   id: zod.number().int(),
@@ -54,6 +41,8 @@ export const UserSchema = zod.object({
   hashedRtoken: zod.string().optional(),
   twoFAsecret: zod.string().optional(),
   twoFA: zod.boolean().default(false),
+  prefferedTableSide: zod.nativeEnum(Side).default(Side.RIGHT),
+  pongColorScheme: zod.nativeEnum(GameScheme).default(GameScheme.GENERAL),
   gamesWon: zod.number().int().default(0),
   gamesLost: zod.number().int().default(0),
   gamesPlayed: zod.number().int().default(0),
@@ -96,4 +85,33 @@ const MemberPreviewSchema = zod.object({
 
 export namespace MemberPreview {
   export class Response extends createZodDto(MemberPreviewSchema) {}
+}
+
+const ProfileSchema = zod.object({
+  id: zod.number().int(),
+	updatedAt: zod.date(),
+	email: zod.string().email(),
+	username: zod.string(),
+	avatar: zod.string(),
+	twoFA: zod.boolean(),
+	prefferedTableSide: zod.nativeEnum(Side),
+	pongColorScheme: zod.nativeEnum(GameScheme),
+	gamesWon: zod.number().int(),
+  gamesLost: zod.number().int(),
+	gamesPlayed: zod.number().int(),
+	gameHistory: zod.array(zod.number()),
+	winRate: zod.number(),
+	playTime: zod.number(),
+	score: zod.number(),
+	rank: zod.number(),
+	friends: zod.array(zod.number()),
+	adding: zod.array(zod.number()),
+	added: zod.array(zod.number()),
+	blocks: zod.array(zod.number()),
+	blocking: zod.array(zod.number()),
+	blocked: zod.array(zod.number()),
+});
+
+export namespace Profile {
+  export class Response extends createZodDto(ProfileSchema) {}
 }

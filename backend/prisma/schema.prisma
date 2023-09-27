@@ -26,6 +26,8 @@ model User {
 	twoFAsecret		String?
 	twoFA			Boolean?	@default(false)
 
+  prefferedTableSide  Int @default(3)
+  pongColorScheme Int @default(0)
 	gamesWon		Int     @default(0)
 	gamesLost		Int     @default(0)
 	gamesPlayed		Int     @default(0)

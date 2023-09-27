@@ -1,18 +1,28 @@
+.message-card {
+	font-size: 12px;
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 5px;
+	margin-left: 3px;
+}
+
 .message {
-	font-size: 14px;
+	/*font-size: 14px;*/
 	font-style: normal;
 	font-weight: 400;
-	/*line-height: 20px; 142.857%*/
-
 	display: flex;
-	min-width: fit-content;
-	/*min-height: fit-content;*/
 	align-items: center;
 	padding: 5px;
 	word-break: break-all;
-	/*overflow-wrap: break-all;*/
-	max-width: 250px;
-	margin-top: 5px;
+	flex-direction: column;
+}
+
+.msg-owner {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	font-size: 12px;
+	width: 100%;
 }
 
 .self {
@@ -26,4 +36,26 @@
 	background: var(--white-color);
 	margin-right: auto;
 	margin-left: 3px;
+	align-items: flex-start;
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius:50%;
+	width: 25px;
+	height: 25px;
+}
+
+.avatar:hover {
+	cursor: pointer;
+}
+
+.svg {
+	filter: var(--white-hover-color-filter);
+	width: 15px;
+}
+
+.svg:hover {
+	cursor: pointer;
 }
