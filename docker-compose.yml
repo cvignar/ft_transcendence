@@ -6,18 +6,48 @@ networks:
     driver: bridge
 
 volumes:
+
   db_vol:
     name: db
     driver_opts:
       type: none
       o: bind
       device: /ft_data/db
+
   upload:
     name: upload
     driver_opts:
       type: none
       o: bind
       device: /ft_data/upload
+
+  backend:
+    name: backend
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/backend
+
+  contracts:
+    name: contracts
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/contracts
+
+  frontend:
+    name: frontend
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/frontend
+
+  pong:
+    name: pong
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/pong
 
 services:
 
@@ -38,17 +68,6 @@ services:
     networks:
       - ft_trancendence
 
-  pong:
-    build:
-      context: ./pong
-    image: pong:img
-    container_name: pong
-    restart: always
-    ports:
-      - "12080:12080"
-    networks:
-      - ft_trancendence
-
   backend:
     build:
       context: ./backend
@@ -58,7 +77,24 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - upload:/backend/upload
+      - backend:/backend
+      - contracts:/contracts
+      - frontend:/frontend
+      - pong:/pong
+      - upload:/upload
+    networks:
+      - ft_trancendence
+
+  pong:
+    build:
+      context: ./pong
+    image: pong:img
+    container_name: pong
+    restart: always
+    volumes:
+      - pong:/pong
+    ports:
+      - "12080:12080"
     networks:
       - ft_trancendence
 

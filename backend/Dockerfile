@@ -1,17 +1,14 @@
 FROM node:18
 
-RUN apt-get install unzip -y
-
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
-COPY backend.zip .
-COPY contracts.zip .
 
-RUN unzip backend.zip \
-	&& unzip contracts.zip \
-	&& rm -f backend.zip \
-	&& rm -f contractsgit .zip \
-	&& mkdir /backend/upload
+RUN mkdir /backend \
+    && mkdir /contracts \
+    && mkdir /upload \
+    && mkdir /frontend \
+    && mkdir /pong \
+    && mkdir /upload
 
 WORKDIR /contracts
 
