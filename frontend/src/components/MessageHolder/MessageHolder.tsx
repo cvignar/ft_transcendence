@@ -41,7 +41,7 @@ function MessageHolder({message, appearence = 'self', ...props}: MessageHolderPr
 			<div {...props} className={classNames(styles['message'], styles[appearence])}>
 				{appearence !== 'self'
 					? <Headling className={styles['msg-owner']}>{message.owner.username}
-						<img src='/delete-fill.svg' className={styles['svg']} onClick={onClick}/>
+						<img src='/delete-line.svg' className={styles['svg']} onClick={onClick}/>
 					</Headling>
 					: <></>}
 				{message.msg}
