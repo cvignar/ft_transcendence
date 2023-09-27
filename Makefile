@@ -22,16 +22,19 @@ up:
 
 	zip backend.zip -r ./backend
 	zip contracts.zip -r ./contracts
+	zip frontend.zip -r ./frontend
 	zip pong.zip -r ./pong
-	
+
 	mv backend.zip ./backend/backend.zip
 	mv contracts.zip ./backend/contracts.zip
+	mv frontend.zip ./frontend/frontend.zip
 	mv pong.zip ./pong/pong.zip
 
 	docker-compose -f docker-compose.yml up -d --build
 
 	rm -f ./backend/backend.zip
 	rm -f ./backend/contracts.zip
+	rm -f ./frontend/frontend.zip
 	rm -f ./pong/pong.zip
 	
 	rm -f ./backend/contracts.zip	@echo "======================================"
