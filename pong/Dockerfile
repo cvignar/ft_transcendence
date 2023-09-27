@@ -4,7 +4,7 @@ RUN apt-get install unzip -y
 
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
-COPY ../pong.zip .
+COPY pong.zip .
 
 RUN unzip pong.zip \
 	&& rm -f pong.zip
