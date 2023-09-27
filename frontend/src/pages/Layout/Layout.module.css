@@ -44,7 +44,7 @@
 	flex-direction: row;
 	margin-left: 10px;
 	max-height: 677px;
-	border: 1px solid red;
+	/*border: 1px solid red;*/
 }
 
 .svg {

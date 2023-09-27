@@ -5,7 +5,7 @@ import { MembersListProps } from './MembersList.props';
 export function MembersList({ onClick }: MembersListProps) {
 
 	return <>
-		<h2>New channel</h2>
+		{/*<h2>New channel</h2>
 		<button className={layoutStyles['close-modal']} onClick={onClick}>
 			<img className={layoutStyles['close-svg']} src='/remove.svg' alt='close'/>
 		</button>
@@ -24,8 +24,8 @@ export function MembersList({ onClick }: MembersListProps) {
 					<label htmlFor="protected">protected</label>
 				</div>
 			</fieldset>
-			{/*{isProtected && <Input type='password' placeholder='Password' className={styles['settings-input']}/>}*/}
-			<Button>Create</Button>
-		</form>
+			{isProtected && <Input type='password' placeholder='Password' className={styles['settings-input']}/>}*/}
+		{/*<Button>Create</Button>
+		</form>*/}
 	</>;
 }
