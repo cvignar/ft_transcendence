@@ -10,15 +10,16 @@ RUN unzip backend.zip \
 	&& rm -f backend.zip \
 	&& mkdir /backend/upload
 
-WORKDIR /backend
+WORKDIR /contracts
 
 RUN npm install \
 	&& npm install -g npm@10.0.0 \
-	&& npm i \
-	&& cd /contracts \
-	&& npm i \
-	&& cd /backend
+	&& npm i
 
-EXPOSE 12080
+WORKDIR /backend
+
+RUN npm i
+
+EXPOSE 3000
 
 CMD [ "npm", "run", "start:dev" ]
