@@ -1,17 +1,19 @@
 version: "3.9"
 
 networks:
-  trancendence:
+  trancenft_trancendencedence:
     name: ft_trancendence
     driver: bridge
 
 volumes:
   db_vol:
+    name: db_vol
     driver_opts:
       type: none
       o: bind
       device: ../db_vol
   upload:
+    name: upload
     driver_opts:
       type: none
       o: bind
