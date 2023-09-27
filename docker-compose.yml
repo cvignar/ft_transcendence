@@ -79,6 +79,7 @@ services:
       - "3000:3000"
     volumes:
       - frontend:/frontend
+      - pong:/pong
       - upload:/upload
     networks:
       - ft_trancendence
