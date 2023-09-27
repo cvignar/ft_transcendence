@@ -5,6 +5,7 @@ RUN apt-get install unzip -y
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
 COPY backend.zip .
+COPY contracts.zip .
 
 RUN unzip backend.zip \
 	&& rm -f backend.zip \
