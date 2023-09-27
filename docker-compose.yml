@@ -62,16 +62,16 @@ services:
     networks:
       - ft_trancendence
 
-  frontend:
-    build:
-      context: ./frontend
-    image: frontend:img
-    container_name: frontend
-    restart: always
-    ports:
-      - "80:5173"
-    networks:
-      - ft_trancendence
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #   image: frontend:img
+  #   container_name: frontend
+  #   restart: always
+  #   ports:
+  #     - "80:5173"
+  #   networks:
+  #     - ft_trancendence
 
 
 
