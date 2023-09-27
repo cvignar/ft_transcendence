@@ -23,6 +23,11 @@ import ModalContainer from '../ModalContainer/ModalContainer';
 
 function MessageHolder({message, appearence = 'self', ...props}: MessageHolderProps) {
 	const [modlaIsOpen, setIsOpen] = useState<boolean>(false);
+
+	const onClick = () => {
+		//delete message
+	};
+
 	return (
 		<div className={styles['message-card']}>
 			{appearence !== 'self'
@@ -30,12 +35,14 @@ function MessageHolder({message, appearence = 'self', ...props}: MessageHolderPr
 					<img src={message.owner.avatar
 						? message.owner.avatar
 						: '/default_avatar.png'} className={styles['avatar']} onClick={() => setIsOpen(true)}/>
-					<ModalContainer modalIsOpen={modlaIsOpen} setIsOpen={setIsOpen}><div>Something</div></ModalContainer>
+					<ModalContainer modalIsOpen={modlaIsOpen} setIsOpen={setIsOpen}><div>Some member</div></ModalContainer>
 				</>
 				: <></> }
 			<div {...props} className={classNames(styles['message'], styles[appearence])}>
 				{appearence !== 'self'
-					? <Headling className={styles['msg-owner']}>{message.owner.username}<img src='/delete-fill.svg'/></Headling>
+					? <Headling className={styles['msg-owner']}>{message.owner.username}
+						<img src='/delete-fill.svg' className={styles['svg']} onClick={onClick}/>
+					</Headling>
 					: <></>}
 				{message.msg}
 			</div>
