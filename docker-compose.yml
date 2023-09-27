@@ -7,17 +7,17 @@ networks:
 
 volumes:
   db_vol:
-    name: db_vol
+    name: db
     driver_opts:
       type: none
       o: bind
-      device: ./data/db_vol
+      device: /ft_data/db
   upload:
     name: upload
     driver_opts:
       type: none
       o: bind
-      device: ./data/upload
+      device: /ft_data/upload
 
 services:
 
