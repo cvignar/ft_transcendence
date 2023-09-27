@@ -20,9 +20,10 @@ mkdir:
 up:
 	@echo "======================================"
 	zip pong.zip -r ./pong
+	mv pong.zip ./pong/pong.zip
 	docker-compose -f docker-compose.yml up -d --build
 #	docker build . --tag pong
-	rm -f pong.zip
+	rm -f ./pong/pong.zip
 #	docker run -dp 12080:12080 pong
 	@echo "======================================"
 	docker images
