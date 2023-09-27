@@ -49,5 +49,18 @@ services:
     networks:
       - ft_trancendence
 
+  backend:
+    build:
+      context: ./backend
+    image: backend:img
+    container_name: backend
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - upload:/backend/upload
+    networks:
+      - ft_trancendence
+
 
 
