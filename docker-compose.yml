@@ -94,7 +94,7 @@ services:
     volumes:
       - pong:/pong
     ports:
-      - "12080:12080"
+      - "12080:12080"§
     networks:
       - ft_trancendence
 
