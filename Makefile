@@ -27,14 +27,14 @@ up:
 	mv backend.zip ./backend/backend.zip
 
 	zip contracts.zip -r ./contracts
-	mv contracts.zip ./contracts/contracts.zip
+	mv contracts.zip ./backend/contracts.zip
 
 	docker-compose -f docker-compose.yml up -d --build
 
 	rm -f ./pong/pong.zip
 	rm -f ./backend/backend.zip
-	rm -f ./contracts/contracts.zip
-	
+	rm -f ./backend/contracts.zip
+
 	@echo "======================================"
 	docker images
 	@echo "======================================"
