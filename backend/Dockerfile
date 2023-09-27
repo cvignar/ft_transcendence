@@ -14,7 +14,10 @@ WORKDIR /backend
 
 RUN npm install \
 	&& npm install -g npm@10.0.0 \
-	&& npm i
+	&& npm i \
+	&& cd /contracts \
+	&& npm i \
+	&& cd /backend
 
 EXPOSE 12080
 
