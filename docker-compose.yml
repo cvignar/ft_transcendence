@@ -1,7 +1,7 @@
 version: "3.3"
 
 networks:
-  ft_trancendence:
+  trancendence:
     name: ft_trancendence
     driver: bridge
 
