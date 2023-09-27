@@ -5,7 +5,6 @@ ENV NODE_VERSION 18
 
 RUN mkdir /backend \
     && mkdir /contracts \
-    && mkdir /upload \
     && mkdir /frontend \
     && mkdir /pong \
     && mkdir /upload
