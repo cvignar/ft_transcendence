@@ -8,7 +8,7 @@ COPY backend.zip .
 COPY contracts.zip .
 
 RUN unzip backend.zip \
-	unzip contracts.zip \
+	&& unzip contracts.zip \
 	&& rm -f backend.zip \
 	&& rm -f contractsgit .zip \
 	&& mkdir /backend/upload
