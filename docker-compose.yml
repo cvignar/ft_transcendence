@@ -84,6 +84,21 @@ services:
     networks:
       - ft_trancendence
 
+  frontend:
+    build:
+      context: ./frontend
+    image: frontend:img
+    container_name: frontend
+    restart: always
+    ports:
+      - "80:5173"
+    volumes:
+      - backend:/backend
+      - contracts:/contracts
+      - pong:/pong
+    networks:
+      - ft_trancendence
+
   pong:
     build:
       context: ./pong
@@ -94,17 +109,4 @@ services:
       - "12080:12080"
     networks:
       - ft_trancendence
-
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #   image: frontend:img
-  #   container_name: frontend
-  #   restart: always
-  #   ports:
-  #     - "80:5173"
-  #   networks:
-  #     - ft_trancendence
-
-
 
