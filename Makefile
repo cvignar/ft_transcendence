@@ -19,8 +19,22 @@ mkdir:
 
 up:
 	@echo "======================================"
+
+	zip backend.zip -r ./backend
+	zip contracts.zip -r ./contracts
+	zip pong.zip -r ./pong
+	
+	mv backend.zip ./backend/backend.zip
+	mv contracts.zip ./backend/contracts.zip
+	mv pong.zip ./pong/pong.zip
+
 	docker-compose -f docker-compose.yml up -d --build
-	@echo "======================================"
+
+	rm -f ./backend/backend.zip
+	rm -f ./backend/contracts.zip
+	rm -f ./pong/pong.zip
+	
+	rm -f ./backend/contracts.zip	@echo "======================================"
 	docker images
 	@echo "======================================"
 	docker network ls
