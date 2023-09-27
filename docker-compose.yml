@@ -21,7 +21,7 @@ services:
   db:
     image: postgres:14
     container_name: db
-    env_file: ./db_init/.env
+    env_file: .env
     environment:
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
