@@ -14,8 +14,8 @@ psls:
 
 mkdir:
 	@echo "=Make dirictory data=================="
-	mkdir -p /var/db_vol
-	mkdir -p /var/upload
+	mkdir -p ./data/db_vol
+	mkdir -p ./data/upload
 
 up:
 	@echo "======================================"
@@ -59,8 +59,8 @@ vol:
 
 vold:
 	@echo "=Removing directory data=============="
-	rm -fr /var/db_vol
-	rm -fr /var/upload
+	rm -fr ./data/db_vol
+	rm -fr ./data/upload
 
 rst:
 	@echo "=Restarting docker===================="
@@ -73,7 +73,7 @@ netshoot:
 	@echo "=Netshoot by Nicolaka================="
 	docker run --rm -it --network $(NET) nicolaka/netshoot
 
-clean: rm net vol rst psls
+clean: rm vol rst psls
 
 fclean: clean rmi psls
 
