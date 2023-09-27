@@ -21,7 +21,9 @@ export class AuthService {
 				id42: 42,
 			});
 		} else if (!(await argon2.verify(user.hash, pass))) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedException('Wrong password');
+		} else if (user.username !== username) {
+			throw new UnauthorizedException('Wrong login');
 		}
 		const payload = { sub: user.id, username: user.username };
 		return {

@@ -15,29 +15,30 @@ const channelsMiddleware: Middleware = store => {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
 			socket.on('connect', () => {
 				store.dispatch(channelActions.connectionEstablished());
-				if (store.getState().channel.channels.length == 0) {
-					socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
-						store.dispatch(channelActions.getChannels({ channels }));
-					});
-				}
+				store.dispatch(channelActions.getChannels(store.getState().user.email));
+
+				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
+				//	store.dispatch(channelActions.getChannels({ channels }));
+				//});
 			});
- 
 			socket.on(ChannelsEvent.getMessages, (messages: Message[]) => {
-				console.log('get messages ');
 				store.dispatch(channelActions.setMessages(messages));
 			});
 			socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
 				store.dispatch(channelActions.recieveMessage(message));
 			});
 			socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
-				store.dispatch(channelActions.getChannels({channels: channels}));
+				store.dispatch(channelActions.setChannels({channels: channels}));
 			});
 			socket.on(ChannelsEvent.AddPreview, (channel: ChannelPreview) => {
 				store.dispatch(channelActions.getChannel({channel: channel}));
 			});
-			//socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
-			//	store.dispatch(channelActions.getChannels({ channels }));
-			//});
+			socket.on(ChannelsEvent.update, () => {
+				store.dispatch(channelActions.updateState());
+				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
+				//	store.dispatch(channelActions.getChannels({ channels }));
+				//});
+			});
  
 			//socket.on(ChannelsEvent.ReceiveMessage, (channel: ChannelPreview) => {
 			//	store.dispatch(channelActions.getChannel({ channel }));
@@ -48,10 +49,9 @@ const channelsMiddleware: Middleware = store => {
 			socket.emit(ChannelsEvent.createChannel, action.payload);
 		}
 		if (channelActions.getChannels.match(action) && isConnectionEstablished) {
-			socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
-				if (store.getState().channel.channels.length == 0) {
-					store.dispatch(channelActions.getChannels({ channels }));
-				}
+			console.log('GET!');
+			socket.emit(ChannelsEvent.getPreview, action.payload, (channels: ChannelPreview[]) => {
+				store.dispatch(channelActions.setChannels({ channels }));
 			});
 		}
  
