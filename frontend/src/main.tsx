@@ -27,7 +27,12 @@ const router = createBrowserRouter([
 		children: [
 			{
 				path: '/Chat',
-				element: <RequireAuth><PongChat/></RequireAuth>
+				element: <RequireAuth><PongChat/></RequireAuth>,
+				children: [
+					{
+						
+					}
+				]
 			},
 			{
 				path: '/Settings',

@@ -60,7 +60,14 @@
   --m-r: 10px; 
 }
 
+html {
+    scrollbar-width: none;
+    overflow: -moz-scrollbars-none;
+    overflow: hidden;
+}
+
 body {
+  scrollbar-width: none;
   font-family: var(--font);
   color: var(--text-color);
   background: var(--white-color);

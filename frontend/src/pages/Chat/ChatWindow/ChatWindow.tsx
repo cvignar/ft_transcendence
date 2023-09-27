@@ -14,6 +14,7 @@ import { Message } from '../../../interfaces/message.interface';
 import Modal from 'react-modal';
 import Button from '../../../components/Button/Button';
 import { MembersList } from '../../Members/MembersList/MembersList';
+import ModalContainer from '../../../components/ModalContainer/ModalContainer';
 
 const customStyles = {
 	content: {
@@ -79,15 +80,9 @@ function ChatWindow({ data }: ChatWindowProps) {
 				<button className={styles['see-members']} onClick={openModal}>
 					<img className={styles['svg']} src='/members.svg' alt='members'/>
 				</button>
-				<Modal
-					isOpen={modalIsOpen}
-					onAfterOpen={afterOpenModal}
-					onRequestClose={closeModal}
-					style={customStyles}
-					contentLabel="Example Modal"
-				>
+				<ModalContainer modalIsOpen={modalIsOpen} setIsOpen={setIsOpen}>
 					<MembersList onClick={closeModal}/>
-				</Modal>
+				</ModalContainer>
 			</div>
 			<hr/>
 			<div className={styles['chat-area']}>
