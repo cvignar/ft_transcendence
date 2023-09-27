@@ -34,8 +34,8 @@ export const GameCommand = [
 ];
 export var GameScheme;
 (function (GameScheme) {
-    GameScheme[GameScheme["GENERAL"] = 0] = "GENERAL";
-    GameScheme[GameScheme["REVERSE"] = 1] = "REVERSE";
+    GameScheme[GameScheme["GENERAL"] = 1] = "GENERAL";
+    GameScheme[GameScheme["REVERSE"] = 2] = "REVERSE";
 })(GameScheme || (GameScheme = {}));
 export function getGameCmd(command) {
     let cmd = 1;

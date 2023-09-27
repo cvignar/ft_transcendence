@@ -10,18 +10,17 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
 export const	socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
-
+//socket.on('disconnect' () => {
+//	// Something
+//});
 export function Pong() {
 
-	const username = useSelector((s: RootState) => s.user.username);
-	const userId = useSelector((s: RootState) => s.user.userId);
+	const user = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
-		console.log('userId: ', userId);
-		socket.emit('new player', {name: username, id: userId}); //FIXME!!!! change id!!!
-		console.log('socket emit username: ', username, 'socket.id: ', socket.id);
+		socket.emit('new player', {name: user.username, id: user.userId, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
 		game(socket);
-	}, []);
+	}, [user.userId, user.username, user.profile?.prefferedTableSide, user.profile?.pongColorScheme]);
 
 	return (
 		<div className={styles['pong-page']}>

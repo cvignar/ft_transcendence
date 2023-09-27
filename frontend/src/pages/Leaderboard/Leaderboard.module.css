@@ -1,0 +1,10 @@
+
+.invite-partner {
+	min-width: 400px;
+	max-width: 800px;
+	width: 800px;
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	max-height: 677px;
+}

@@ -1,8 +1,10 @@
+import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import { AppDispatch } from '../../store/store';
 import { userActions } from '../../store/user.slice';
+import { Pong } from '../Pong/pong';
 import styles from './Layout.module.css';
 
 export function Layout() {
@@ -18,10 +20,6 @@ export function Layout() {
 		dispatch(userActions.logout());
 		window.location.reload();
 		//navigate('/Auth');
-	};
-
-	const navigateSettings = () => {
-		navigate('/Settings');
 	};
 
 	return <div className={styles['layout']}>
@@ -49,22 +47,43 @@ export function Layout() {
 				</NavLink>
 
 			</div>*/}
-			<Button className={styles['']} onClick={() => {console.log('Leaderboard');}}>
-				Leaderboard
-			</Button>
-			<Button className={styles['-btn']} onClick={() => {console.log('Invite partner');}}>
-				Invite partner
-			</Button>
+			<NavLink to='/Chat' className={({isActive}) => classNames(styles['link'], {
+				[styles['active']]: isActive
+			})}>
+				<img src='/chat.svg' alt='chat' className={styles['svg']}/>
+			</NavLink>
 
-			<Button  onClick={navigateSettings}>
-				Settings
-			</Button>
-			<Button  onClick={logout}>
-				Logout
-			</Button>
+			<NavLink to='/Leaderboard' className={({isActive}) => classNames(styles['link'], {
+				[styles['active']]: isActive
+			})}>
+				<img src='/ladder.svg' alt='leaderboard' className={styles['svg']}/>
+			</NavLink>
+
+
+			<NavLink to='/InvitePartner' className={({isActive}) => classNames(styles['link'], {
+				[styles['active']]: isActive
+			})}>
+				<img src='/invitePartner.svg' alt='invitePartner' className={styles['svg']}/>
+			</NavLink>
+
+
+			<NavLink to='/Settings' className={({isActive}) => classNames(styles['link'], {
+				[styles['active']]: isActive
+			})}>
+				<img src='/settings-fill.svg' alt='settings' className={styles['svg']}/>
+			</NavLink>
+
+			<NavLink to='/' className={({isActive}) => classNames(styles['link'], {
+				[styles['active']]: isActive
+			})}>
+				<img src='/logout.svg' alt='logout' className={styles['svg']} onClick={logout}/>
+			</NavLink>
 		</div>
 		<div className={styles['content']}>
-			<Outlet/>
+			<Pong/>
+			<div className={styles['outlet']}>
+				<Outlet/>
+			</div>
 		</div>
 	</div>;
 }

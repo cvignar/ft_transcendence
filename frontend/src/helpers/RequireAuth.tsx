@@ -6,7 +6,7 @@ export const RequireAuth = ({ children }: { children: ReactNode }) => {
 	const token = useSelector((s: RootState) => s.user.token);
 
 	if (!token) {
-		return <Navigate to='/' replace />;
+		return <Navigate to='/Auth' replace />;
 	}
 	return <>{children}</>;
 };

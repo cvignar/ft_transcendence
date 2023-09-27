@@ -2,14 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 import { BACK_PREFIX } from '../helpers/API';
 import { AuthResponse } from '../interfaces/auth.interface';
-//import { Profile } from '../interfaces/user.interface';
+import { Profile, UpdateUser } from '../interfaces/user.interface';
 import { loadState } from './storage';
+import { store } from './store';
 //import { RootState } from './store';
 
 export const JWT_PERSISTENT_STATE = 'userToken';
 export const EMAIL_PERSISTENT_STATE = 'userEmail';
 export const USERNAME_PERSISTENT_STATE = 'userName';
 export const USERID_PERSISTENT_STATE = 'userId';
+export const PROFILE_PERSISTENT_STATE = 'userProfile';
 
 export interface UserState {
 	token: string | null;
@@ -18,8 +20,8 @@ export interface UserState {
 	authErrorMessage?: string;
 	username?: string;
 	userId: number | null;
-	//profile?: Profile;
-	//profileError?: string;
+	profile: Profile | null;
+	profileError?: string;
 	//registerError?: string;
 }
 
@@ -28,7 +30,8 @@ const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
 	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
 	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? '',
-	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null
+	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null,
+	profile: loadState<Profile>(PROFILE_PERSISTENT_STATE) ?? null
 };
 
 export const auth = createAsyncThunk('auth/login',
@@ -40,6 +43,33 @@ export const auth = createAsyncThunk('auth/login',
 				password: params.password
 			});
 			return {data: data, email: params.email, username: params.username};
+		} catch (e) {
+			if (e instanceof AxiosError) {
+				throw new Error(e.response?.data.message);
+			}
+		}
+	}
+);
+
+export const getProfile = createAsyncThunk('/getProfile',
+	async (id: number | null) => {
+		try {
+			const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`);
+			return {profile: data};
+		} catch (e) {
+			if (e instanceof AxiosError) {
+				throw new Error(e.response?.data.message);
+			}
+		}
+	}
+);
+	
+export const updateProfile = createAsyncThunk('/updateProfile',
+	async (params: UpdateUser) => {
+		try {
+			console.log('id:', params.id);
+			const { data } = await axios.post<UpdateUser>(`${BACK_PREFIX}/user/updateProfile/${params.id}`, params);
+			return data;
 		} catch (e) {
 			if (e instanceof AxiosError) {
 				throw new Error(e.response?.data.message);
@@ -94,15 +124,26 @@ export const userSlice = createSlice({
 			state.authErrorMessage = action.error.message;
 			console.log(action.error);
 		});
-		//builder.addCase(register.fulfilled, (state, action) => {
-		//	if (!action.payload) {
-		//		return;
-		//	}
-		//	state.id42 = action.payload.id42;
-		//});
-		//builder.addCase(register.rejected, (state, action) => {
-		//	state.registerError = action.error.message;
-		//});
+		builder.addCase(getProfile.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+			state.profile = action.payload.profile;
+			console.log(state.profile);
+		});
+		builder.addCase(getProfile.rejected, (state, action) => {
+			state.authErrorMessage = action.error.message;
+			console.log(action.error);
+		});
+		builder.addCase(updateProfile.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+		});
+		builder.addCase(updateProfile.rejected, (state, action) => {
+			state.profileError = action.error.message;
+			console.log(action.error);
+		});
 	}
 });
 

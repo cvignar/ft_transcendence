@@ -16,20 +16,38 @@ import { ChannelPreview } from '../../interfaces/channel.interface';
 import { INITIAL_CHANNEL } from '../../helpers/ChatInit';
 import { MessageHolderProps } from './MessageHolder.props';
 import classNames from 'classnames';
+import ModalContainer from '../ModalContainer/ModalContainer';
 //import {RootState} from '../../store/store'
 
 
 
-const MessageHolder
-= forwardRef<HTMLDivElement, MessageHolderProps>(
-	function MessageHolder({message, appearence = 'self', ...props}, ref
-	) {
+function MessageHolder({message, appearence = 'self', ...props}: MessageHolderProps) {
+	const [modlaIsOpen, setIsOpen] = useState<boolean>(false);
 
-		return (
-			<div {...props} ref={ref} className={classNames(styles['message'], styles[appearence])}>
+	const onClick = () => {
+		//delete message
+	};
+
+	return (
+		<div className={styles['message-card']}>
+			{appearence !== 'self'
+				? <>
+					<img src={message.owner.avatar
+						? message.owner.avatar
+						: '/default_avatar.png'} className={styles['avatar']} onClick={() => setIsOpen(true)}/>
+					<ModalContainer modalIsOpen={modlaIsOpen} setIsOpen={setIsOpen}><div>Some member</div></ModalContainer>
+				</>
+				: <></> }
+			<div {...props} className={classNames(styles['message'], styles[appearence])}>
+				{appearence !== 'self'
+					? <Headling className={styles['msg-owner']}>{message.owner.username}
+						<img src='/delete-line.svg' className={styles['svg']} onClick={onClick}/>
+					</Headling>
+					: <></>}
 				{message.msg}
 			</div>
-		);
-	});
+		</div>
+	);
+}
 
 export default MessageHolder;
