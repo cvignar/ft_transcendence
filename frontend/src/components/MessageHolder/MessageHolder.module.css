@@ -22,6 +22,7 @@
 	flex-direction: row;
 	justify-content: space-between;
 	font-size: 12px;
+	width: 100%;
 }
 
 .self {
@@ -44,4 +45,17 @@
 	border-radius:50%;
 	width: 25px;
 	height: 25px;
+}
+
+.avatar:hover {
+	cursor: pointer;
+}
+
+.svg {
+	filter: var(--white-hover-color-filter);
+	width: 15px;
+}
+
+.svg:hover {
+	cursor: pointer;
 }
