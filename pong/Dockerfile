@@ -1,9 +1,15 @@
 FROM node:18
 
+RUN apt-get install unzip -y
+
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
 
-RUN mkdir /pong
+COPY pong.zip .
+
+RUN unzip pong.zip \
+	&& rm -f pong.zip \
+	&& rm -f contracts.zip
 
 WORKDIR /pong
 
