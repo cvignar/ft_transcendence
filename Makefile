@@ -14,8 +14,8 @@ psls:
 
 mkdir:
 	@echo "=Make dirictory data=================="
-	mkdir -p ../db_vol
-	mkdir -p ../upload
+	mkdir -p /var/db_vol
+	mkdir -p /var/upload
 
 up:
 	@echo "======================================"
@@ -59,8 +59,8 @@ vol:
 
 vold:
 	@echo "=Removing directory data=============="
-	rm -fr ../db_vol
-	rm -fr ../upload
+	rm -fr /var/db_vol
+	rm -fr /var/upload
 
 rst:
 	@echo "=Restarting docker===================="

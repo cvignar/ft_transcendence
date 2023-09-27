@@ -11,13 +11,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ../db_vol
+      device: /var/db_vol
   upload:
     name: upload
     driver_opts:
       type: none
       o: bind
-      device: ../upload
+      device: /var/upload
 
 services:
 
