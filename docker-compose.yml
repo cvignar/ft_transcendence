@@ -1,0 +1,51 @@
+version: "3.9"
+
+networks:
+  ft_trancendence:
+    driver: bridge
+    name: ft_trancendence
+
+volumes:
+  db_vol:
+    driver_opts:
+      type: none
+      o: bind
+      device: ../db_vol
+  upload:
+    driver_opts:
+      type: none
+      o: bind
+      device: ../upload
+
+services:
+
+  db:
+    image: postgres:14
+    container_name: db
+    env_file: ./db_init/.env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/${DB_NAME}
+      - POSTGRES_HOST_AUTH_METHOD=${DB_AUTH}
+    restart: always
+    ports:
+      - "11080:5432"
+    volumes:
+      - db_vol:/var/lib/postgresql/data/${DB_NAME}
+    networks:
+      - ft_trancendence
+
+  pong:
+    build:
+      context: ./pong
+    image: pong:img
+    container_name: pong
+    restart: always
+    ports:
+      - "12080:12080"
+    networks:
+      - ft_trancendence
+
+
+

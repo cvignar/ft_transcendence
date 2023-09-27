@@ -14,15 +14,15 @@ psls:
 
 mkdir:
 	@echo "=Make dirictory data=================="
-#	mkdir -p ~/data/html
+	mkdir -p ../db_vol
+	mkdir -p ../upload
 
 up:
 	@echo "======================================"
-#	docker-compose -f docker-compose.yml up -d --build
+	docker-compose -f docker-compose.yml up -d --build
 	zip pong.zip -r ./pong
 	docker build . --tag pong
 	rm -f pong.zip
-#	docker run pong
 	docker run -dp 12080:12080 pong
 	@echo "======================================"
 	docker images
@@ -35,7 +35,7 @@ up:
 
 stop:
 	@echo "=Stopping containers's stack=========="
-#	docker-compose -f docker-compose.yml stop
+	docker-compose -f docker-compose.yml stop
 	docker stop pong
 	@echo "======================================"
 	docker ps -a
@@ -58,13 +58,15 @@ vol:
 
 vold:
 	@echo "=Removing directory data=============="
-#	sudo rm -fr ~/data
+	rm -fr ../db_vol
+	rm -fr ../upload
 
 rst:
 	@echo "=Restarting docker===================="
 	sudo systemctl restart docker
+
 logs:
-#	docker-compose -f docker-compose.yml logs -f
+	docker-compose -f docker-compose.yml logs -f
 
 netshoot:
 	@echo "=Netshoot by Nicolaka================="
@@ -72,6 +74,6 @@ netshoot:
 
 clean: rm net vol rst psls
 
-fclean: clean rmi vold psls
+fclean: clean rmi psls
 
 .PHONY: all psls up stop rm rmi net vol rst logs clean fclean mkdir	
