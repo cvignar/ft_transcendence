@@ -2,6 +2,7 @@ version: "3.3"
 
 networks:
   ft_trancendence:
+    name: ft_trancendence
     driver: bridge
 
 volumes:

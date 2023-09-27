@@ -1,4 +1,4 @@
-NET =   ft_transcendence
+NET = ft_transcendence
 
 all: mkdir up
 
