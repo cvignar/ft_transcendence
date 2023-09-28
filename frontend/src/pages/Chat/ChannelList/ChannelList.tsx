@@ -28,13 +28,14 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 			</div>
 			{channels?.map(c => (
 				<CardNavLink
-					to={`/Chat/${c.id}`}
+					to={`/Chat/channel/${c.id}`}
 					className={classNames(styles['preview-button'])}
 					key={c.id}
 					onClick={() => {
 						setChannel(c);
 						setActive(c.id);
 						dispatch(channelActions.getChannel(c.id));
+						dispatch(channelActions.getMessages(c.id));
 					}}>
 					<ChannelPreview
 						data={c}

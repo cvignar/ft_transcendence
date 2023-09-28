@@ -67,10 +67,10 @@ function ChatWindow() {
 	useEffect(() => {
 		console.log('getMessages: ', selectedChannel.id);
 		dispatch(channelActions.getMessages(selectedChannel?.id));
-	}, [dispatch, selectedChannel?.id]);
+	}, []);
 
 	return (
-		<div className={styles['window']} onLoad={() => console.log('load, channelId: ', selectedChannel.id)}>
+		<div className={styles['window']}>
 			<div className={styles['head']}>
 				<ChannelShortInfo appearence='chat' props={selectedChannel}/>
 				<button className={styles['see-members']}>

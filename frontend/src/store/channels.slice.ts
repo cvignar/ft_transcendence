@@ -35,6 +35,8 @@ export interface ChannelsState {
 	channels: ChannelPreview[];
 	messages: Message[];
 	selectedChannel: ChannelPreview;
+
+
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
 	state: number;
@@ -42,7 +44,7 @@ export interface ChannelsState {
  
 const initialState: ChannelsState = {
 	channels: [],
-	messages: [],
+	messages: loadState<Message[]>('messages') ?? [],
 	selectedChannel: loadState<ChannelPreview>('selectedChannel') ?? {
 		id: -1,
 		type: typeEnum.PUBLIC,
@@ -53,7 +55,6 @@ const initialState: ChannelsState = {
 		unreadCount: 0,
 		ownerEmail: '',
 		ownerId: -1
-
 	},
 	isEstablishingConnection: false,
 	isConnected: false,
@@ -64,6 +65,23 @@ const channelSlice = createSlice({
 	name: 'channels',
 	initialState,
 	reducers: {
+		logout: (state) => {
+			state.channels = [];
+			state.isConnected = false;
+			state.isEstablishingConnection = false;
+			state.messages = [];
+			state.selectedChannel = {
+				id: -1,
+				type: typeEnum.PUBLIC,
+				name: '',
+				picture: '',
+				updatedAt: new Date('now').toDateString(),
+				lastMessage: '',
+				unreadCount: 0,
+				ownerEmail: '',
+				ownerId: -1
+			};
+		},
 		startConnecting: (state => {
 			state.isEstablishingConnection = true;
 		}),
