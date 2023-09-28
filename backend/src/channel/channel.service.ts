@@ -274,6 +274,7 @@ export class ChannelService {
 							id: true,
 							msg: true,
 							createdAt: true,
+							cid: true,
 							owner: {
 								select: {
 									id: true,

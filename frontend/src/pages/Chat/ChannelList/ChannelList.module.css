@@ -30,7 +30,7 @@
 }
 
 .add-channel:hover {
-	background: var(--primary-color);
+	background: var(--white-hover-color);
 }
 
 .search {
