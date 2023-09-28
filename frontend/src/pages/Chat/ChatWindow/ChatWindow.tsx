@@ -40,8 +40,12 @@ function ChatWindow() {
 	const selectedChannel = useSelector((s: RootState) => s.channel.selectedChannel);
 
 	useEffect(() => {
-		dispatch(channelActions.getChannel);
-	}, [channelId]);
+		if (selectedChannel.id == -1 && channelId) {
+			console.log('!');
+			dispatch(channelActions.getChannel(parseInt(channelId)));
+		}
+	}, [dispatch, channelId, selectedChannel.id]);
+
 	const sendMessage = (event: React.KeyboardEvent) => {
 		if (event.key == 'Enter' && /\S/.test(message)) {
 			setValue('');
@@ -61,30 +65,15 @@ function ChatWindow() {
 	};
 
 	useEffect(() => {
+		console.log('getMessages: ', selectedChannel.id);
 		dispatch(channelActions.getMessages(selectedChannel?.id));
 	}, [dispatch, selectedChannel?.id]);
 
-	let subtitle;
-	const [modalIsOpen, setIsOpen] = useState(false);
-
-	const openModal = () => {
-		setIsOpen(true);
-	};
-
-	const afterOpenModal = () => {
-		// references are now sync'd and can be accessed.
-		subtitle.style.color = '#f00';
-	};
-
-	const closeModal = () => {
-		setIsOpen(false);
-	};
-
 	return (
-		<div className={styles['window']}>
+		<div className={styles['window']} onLoad={() => console.log('load, channelId: ', selectedChannel.id)}>
 			<div className={styles['head']}>
 				<ChannelShortInfo appearence='chat' props={selectedChannel}/>
-				<button className={styles['see-members']} onClick={openModal}>
+				<button className={styles['see-members']}>
 					<img className={styles['svg']} src='/members.svg' alt='members'/>
 				</button>
 				{/*<ModalContainer modalIsOpen={modalIsOpen} setIsOpen={setIsOpen}>

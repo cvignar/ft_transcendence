@@ -43,12 +43,12 @@ export interface ChannelsState {
 const initialState: ChannelsState = {
 	channels: [],
 	messages: [],
-	selectedChannel: {
+	selectedChannel: loadState<ChannelPreview>('selectedChannel') ?? {
 		id: -1,
 		type: typeEnum.PUBLIC,
 		name: '',
 		picture: '',
-		updatedAt: new Date('now'),
+		updatedAt: new Date('now').toDateString(),
 		lastMessage: '',
 		unreadCount: 0,
 		ownerEmail: '',
@@ -71,10 +71,14 @@ const channelSlice = createSlice({
 			state.isConnected = true;
 			state.isEstablishingConnection = true;
 		}),
-		getChannel: ((state, action: PayloadAction<{
+		getChannel: ((state, action: PayloadAction<number>) => {
+			return;
+		}),
+		setChannel: ((state, action: PayloadAction<{
 			channel: ChannelPreview
 		}>) => {
-			state.channels.push(action.payload.channel);
+			state.selectedChannel = action.payload.channel;
+			console.log(state.selectedChannel.updatedAt);
 		}),
 		getChannels: ((state, action: PayloadAction<string | undefined>) => {
 			return;
