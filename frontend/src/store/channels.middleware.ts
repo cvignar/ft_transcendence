@@ -31,7 +31,7 @@ const channelsMiddleware: Middleware = store => {
 				store.dispatch(channelActions.setChannels({channels: channels}));
 			});
 			socket.on(ChannelsEvent.AddPreview, (channel: ChannelPreview) => {
-				store.dispatch(channelActions.getChannel({channel: channel}));
+				store.dispatch(channelActions.setChannel({channel: channel}));
 			});
 			socket.on(ChannelsEvent.update, () => {
 				store.dispatch(channelActions.updateState());
@@ -49,7 +49,6 @@ const channelsMiddleware: Middleware = store => {
 			socket.emit(ChannelsEvent.createChannel, action.payload);
 		}
 		if (channelActions.getChannels.match(action) && isConnectionEstablished) {
-			console.log('GET!');
 			socket.emit(ChannelsEvent.getPreview, action.payload, (channels: ChannelPreview[]) => {
 				store.dispatch(channelActions.setChannels({ channels }));
 			});
@@ -62,6 +61,12 @@ const channelsMiddleware: Middleware = store => {
 		if (channelActions.getMessages.match(action) && isConnectionEstablished) {
 			if (action.payload != -1) {
 				socket.emit(ChannelsEvent.getMessages, action.payload);
+			}
+		}
+		if (channelActions.getChannel.match(action) && isConnectionEstablished) {
+			console.log('GET!');
+			if (action.payload != -1) {
+				socket.emit(ChannelsEvent.AddPreview, {email: store.getState().user.email, channelId: action.payload});
 			}
 		}
 		next(action);

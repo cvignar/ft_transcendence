@@ -11,7 +11,9 @@ export const store = configureStore({
 		channel: channelSlice
 	},
 	middleware: (getDefaultMiddleware) => {
-		return getDefaultMiddleware().concat([channelsMiddleware]);
+		return getDefaultMiddleware({
+			serializableCheck: false
+		}).concat([channelsMiddleware]);
 	}
 });
 	
@@ -22,6 +24,7 @@ store.subscribe(() => {
 	saveState(store.getState().user.email, EMAIL_PERSISTENT_STATE);
 	saveState(store.getState().user.username, USERNAME_PERSISTENT_STATE);
 	saveState(store.getState().user.profile, PROFILE_PERSISTENT_STATE);
+	saveState(store.getState().channel.selectedChannel, 'selectedChannel');
 	//saveState(store.getState().channel);
 });
 

@@ -22,8 +22,8 @@ import ModalContainer from '../ModalContainer/ModalContainer';
 
 
 function MessageHolder({message, appearence = 'self', ...props}: MessageHolderProps) {
-	const [modlaIsOpen, setIsOpen] = useState<boolean>(false);
 
+	const navigate = useNavigate();
 	const onClick = () => {
 		//delete message
 	};
@@ -34,8 +34,7 @@ function MessageHolder({message, appearence = 'self', ...props}: MessageHolderPr
 				? <>
 					<img src={message.owner.avatar
 						? message.owner.avatar
-						: '/default_avatar.png'} className={styles['avatar']} onClick={() => setIsOpen(true)}/>
-					<ModalContainer modalIsOpen={modlaIsOpen} setIsOpen={setIsOpen}><div>Some member</div></ModalContainer>
+						: '/default_avatar.png'} className={styles['avatar']} onClick={() => {navigate('/Chat');}}/>
 				</>
 				: <></> }
 			<div {...props} className={classNames(styles['message'], styles[appearence])}>
