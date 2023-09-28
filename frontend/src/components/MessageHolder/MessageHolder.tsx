@@ -34,7 +34,7 @@ function MessageHolder({message, appearence = 'self', ...props}: MessageHolderPr
 				? <>
 					<img src={message.owner.avatar
 						? message.owner.avatar
-						: '/default_avatar.png'} className={styles['avatar']} onClick={() => {navigate('/Chat');}}/>
+						: '/default_avatar.png'} className={styles['avatar']} onClick={() => {navigate(`/Chat/channel/${message.cid}/member/${message.owner.id}`);}}/>
 				</>
 				: <></> }
 			<div {...props} className={classNames(styles['message'], styles[appearence])}>
