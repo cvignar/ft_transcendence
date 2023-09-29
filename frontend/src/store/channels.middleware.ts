@@ -40,12 +40,14 @@ const channelsMiddleware: Middleware = store => {
 				//});
 			});
  
-			//socket.on(ChannelsEvent.ReceiveMessage, (channel: ChannelPreview) => {
-			//	store.dispatch(channelActions.getChannel({ channel }));
-			//});
+			socket.on(ChannelsEvent.getError, (error: string) => {
+				store.dispatch(channelActions.setError(error));
+			});
 		}
  
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
+			console.log('!');
+			console.log(action.payload);
 			socket.emit(ChannelsEvent.createChannel, action.payload);
 		}
 		if (channelActions.getChannels.match(action) && isConnectionEstablished) {
