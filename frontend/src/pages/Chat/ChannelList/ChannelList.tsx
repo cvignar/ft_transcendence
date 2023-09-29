@@ -5,14 +5,14 @@ import styles from './ChannelList.module.css';
 import classNames from 'classnames';
 import Headling from '../../../components/Headling/Headling';
 import Search from '../../../components/Search/Search';
-import { Navigate, NavLink } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import CardNavLink from '../../../components/CardNavLink/CardNavLink';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../store/store';
 import { channelActions } from '../../../store/channels.slice';
 export function ChannelList({ channels, setChannel, isActive, setActive }: ChannelListProps) {
 	const dispatch = useDispatch<AppDispatch>();
-
+	const navigate = useNavigate();
 	return (
 		<div className={styles['list']} >
 			<div className={styles['control-row']}>
@@ -21,7 +21,7 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 					<Search className={styles['search']} placeholder='Search'></Search>
 				</div>
 				<div className={styles['btn']}>
-					<button className={styles['add-channel']}>
+					<button className={styles['add-channel']} onClick={() => navigate('/Chat/createChannel')}>
 						<img className={styles['svg']} src='/increase.svg' alt='add channel'/>
 					</button>
 				</div>
