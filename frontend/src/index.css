@@ -78,3 +78,8 @@ body {
     display: none;
 }
 
+a:-webkit-any-link {
+    color: var(--text-color);
+    cursor: pointer;
+    text-decoration: none;
+}

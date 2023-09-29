@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 import { Socket } from 'socket.io-client';
+import { typeEnum } from '../../../contracts/enums';
 import { BACK_PREFIX } from '../helpers/API';
 import { ChannelPreview } from '../interfaces/channel.interface';
-import CreateChannel from '../interfaces/createChannel.interface';
+import { CreateChannel } from '../interfaces/createChannel.interface';
 import { CreateMessage } from '../interfaces/createMessage.interface';
 import { Message } from '../interfaces/message.interface';
 import { loadState } from './storage';
@@ -33,21 +34,54 @@ export enum ChannelsEvent {
 export interface ChannelsState {
 	channels: ChannelPreview[];
 	messages: Message[];
+	selectedChannel: ChannelPreview;
+
+
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
+	state: number;
 }
  
 const initialState: ChannelsState = {
 	channels: [],
-	messages: [],
+	messages: loadState<Message[]>('messages') ?? [],
+	selectedChannel: loadState<ChannelPreview>('selectedChannel') ?? {
+		id: -1,
+		type: typeEnum.PUBLIC,
+		name: '',
+		picture: '',
+		updatedAt: new Date('now').toDateString(),
+		lastMessage: '',
+		unreadCount: 0,
+		ownerEmail: '',
+		ownerId: -1
+	},
 	isEstablishingConnection: false,
-	isConnected: false
+	isConnected: false,
+	state: 0
 };
  
 const channelSlice = createSlice({
 	name: 'channels',
 	initialState,
 	reducers: {
+		logout: (state) => {
+			state.channels = [];
+			state.isConnected = false;
+			state.isEstablishingConnection = false;
+			state.messages = [];
+			state.selectedChannel = {
+				id: -1,
+				type: typeEnum.PUBLIC,
+				name: '',
+				picture: '',
+				updatedAt: new Date('now').toDateString(),
+				lastMessage: '',
+				unreadCount: 0,
+				ownerEmail: '',
+				ownerId: -1
+			};
+		},
 		startConnecting: (state => {
 			state.isEstablishingConnection = true;
 		}),
@@ -55,12 +89,19 @@ const channelSlice = createSlice({
 			state.isConnected = true;
 			state.isEstablishingConnection = true;
 		}),
-		getChannel: ((state, action: PayloadAction<{
+		getChannel: ((state, action: PayloadAction<number>) => {
+			return;
+		}),
+		setChannel: ((state, action: PayloadAction<{
 			channel: ChannelPreview
 		}>) => {
-			state.channels.push(action.payload.channel);
+			state.selectedChannel = action.payload.channel;
+			console.log(state.selectedChannel.updatedAt);
 		}),
-		getChannels: ((state, action: PayloadAction<{ channels: ChannelPreview[] }>) => {
+		getChannels: ((state, action: PayloadAction<string | undefined>) => {
+			return;
+		}),
+		setChannels: ((state, action: PayloadAction<{ channels: ChannelPreview[] }>) => {
 			state.channels = action.payload.channels;
 		}),
 		sendMessage: ((state, action: PayloadAction<CreateMessage>) => {
@@ -78,6 +119,9 @@ const channelSlice = createSlice({
 		}),
 		createChannel: ((state, action: PayloadAction<CreateChannel>) => {
 			return;
+		}),
+		updateState: (state => {
+			state.state = state.state + 1;
 		})
 	}
 });
