@@ -7,7 +7,7 @@ ENV NODE_VERSION 18
 
 COPY frontend.zip .
 
-RUN unzip frontend.zip \
+RUN unzip -q frontend.zip \
 	&& rm -f frontend.zip
 
 WORKDIR /frontend

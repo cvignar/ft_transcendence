@@ -22,10 +22,10 @@ mkdir:
 up:
 	@echo "======================================"
 
-	zip backend.zip -r ./backend
-	zip contracts.zip -r ./contracts
-	zip frontend.zip -r ./frontend
-	zip pong.zip -r ./pong
+	zip backend.zip -rq ./backend
+	zip contracts.zip -rq ./contracts
+	zip frontend.zip -rq ./frontend
+	zip pong.zip -rq ./pong
 
 	mv backend.zip ./backend/backend.zip
 	mv contracts.zip ./backend/contracts.zip
