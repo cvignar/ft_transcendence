@@ -2,7 +2,7 @@ import { z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
-import { MessageSchema } from './Message.schema';
+import { MessageSchema } from './message.schema';
 import { Status } from './enums';
 import { GameScheme, Side } from '../pong/static/common';
 
