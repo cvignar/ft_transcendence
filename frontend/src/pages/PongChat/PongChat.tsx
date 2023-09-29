@@ -81,7 +81,9 @@ export function PongChat() {
 		//<div className={styles['chat']}>
 		<>
 			<ChannelList channels={channelState.channels} setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
-			<Outlet/>
+			<div className={styles['other']}>
+				<Outlet/>
+			</div>
 			{/*<ChatWindow data={selectedChannel}/>*/}
 		</>
 		//</div>
