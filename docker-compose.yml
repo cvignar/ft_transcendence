@@ -77,6 +77,8 @@ services:
     restart: always
     depends_on:
       - db
+    ports:
+      - "3000:3000"
     volumes:
       - frontend:/frontend
       - pong:/pong
