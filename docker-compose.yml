@@ -75,8 +75,8 @@ services:
     image: backend:img
     container_name: backend
     restart: always
-    ports:
-      - "3000:3000"
+    depends_on:
+      - db
     volumes:
       - frontend:/frontend
       - pong:/pong
@@ -90,6 +90,8 @@ services:
     image: frontend:img
     container_name: frontend
     restart: always
+    depends_on:
+      - pong
     ports:
       - "80:5173"
     volumes:
@@ -105,6 +107,8 @@ services:
     image: pong:img
     container_name: pong
     restart: always
+    depends_on:
+      - backend
     ports:
       - "12080:12080"
     networks:
