@@ -12,14 +12,15 @@ import { auth, getProfile, userActions } from '../../store/user.slice';
 export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const { token, authErrorMessage, userId } = useSelector((s: RootState) => s.user);
+	const { token, authErrorMessage, userId, profile } = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
 		if (token) {
 			dispatch(getProfile(userId));
-			navigate('/Chat');
+			if (profile)
+				navigate('/Chat');
 		}
-	}, [token, navigate, dispatch, userId]);
+	}, [token, navigate, dispatch, userId, profile]);
 
 	const submit = async (e: FormEvent) => {
 		e.preventDefault();

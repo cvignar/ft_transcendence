@@ -18,10 +18,9 @@ export function Pong() {
 	const user = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
-		console.log('new player!!!!!! ', user.username, user.userId, user.profile?.prefferedTableSide, user.profile?.pongColorScheme, user.token);
-		socket.emit('new player', {name: user.username, id: user.userId, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
-		game(socket);
-	}, [user.userId, user.username, user.profile?.prefferedTableSide, user.profile?.pongColorScheme]);
+		console.log(user);
+		game(socket, user);
+	}, []);
 
 	return (
 		<div className={styles['pong-page']}>

@@ -17,6 +17,7 @@ import { InvitePartner } from './pages/InvitePartner/InvitePartner';
 import { Leaderboard } from './pages/Leaderboard/Leaderboard';
 import ChatWindow from './pages/Chat/ChatWindow/ChatWindow';
 import MemberPreview from './pages/MemberPreview/MemberPreview';
+import { CreateChannelFrom } from './pages/CreateChannelForm/CreateChannelForm';
 
 const router = createBrowserRouter([
 	{
@@ -40,8 +41,8 @@ const router = createBrowserRouter([
 						element: <MemberPreview/>
 					},
 					{
-						path: 'Chat/createChannel',
-						element: <Cre></>
+						path: '/Chat/createChannel',
+						element: <CreateChannelFrom/>
 					}
 				]
 			},
