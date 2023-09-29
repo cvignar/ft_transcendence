@@ -11,6 +11,8 @@ psls:
 	docker volume ls
 	@echo "======================================"
 	docker ps -a
+	@echo "======================================"
+	docker system df
 
 mkdir:
 	@echo "=Make dirictory data=================="
