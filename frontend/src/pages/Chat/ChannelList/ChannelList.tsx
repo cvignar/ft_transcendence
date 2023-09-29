@@ -34,7 +34,7 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 					onClick={() => {
 						setChannel(c);
 						setActive(c.id);
-						dispatch(channelActions.getChannel(c.id));
+						dispatch(channelActions.setSelectedChannel({ channel: c }));
 						dispatch(channelActions.getMessages(c.id));
 					}}>
 					<ChannelPreview
