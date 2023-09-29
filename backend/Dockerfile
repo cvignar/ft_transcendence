@@ -8,11 +8,10 @@ ENV NODE_VERSION 18
 COPY backend.zip .
 COPY contracts.zip .
 
-RUN unzip backend.zip \
-	&& unzip contracts.zip \
+RUN unzip -q backend.zip \
+	&& unzip -q contracts.zip \
 	&& rm -f backend.zip \
-	&& rm -f contracts.zip \
-	&& mkdir /upload
+	&& rm -f contracts.zip
 
 WORKDIR /contracts
 

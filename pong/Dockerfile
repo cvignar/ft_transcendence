@@ -7,9 +7,8 @@ ENV NODE_VERSION 18
 
 COPY pong.zip .
 
-RUN unzip pong.zip \
-	&& rm -f pong.zip \
-	&& rm -f contracts.zip
+RUN unzip -q pong.zip \
+	&& rm -f pong.zip
 
 WORKDIR /pong
 
