@@ -15,6 +15,8 @@ import Chat from './pages/Chat/Chat';
 import { Settings } from './pages/Settings/Settings';
 import { InvitePartner } from './pages/InvitePartner/InvitePartner';
 import { Leaderboard } from './pages/Leaderboard/Leaderboard';
+import ChatWindow from './pages/Chat/ChatWindow/ChatWindow';
+import MemberPreview from './pages/MemberPreview/MemberPreview';
 
 const router = createBrowserRouter([
 	{
@@ -30,7 +32,12 @@ const router = createBrowserRouter([
 				element: <RequireAuth><PongChat/></RequireAuth>,
 				children: [
 					{
-						
+						path: '/Chat/channel/:channelId',
+						element: <ChatWindow/>
+					},
+					{
+						path: '/Chat/channel/:channelId/member/:memberId',
+						element: <MemberPreview/>
 					}
 				]
 			},
