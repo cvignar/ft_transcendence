@@ -104,6 +104,7 @@ export const userSlice = createSlice({
 			state.email = '';
 			state.token = null;
 			state.username = '';
+			state.profile = null;
 			console.log('logout!');
 		},
 		clearAuthError: (state) => {

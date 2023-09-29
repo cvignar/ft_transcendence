@@ -419,6 +419,11 @@ export class ChannelGateway {
 		this.server.in(channelName).emit('update channel request');
 	}
 
+	@SubscribeMessage('get member')
+	async getMember(
+		@MessageBody() data: { channelId: number; memberId: number },
+	) {}
+
 	//@SubscribeMessage('be admin')
 	//async handleBeAdmin(
 	//  @MessageBody() channelData: UpdateChannel.Request,
