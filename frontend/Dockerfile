@@ -4,17 +4,18 @@ RUN apt-get install unzip -y
 
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
-COPY pong.zip .
 
-RUN unzip pong.zip \
-	&& rm -f pong.zip
+COPY frontend.zip .
 
-WORKDIR /pong
+RUN unzip frontend.zip \
+	&& rm -f frontend.zip
+
+WORKDIR /frontend
 
 RUN npm install \
 	&& npm install -g npm@10.0.0 \
 	&& npm i
 
-EXPOSE 12080
+EXPOSE 5173
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "run", "dev"]

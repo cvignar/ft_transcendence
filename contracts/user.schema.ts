@@ -2,7 +2,7 @@ import { z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
-import { MessageSchema } from './Message.schema';
+import { MessageSchema } from './message.schema';
 import { Status } from './enums';
 import { GameScheme, Side } from '../pong/static/common';
 
@@ -94,8 +94,8 @@ const ProfileSchema = zod.object({
 	username: zod.string(),
 	avatar: zod.string(),
 	twoFA: zod.boolean(),
-	prefferedTableSide: zod.nativeEnum(Side),
-	pongColorScheme: zod.nativeEnum(GameScheme),
+	prefferedTableSide: zod.nativeEnum(Side).default(Side.RIGHT),
+	pongColorScheme: zod.nativeEnum(GameScheme).default(GameScheme.GENERAL),
 	gamesWon: zod.number().int(),
   gamesLost: zod.number().int(),
 	gamesPlayed: zod.number().int(),
