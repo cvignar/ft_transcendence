@@ -19,7 +19,7 @@ import {
 	CreateDirectChannel,
 	UpdateChannel,
 } from 'contracts/channel.schema';
-import { CreateMessage, MessagePreview } from 'contracts/Message.schema';
+import { CreateMessage, MessagePreview } from 'contracts/message.schema';
 import { MemberPreview } from 'contracts/user.schema';
 import { Role } from 'contracts/enums';
 
