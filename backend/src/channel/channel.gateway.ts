@@ -29,7 +29,7 @@ import { Role } from 'contracts/enums';
 @WebSocketGateway()
 export class ChannelGateway {
 	@WebSocketServer()
-		server: Server;
+	server: Server;
 
 	constructor(
 		private channelService: ChannelService,
@@ -83,6 +83,7 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
+		console.log('!');
 		const channelId = await this.channelService.createChannel(channelData);
 		if (channelId == undefined) {
 			client.emit('exception', 'failed to create channel, try again');

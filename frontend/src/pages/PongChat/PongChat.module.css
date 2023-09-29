@@ -20,6 +20,14 @@
 	/*border: 1px solid red;*/
 }
 
+.other {
+	background: var(--white-hover-color);
+	display: flex;
+	width: 50%;
+	height: 100%;
+	/*border: 1px solid red;*/
+}
+
 .pong-ratings {
 	display: flex;
 	flex-direction: column;
