@@ -12,7 +12,7 @@ import {
 import { typeEnum } from '../../../contracts/enums';
 import { WsException } from '@nestjs/websockets';
 import { MemberPreview } from 'contracts/user.schema';
-import { CreateMessage, MessagePreview } from 'contracts/Message.schema';
+import { CreateMessage, MessagePreview } from 'contracts/message.schema';
 import { Message } from '@prisma/client';
 //import { ExceptionWithMessage } from '@prisma/client/runtime/library';
 
