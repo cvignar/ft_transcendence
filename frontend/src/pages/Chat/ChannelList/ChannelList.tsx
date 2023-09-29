@@ -21,7 +21,7 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 					<Search className={styles['search']} placeholder='Search'></Search>
 				</div>
 				<div className={styles['btn']}>
-					<button className={styles['add-channel']} onClick={() => navigate('/')}>
+					<button className={styles['add-channel']} onClick={() => navigate('/Chat/createChannel')}>
 						<img className={styles['svg']} src='/increase.svg' alt='add channel'/>
 					</button>
 				</div>

@@ -40,6 +40,7 @@ export interface ChannelsState {
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
 	state: number;
+	error?: string;
 }
  
 const initialState: ChannelsState = {
@@ -118,10 +119,14 @@ const channelSlice = createSlice({
 			state.messages.push(action.payload);
 		}),
 		createChannel: ((state, action: PayloadAction<CreateChannel>) => {
+			console.log('!');
 			return;
 		}),
 		updateState: (state => {
 			state.state = state.state + 1;
+		}),
+		setError: ((state, action: any) => {
+			state.error = action;
 		})
 	}
 });
