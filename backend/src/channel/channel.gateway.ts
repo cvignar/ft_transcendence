@@ -83,7 +83,6 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('!');
 		const channelId = await this.channelService.createChannel(channelData);
 		if (channelId == undefined) {
 			client.emit('exception', 'failed to create channel, try again');
@@ -92,6 +91,7 @@ export class ChannelGateway {
 				channelId,
 				channelData.email,
 			);
+			console.log(preview);
 			client.join(preview.name);
 			client.emit('add preview', preview);
 			this.server.in('all').emit('update channel request');
