@@ -93,11 +93,16 @@ const channelSlice = createSlice({
 		getChannel: ((state, action: PayloadAction<number>) => {
 			return;
 		}),
-		setChannel: ((state, action: PayloadAction<{
+		setSelectedChannel: ((state, action: PayloadAction<{
 			channel: ChannelPreview
 		}>) => {
 			state.selectedChannel = action.payload.channel;
-			console.log(state.selectedChannel.updatedAt);
+		}),
+		setChannel: ((state, action: PayloadAction<{
+			channel: ChannelPreview
+		}>) => {
+			//if ()
+			state.channels.push(action.payload.channel);
 		}),
 		getChannels: ((state, action: PayloadAction<string | undefined>) => {
 			return;
@@ -125,7 +130,7 @@ const channelSlice = createSlice({
 		updateState: (state => {
 			state.state = state.state + 1;
 		}),
-		setError: ((state, action: any) => {
+		setError: ((state, action: PayloadAction<string>) => {
 			state.error = action;
 		})
 	}
