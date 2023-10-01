@@ -2,7 +2,7 @@ import { z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 import { ChannelSchema } from './channel.schema';
 import { MuteSchema } from './mute.schema';
-import { MessageSchema } from './Message.schema';
+import { MessageSchema } from './message.schema';
 import { Status } from './enums';
 import { GameScheme, Side } from '../pong/static/common';
 
@@ -89,6 +89,7 @@ export namespace MemberPreview {
 
 const ProfileSchema = zod.object({
   id: zod.number().int(),
+  id42: zod.number().int(),
 	updatedAt: zod.date(),
 	email: zod.string().email(),
 	username: zod.string(),
