@@ -13,7 +13,11 @@ export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
 	const { token, authErrorMessage, userId } = useSelector((s: RootState) => s.user);
-
+	const uri = 'http://localhost:3000/auth/intra42';
+	const getIntraUserCode = () =>
+	{
+		location.href = uri;
+	};
 	useEffect(() => {
 		if (token) {
 			dispatch(getProfile(userId));
@@ -32,7 +36,7 @@ export function AuthForm() {
 	return (
 		<div className={styles['page']}>
 			<div className={styles['login']}>
-				<Headling>FAKE AUTORIZATION</Headling>
+				<Headling>Welcome to PingPong</Headling>
 				{authErrorMessage && <div className={styles['error']}>{authErrorMessage}</div>}
 				<form className={styles['form']} onSubmit={submit}>
 					<div className={styles['field']}>
@@ -49,6 +53,7 @@ export function AuthForm() {
 					</div>
 					<Button appearence='big'>Login</Button>
 				</form>
+				<Button appearence='big' onClick={getIntraUserCode}>Login</Button>
 			</div>
 		</div>
 	);

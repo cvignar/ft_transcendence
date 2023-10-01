@@ -2,7 +2,7 @@ import { string, z as zod } from 'nestjs-zod/z';
 import { createZodDto } from 'nestjs-zod';
 import { UserSchema } from './user.schema';
 import { MuteSchema } from './mute.schema';
-import { MessageSchema } from './Message.schema';
+import { MessageSchema } from './message.schema';
 import { typeEnum } from './enums';
 export const DirectChannelSchema = zod.object({
 	channelId: zod.number(),
