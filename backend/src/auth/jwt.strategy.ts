@@ -22,7 +22,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 	}
 	
 	async validate(payload: any) {
-		const user = await this.userService.getUserById(payload.id);
+		const user = await this.userService.getUserById(payload.sub);
 		if (!user) {
 			throw new UnauthorizedException('Access denied');
 		}
