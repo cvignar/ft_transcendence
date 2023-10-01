@@ -29,6 +29,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		if (payload?.only2FA == true) {
 			throw new UnauthorizedException('2FA required');
 		}
-		return { name: payload.owner, id: payload.id};
+		return { name: payload.username, id: payload.sub};
 	}
 }
