@@ -41,7 +41,7 @@ export class PongOptions extends Options {
 	static ball_StartClicksForSpeedup: number = 12;
 	static ball_speedUp: number = 1.2;
 	static ball_speedUpMax: number = 6;
-	static calculation_period: number = 1000 / 60;
+	static calculation_period: number = 1000 / 30;
 	static sendResult_period: number = 2000;
 	static tokenRequest_period: number = 179990000;// 300 min
 }
@@ -76,5 +76,4 @@ export class ImageOptions extends Options {
 	static score_font: string = this.score_fontSize.toString() + 'px ' + 'Courier Prime';
 	static score_font1: string = this.score_fontSize.toString() + 'px ' + 'Share Tech Mono';
 	static score_font2: string = this.score_fontSize.toString() + 'px ' + 'VT323';
-	static rendering_period: number = 1000 / 100;
 }
