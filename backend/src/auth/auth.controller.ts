@@ -1,13 +1,13 @@
 import {
-  Body,
-  Controller,
+	Body,
+	Controller,
   Redirect,
-  Post,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-  Get,
-  Request,
+	Post,
+	HttpCode,
+	HttpStatus,
+	UseGuards,
+	Get,
+	Request,
   Req,
   Res,
   BadRequestException,
@@ -33,7 +33,7 @@ export class AuthGateway {
 
 @Controller('auth')
 export class AuthController {
-  constructor(
+	constructor(
     private authService: AuthService,
     private userService: UserService,
     private authGateway: AuthGateway,
@@ -41,15 +41,22 @@ export class AuthController {
     private readonly configService: ConfigService,
     ) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(
-      signInDto.email,
-      signInDto.username,
-      signInDto.password,
-    );
-  }
+	//@HttpCode(HttpStatus.OK)
+	@Post('login')
+	signIn(
+		@Body()
+		signInDto: {
+			email: string;
+			username: string;
+			password: string;
+		},
+	) {
+		return this.authService.signIn(
+			signInDto.email,
+			signInDto.username,
+			signInDto.password,
+		);
+	}
 
   @Get('intra42')
   @UseGuards(Oauth42Guard)
@@ -77,9 +84,9 @@ export class AuthController {
     return ;
   }
 
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
+	@UseGuards(AuthGuard)
+	@Get('profile')
+	getProfile(@Request() req) {
+		return req.user;
+	}
 }

@@ -37,7 +37,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	clientSocket = new Map<number, Socket>();
 
 	@WebSocketServer()
-		server: Server;
+	server: Server;
 
 	async handleConnection(client: Socket) {
 		try {
@@ -95,7 +95,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			channelData.channelId,
 		);
 		if (this.clientSocket.has(channelData.userId)) {
-			const client = await this.clientSocket.get(channelData.userId);
+			const client = this.clientSocket.get(channelData.userId);
 			client.join(channelName);
 			client.emit('update channel request');
 		}

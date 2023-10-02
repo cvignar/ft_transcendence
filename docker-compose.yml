@@ -1,0 +1,118 @@
+version: "3.9"
+
+networks:
+
+  ft_trancendence:
+    name: ft_trancendence
+    driver: bridge
+
+volumes:
+
+  db_vol:
+    name: db
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_data/db
+
+  upload:
+    name: upload
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_data/upload
+
+  backend:
+    name: backend
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/backend
+
+  contracts:
+    name: contracts
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/contracts
+
+  frontend:
+    name: frontend
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/frontend
+
+  pong:
+    name: pong
+    driver_opts:
+      type: none
+      o: bind
+      device: /ft_transcendence/pong
+
+services:
+
+  db:
+    image: postgres:14
+    container_name: db
+    env_file: .env
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/${DB_NAME}
+      - POSTGRES_HOST_AUTH_METHOD=${DB_AUTH}
+    restart: always
+    ports:
+      - "11080:5432"
+    volumes:
+      - db_vol:/var/lib/postgresql/data/${DB_NAME}
+    networks:
+      - ft_trancendence
+
+  backend:
+    build:
+      context: ./backend
+    image: backend:img
+    container_name: backend
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    volumes:
+      - frontend:/frontend
+      - pong:/pong
+      - upload:/upload
+    networks:
+      - ft_trancendence
+
+  frontend:
+    build:
+      context: ./frontend
+    image: frontend:img
+    container_name: frontend
+    restart: always
+    depends_on:
+      - pong
+    ports:
+      - "80:5173"
+    volumes:
+      - backend:/backend
+      - contracts:/contracts
+      - pong:/pong
+    networks:
+      - ft_trancendence
+
+  pong:
+    build:
+      context: ./pong
+    image: pong:img
+    container_name: pong
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "12080:12080"
+    networks:
+      - ft_trancendence
+

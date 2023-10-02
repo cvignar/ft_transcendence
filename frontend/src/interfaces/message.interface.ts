@@ -3,9 +3,11 @@ export interface Message {
 	msg: string,
 	createdAt: Date,
 	updatedAt: Date,
+	cid: number,
 	owner: {
 		id: number,
 		email: string,
-		username: string
+		username: string,
+		avatar: string,
 	}
 }

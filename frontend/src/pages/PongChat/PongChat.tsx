@@ -12,6 +12,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { ChannelList } from '../Chat/ChannelList/ChannelList';
 import ChatWindow from '../Chat/ChatWindow/ChatWindow';
 import { channelActions } from '../../store/channels.slice';
+import { Outlet } from 'react-router-dom';
 
 export function PongChat() {
 	const dispatch = useDispatch<AppDispatch>();
@@ -47,14 +48,20 @@ export function PongChat() {
 		const timerId = setTimeout(() => {
 			if (token) {
 				dispatch(channelActions.startConnecting());
+				//console.log('dispatch');
+				//dispatch(channelActions.getChannels(email));
 			}
-		}, 0);
+		}, 10);
 		return () => clearTimeout(timerId);
 	}, [dispatch, token]);
 
-	const onChange = (e: FormEvent) => { //FIXME!
-		if (e.target.name === 'type') {
-			if (e.target.value === 'protected') {
+	useEffect(() => {
+		dispatch(channelActions.getChannels);
+	}, [channelState.isConnected, channelState.state, dispatch]);
+
+	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
+		if (e.currentTarget.name === 'type') {
+			if (e.currentTarget.value === 'protected') {
 				setIsProtected(true);
 			} else {
 				setIsProtected(false);
@@ -63,18 +70,21 @@ export function PongChat() {
 	};
 
 
-	const logout = () => {
-		console.log('logout ?');
-		dispatch(userActions.logout());
-		socket.close();
-		window.location.reload();
-	};
+	//const logout = () => {
+	//	console.log('logout ?');
+	//	dispatch(userActions.logout());
+	//	socket.close();
+	//	window.location.reload();
+	//};
 
 	return (
 		//<div className={styles['chat']}>
 		<>
 			<ChannelList channels={channelState.channels} setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
-			<ChatWindow data={selectedChannel}/>
+			<div className={styles['other']}>
+				<Outlet/>
+			</div>
+			{/*<ChatWindow data={selectedChannel}/>*/}
 		</>
 		//</div>
 	);
