@@ -14,6 +14,8 @@ import { Message } from '../../../interfaces/message.interface';
 import Modal from 'react-modal';
 import Button from '../../../components/Button/Button';
 import { MembersList } from '../../Members/MembersList/MembersList';
+import ModalContainer from '../../../components/ModalContainer/ModalContainer';
+import { useParams } from 'react-router-dom';
 
 const customStyles = {
 	content: {
@@ -27,12 +29,22 @@ const customStyles = {
 	}
 };
 
-function ChatWindow({ data }: ChatWindowProps) {
+function ChatWindow() {
+
+	const { channelId } = useParams();
 	const dispatch = useDispatch<AppDispatch>();
 	const [message, setMessage] = useState<string>('');
 	const email = useSelector((s: RootState) => s.user.email);
 	const [value, setValue] = useState<string>('');
 	const messages: Message[] = useSelector((s: RootState) => s.channel.messages);
+	const selectedChannel = useSelector((s: RootState) => s.channel.selectedChannel);
+
+	useEffect(() => {
+		if (selectedChannel.id == -1 && channelId) {
+			console.log('!');
+			dispatch(channelActions.getChannel(parseInt(channelId)));
+		}
+	}, [dispatch, channelId, selectedChannel.id]);
 
 	const sendMessage = (event: React.KeyboardEvent) => {
 		if (event.key == 'Enter' && /\S/.test(message)) {
@@ -40,7 +52,7 @@ function ChatWindow({ data }: ChatWindowProps) {
 			const newMessage: CreateMessage = {
 				message: message,
 				email: email,
-				channelId: data.id
+				channelId: selectedChannel?.id
 			};
 			dispatch(channelActions.sendMessage(newMessage));
 		}
@@ -53,41 +65,20 @@ function ChatWindow({ data }: ChatWindowProps) {
 	};
 
 	useEffect(() => {
-		dispatch(channelActions.getMessages(data.id));
-	}, [dispatch, data.id]);
-
-	let subtitle;
-	const [modalIsOpen, setIsOpen] = useState(false);
-
-	const openModal = () => {
-		setIsOpen(true);
-	};
-
-	const afterOpenModal = () => {
-		// references are now sync'd and can be accessed.
-		subtitle.style.color = '#f00';
-	};
-
-	const closeModal = () => {
-		setIsOpen(false);
-	};
+		console.log('getMessages: ', selectedChannel.id);
+		dispatch(channelActions.getMessages(selectedChannel?.id));
+	}, []);
 
 	return (
 		<div className={styles['window']}>
 			<div className={styles['head']}>
-				<ChannelShortInfo appearence='chat' props={data}/>
-				<button className={styles['see-members']} onClick={openModal}>
+				<ChannelShortInfo appearence='chat' props={selectedChannel}/>
+				<button className={styles['see-members']}>
 					<img className={styles['svg']} src='/members.svg' alt='members'/>
 				</button>
-				<Modal
-					isOpen={modalIsOpen}
-					onAfterOpen={afterOpenModal}
-					onRequestClose={closeModal}
-					style={customStyles}
-					contentLabel="Example Modal"
-				>
+				{/*<ModalContainer modalIsOpen={modalIsOpen} setIsOpen={setIsOpen}>
 					<MembersList onClick={closeModal}/>
-				</Modal>
+				</ModalContainer>*/}
 			</div>
 			<hr/>
 			<div className={styles['chat-area']}>
@@ -102,7 +93,7 @@ function ChatWindow({ data }: ChatWindowProps) {
 					))}
 				</div>
 			</div>
-			{data.id === -1
+			{selectedChannel?.id === -1
 				? <div></div>
 				: <textarea
 					name='messageInput'

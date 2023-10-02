@@ -5,7 +5,7 @@ export interface ChannelPreview {
 	type: typeEnum,
 	name: string,
 	picture: string,
-	updatedAt: Date,
+	updatedAt: string,
 	lastMessage: string,
 	unreadCount: number,
 	ownerEmail: string,
