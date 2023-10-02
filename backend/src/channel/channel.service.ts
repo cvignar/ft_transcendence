@@ -199,9 +199,9 @@ export class ChannelService {
 			const memberId =
 				channelData.memberId == -1
 					? await (
-						await this.userService.getUserByEmail(
-							channelData.email,
-						)
+							await this.userService.getUserByEmail(
+								channelData.email,
+							)
 					  ).id
 					: channelData.memberId;
 			await this.prismaService.channel.update({
@@ -274,11 +274,13 @@ export class ChannelService {
 							id: true,
 							msg: true,
 							createdAt: true,
+							cid: true,
 							owner: {
 								select: {
 									id: true,
 									email: true,
 									username: true,
+									avatar: true,
 								},
 							},
 						},
@@ -298,51 +300,51 @@ export class ChannelService {
 			const channelsList = await this.prismaService.user.findUnique({
 				where: { email: email },
 				select: {
-					owner: {
-						where: { type: 'direct' },
-						select: {
-							id: true,
-							type: true,
-							name: true,
-							password: true,
-							updatedAt: true,
-							owners: {
-								select: {
-									id: true,
-									email: true,
-									username: true,
-								},
-							},
-							messages: {
-								where: { unsent: false },
-								orderBy: { createdAt: 'desc' },
-								select: { msg: true },
-								take: 1,
-							},
-						},
-					},
-					admin: {
-						select: {
-							id: true,
-							type: true,
-							name: true,
-							password: true,
-							updatedAt: true,
-							owners: {
-								select: {
-									id: true,
-									email: true,
-									username: true,
-								},
-							},
-							messages: {
-								where: { unsent: false },
-								orderBy: { createdAt: 'desc' },
-								select: { msg: true },
-								take: 1,
-							},
-						},
-					},
+					//owner: {
+					//	where: { type: 'direct' },
+					//	select: {
+					//		id: true,
+					//		type: true,
+					//		name: true,
+					//		password: true,
+					//		updatedAt: true,
+					//		owners: {
+					//			select: {
+					//				id: true,
+					//				email: true,
+					//				username: true,
+					//			},
+					//		},
+					//		messages: {
+					//			where: { unsent: false },
+					//			orderBy: { createdAt: 'desc' },
+					//			select: { msg: true },
+					//			take: 1,
+					//		},
+					//	},
+					//},
+					//admin: {
+					//	select: {
+					//		id: true,
+					//		type: true,
+					//		name: true,
+					//		password: true,
+					//		updatedAt: true,
+					//		owners: {
+					//			select: {
+					//				id: true,
+					//				email: true,
+					//				username: true,
+					//			},
+					//		},
+					//		messages: {
+					//			where: { unsent: false },
+					//			orderBy: { createdAt: 'desc' },
+					//			select: { msg: true },
+					//			take: 1,
+					//		},
+					//	},
+					//},
 					member: {
 						select: {
 							id: true,
@@ -365,28 +367,28 @@ export class ChannelService {
 							},
 						},
 					},
-					invited: {
-						select: {
-							id: true,
-							type: true,
-							name: true,
-							password: true,
-							updatedAt: true,
-							owners: {
-								select: {
-									id: true,
-									email: true,
-									username: true,
-								},
-							},
-							messages: {
-								where: { unsent: false },
-								orderBy: { createdAt: 'desc' },
-								select: { msg: true },
-								take: 1,
-							},
-						},
-					},
+					//invited: {
+					//	select: {
+					//		id: true,
+					//		type: true,
+					//		name: true,
+					//		password: true,
+					//		updatedAt: true,
+					//		owners: {
+					//			select: {
+					//				id: true,
+					//				email: true,
+					//				username: true,
+					//			},
+					//		},
+					//		messages: {
+					//			where: { unsent: false },
+					//			orderBy: { createdAt: 'desc' },
+					//			select: { msg: true },
+					//			take: 1,
+					//		},
+					//	},
+					//},
 				},
 			});
 			return channelsList;
@@ -517,8 +519,8 @@ export class ChannelService {
 							channelsList.invited[i].type === 'protected'
 								? ''
 								: messageCount > 0
-								? channelsList.invited[i].messages[0].msg
-								: '',
+									? channelsList.invited[i].messages[0].msg
+									: '',
 						//ownerEmail: channelsList.invited[i].ownerEmail,
 						//ownerId: channelsList.invited[i].ownerId,
 						ownerEmail: channelsList.invited[i].owners[0].email,
@@ -575,8 +577,8 @@ export class ChannelService {
 				channel.type === 'protected'
 					? ''
 					: messageCount > 0
-					? channel.messages[0].msg
-					: '',
+						? channel.messages[0].msg
+						: '',
 			ownerEmail:
 				channel.owners.length > 0 ? channel.owners[0].email : '',
 			ownerId: ownerId,
@@ -664,8 +666,8 @@ export class ChannelService {
 						isFriend:
 							userId != channel.admins[i].id
 								? await this.userService.isFriend(
-									userId,
-									channel.admins[i].id,
+										userId,
+										channel.admins[i].id,
 								  )
 								: false,
 					};
@@ -704,8 +706,8 @@ export class ChannelService {
 						isFriend:
 							userId != channel.owners[i].id
 								? await this.userService.isFriend(
-									userId,
-									channel.owners[i].id,
+										userId,
+										channel.owners[i].id,
 								  )
 								: false,
 					};
@@ -744,8 +746,8 @@ export class ChannelService {
 						isFriend:
 							userId != channel.members[i].id
 								? await this.userService.isFriend(
-									userId,
-									channel.members[i].id,
+										userId,
+										channel.members[i].id,
 								  )
 								: false,
 					};
@@ -775,8 +777,8 @@ export class ChannelService {
 						isFriend:
 							userId != channel.inviteds[i].id
 								? await this.userService.isFriend(
-										userId,
-										channel.inviteds[i].id,
+									userId,
+									channel.inviteds[i].id,
 								  )
 								: false,
 					};

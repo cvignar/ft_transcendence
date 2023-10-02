@@ -29,7 +29,7 @@ import { Role } from 'contracts/enums';
 @WebSocketGateway()
 export class ChannelGateway {
 	@WebSocketServer()
-		server: Server;
+	server: Server;
 
 	constructor(
 		private channelService: ChannelService,
@@ -91,6 +91,7 @@ export class ChannelGateway {
 				channelId,
 				channelData.email,
 			);
+			console.log(preview);
 			client.join(preview.name);
 			client.emit('add preview', preview);
 			this.server.in('all').emit('update channel request');
@@ -418,6 +419,11 @@ export class ChannelGateway {
 		client.emit('update preview', previews);
 		this.server.in(channelName).emit('update channel request');
 	}
+
+	@SubscribeMessage('get member')
+	async getMember(
+		@MessageBody() data: { channelId: number; memberId: number },
+	) {}
 
 	//@SubscribeMessage('be admin')
 	//async handleBeAdmin(
