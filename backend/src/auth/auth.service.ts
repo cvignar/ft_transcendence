@@ -38,7 +38,7 @@ export class AuthService {
 	}
 
   async validateIntraUser(id: number, username : string, email : string) : Promise<any>{
-    const user = await this.usersService.getUserByEmail(email);
+    const user = await this.userService.getUserByEmail(email);
     if (user)
     {
       // return user;
@@ -51,7 +51,7 @@ export class AuthService {
     }
     else
     {
-      const user = await this.usersService.createUser({
+      const user = await this.userService.createUser({
         username: username,
         hash: "",
         email: email,
