@@ -40,7 +40,7 @@ PongOptions.ball_startSpeed = 100 * _b.line_width;
 PongOptions.ball_StartClicksForSpeedup = 12;
 PongOptions.ball_speedUp = 1.2;
 PongOptions.ball_speedUpMax = 6;
-PongOptions.calculation_period = 1000 / 30;
+PongOptions.calculation_period = 1000 / 60;
 PongOptions.sendResult_period = 2000;
 PongOptions.tokenRequest_period = 179990000; // 300 min
 export { PongOptions };

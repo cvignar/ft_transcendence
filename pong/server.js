@@ -120,17 +120,39 @@ io.on('connection', (socket) => {
         }
         socket.emit('partner unavailable');
     });
+    socket.on('invite partner', (user_id) => {
+        const inviter = games.getPlayer(socket.id);
+        if (inviter) {
+            const invited = games.getPlayerById(user_id);
+            if (invited) {
+                const invitedSocket = io.sockets.sockets.get(invited.socketId);
+                if (invitedSocket) {
+                    setTimeout(function () {
+                        invitedSocket === null || invitedSocket === void 0 ? void 0 : invitedSocket.emit('confirm partner', [socket.id, inviter.name]);
+                    }, ControlOptions.game_startTime);
+                    return;
+                }
+            }
+        }
+        socket.emit('partner unavailable');
+    });
     socket.on('partner confirmation', (socket_id) => {
         var _a, _b;
-        const partner = games.setPartner(socket.id, socket_id);
-        const pong = games.getPong(socket.id);
-        if (partner && pong) {
-            (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong launched');
+        const player = games.getPlayer(socket.id);
+        if (player) {
+            let pong = games.getPong(socket.id);
+            if (!pong) {
+                pong = games.nwePong(player);
+                socket.emit('pong launched');
+            }
+            const partner = games.setPartner(socket.id, socket_id);
+            if (partner && pong) {
+                (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong launched');
+                return;
+            }
         }
-        else {
-            socket.emit('partner unavailable');
-            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('partner unavailable');
-        }
+        socket.emit('partner unavailable');
+        (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('partner unavailable');
     });
     socket.on('refusal', (socket_id) => {
         var _a;
@@ -139,9 +161,9 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('start partner game', () => {
-        let opposer = games.getOpposer(socket.id);
-        if (opposer) {
-            let opposerSocket = io.sockets.sockets.get(opposer);
+        let opposerSocketId = games.getOpposerSocketId(socket.id);
+        if (opposerSocketId) {
+            let opposerSocket = io.sockets.sockets.get(opposerSocketId);
             if (opposerSocket) {
                 setTimeout(function () {
                     opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('start partner game');
@@ -150,9 +172,9 @@ io.on('connection', (socket) => {
         }
     });
     socket.on('partner refused', () => {
-        let opposer = games.getOpposer(socket.id);
-        if (opposer) {
-            let opposerSocket = io.sockets.sockets.get(opposer);
+        let opposerSocketId = games.getOpposerSocketId(socket.id);
+        if (opposerSocketId) {
+            let opposerSocket = io.sockets.sockets.get(opposerSocketId);
             if (opposerSocket) {
                 setTimeout(function () {
                     opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('partner refused');
