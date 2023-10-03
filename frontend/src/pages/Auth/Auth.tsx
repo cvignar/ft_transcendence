@@ -28,9 +28,6 @@ export function AuthForm() {
 	};
 	useEffect(() => {
 		if (token) {
-			const headers = {
-							'Accept' : 'application/json',
-							'Authorization': 'Bearer' + token};
 			navigate('/Chat');
 		}
 	}, []);
