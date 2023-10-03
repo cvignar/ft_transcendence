@@ -1,7 +1,7 @@
-export interface AuthForm {
+export interface AuthFormProps {
 	username: {
 		value: string;
-	}
+	};
 	email: {
 		value: string;
 	};
