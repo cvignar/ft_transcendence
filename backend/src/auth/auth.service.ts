@@ -38,7 +38,7 @@ export class AuthService {
 	}
 
   async validateIntraUser(id: number, username : string, email : string) : Promise<any>{
-    const user = await this.usersService.getUserByEmail(email);
+    const user = await this.userService.getUserByEmail(email);
     if (user)
     {
       // return user;
@@ -51,7 +51,7 @@ export class AuthService {
     }
     else
     {
-      const user = await this.usersService.createUser({
+      const user = await this.userService.createUser({
         username: username,
         hash: "",
         email: email,
@@ -59,10 +59,7 @@ export class AuthService {
       });
       const payload = { sub: user.id42, username: user.username };
       const token = await this.jwtService.signAsync(payload);
-      return {
-        access_token: token,
-        user: user
-      }
+      return await this.userService.updateJWTAccess(user.id, token);
     }
   }
 }

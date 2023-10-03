@@ -11,6 +11,7 @@ import { jwtConstants } from './auth/constants';
 import { AppGateway } from './app.gateway';
 import { GameModule } from './game/game.module';
 import { GameService } from './game/game.service';
+import { JwtAuthGuard } from './auth/jwt.guard';
 
 @Module({
 	imports: [
@@ -33,6 +34,6 @@ import { GameService } from './game/game.service';
 		//}),
 	],
 	controllers: [AppController],
-	providers: [AppService, PrismaService, AppGateway, GameService],
+	providers: [AppService, PrismaService, AppGateway, GameService, JwtAuthGuard],
 })
 export class AppModule {}
