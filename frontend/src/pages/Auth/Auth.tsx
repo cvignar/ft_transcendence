@@ -8,11 +8,19 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
 import { auth, getProfile, userActions } from '../../store/user.slice';
+import { configureStore } from '@reduxjs/toolkit';
+import { getCookie } from 'typescript-cookie';
 
 export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
+	let accessToken = getCookie('accessToken');
+	if (accessToken)
+	{
+		
+	}
 	const { token, authErrorMessage, userId, profile } = useSelector((s: RootState) => s.user);
+	// const token = getCookie('accessToken');
 	const uri = 'http://localhost:3000/auth/intra42';
 	const getIntraUserCode = () =>
 	{
@@ -20,11 +28,12 @@ export function AuthForm() {
 	};
 	useEffect(() => {
 		if (token) {
-			dispatch(getProfile(userId));
-			if (profile)
-				navigate('/Chat');
+			const headers = {
+							'Accept' : 'application/json',
+							'Authorization': 'Bearer' + token};
+			navigate('/Chat');
 		}
-	}, [token, navigate, dispatch, userId, profile]);
+	}, []);
 
 	const submit = async (e: FormEvent) => {
 		e.preventDefault();
