@@ -5,6 +5,7 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Req,
 	UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
