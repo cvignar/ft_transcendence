@@ -33,6 +33,7 @@
     "@nestjs/websockets": "^10.2.5",
     "@prisma/client": "^5.2.0",
     "argon2": "^0.31.1",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "nestjs-zod": "^3.0.0",
