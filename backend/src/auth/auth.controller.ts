@@ -64,11 +64,10 @@ export class AuthController {
 
 	@Get('callback')
 	@UseGuards(Oauth42Guard)
-	// @Redirect("http://localhost:5173/Auth")
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect('http://localhost:5173/Auth');
+			res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth`);
 			throw new UnauthorizedException();
 		}
 		const payload = { sub: user.id, username: user.username };
@@ -76,7 +75,7 @@ export class AuthController {
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect('http://localhost:5173/Auth');
+		res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth`);
 	}
 
 	@Get('intra42/return')
