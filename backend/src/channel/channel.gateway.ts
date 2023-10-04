@@ -19,7 +19,10 @@ import {
 	CreateDirectChannel,
 	UpdateChannel,
 } from 'contracts/channel.schema';
-import { CreateMessage, MessagePreview } from 'contracts/message.schema';
+import {
+	CreateMessage,
+	MessagePreview,
+} from '../../../contracts/message.schema';
 import { MemberPreview } from 'contracts/user.schema';
 import { Role } from 'contracts/enums';
 
@@ -83,7 +86,6 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('!');
 		const channelId = await this.channelService.createChannel(channelData);
 		if (channelId == undefined) {
 			client.emit('exception', 'failed to create channel, try again');

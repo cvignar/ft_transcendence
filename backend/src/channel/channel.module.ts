@@ -4,12 +4,13 @@ import { ChannelService } from './channel.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 import { ChannelGateway } from './channel.gateway';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 
 @Module({
   //   imports: [forwardRef(() => UserModule)],
   imports: [],
   controllers: [ChannelController],
-  providers: [ChannelService, PrismaService, UserService, ChannelGateway],
+  providers: [ChannelService, PrismaService, UserService, ChannelGateway, JwtAuthGuard],
   exports: [ChannelGateway, ChannelService],
 })
 export class ChannelModule {}

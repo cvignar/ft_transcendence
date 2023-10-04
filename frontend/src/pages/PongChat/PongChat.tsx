@@ -13,10 +13,11 @@ import { ChannelList } from '../Chat/ChannelList/ChannelList';
 import ChatWindow from '../Chat/ChatWindow/ChatWindow';
 import { channelActions } from '../../store/channels.slice';
 import { Outlet } from 'react-router-dom';
+import { getCookie } from 'typescript-cookie';
 
 export function PongChat() {
 	const dispatch = useDispatch<AppDispatch>();
-	const {email, token} = useSelector((s: RootState) => s.user);
+	const {email} = useSelector((s: RootState) => s.user);
 	const channelState = useSelector((s: RootState) => s.channel);
 	const [isActive, setActive] = useState<number>(-1);
 	//const [channels, setChannels] = useState<ChannelPreview[]>();
@@ -46,6 +47,7 @@ export function PongChat() {
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {
+			const token = getCookie('accessToken');
 			if (token) {
 				dispatch(channelActions.startConnecting());
 				//console.log('dispatch');
@@ -53,7 +55,7 @@ export function PongChat() {
 			}
 		}, 10);
 		return () => clearTimeout(timerId);
-	}, [dispatch, token]);
+	}, [dispatch]);
 
 	useEffect(() => {
 		dispatch(channelActions.getChannels);
