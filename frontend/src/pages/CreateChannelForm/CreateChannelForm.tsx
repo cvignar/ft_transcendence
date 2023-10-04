@@ -14,7 +14,8 @@ import { CreateChannel } from '../../interfaces/createChannel.interface';
 
 export function CreateChannelFrom() {
 	const dispatch = useDispatch<AppDispatch>();
-	const email = useSelector((s: RootState) => s.user.email);
+	const user = useSelector((s: RootState) => s.user);
+	const channelState = useSelector((s: RootState) => s.channel);
 	const [isProtected, setIsProtected] = useState<boolean>(false);
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
 		console.log(e.currentTarget.type.value);
@@ -30,8 +31,11 @@ export function CreateChannelFrom() {
 			name: e.currentTarget.name.value,
 			type: e.currentTarget.type.value,
 			password: e.currentTarget.password,
-			email: email,
-			members: []
+			email: user.email,
+			members: [{
+				id: user.userId,
+				name: user.username
+			}]
 		};
 		dispatch(channelActions.createChannel(newChannel));
 		//console.log(newChannel);
@@ -39,11 +43,12 @@ export function CreateChannelFrom() {
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
-			<Headling>Create a new channel:</Headling>
+			<Headling>Create a new channel</Headling>
+			{channelState.error ? <div>Error!</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>
 				<label htmlFor='type-radio' className={styles['radio-set']}>
-					Type of your channel:
+					Type of your channel
 				</label>
 				<div id='type-radio' className={styles['radio-set']}>
 					<input type="radio" id="public" name="type" value="public" defaultChecked />
@@ -58,7 +63,6 @@ export function CreateChannelFrom() {
 			</fieldset>
 			{isProtected && <Input type='password' placeholder='Password' name='password' className={styles['input']}/>}
 			<Button className={styles['button']}>Create</Button>
-
 		</form>
 	</>;
 }

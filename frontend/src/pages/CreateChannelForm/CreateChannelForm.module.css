@@ -20,9 +20,10 @@
 }
 
 .button {
-	background: var(--white-hover-color);
+	background: var(--white-color);
 }
 
 .button:hover {
+	color: var(--primary-color);
 	background: var(--white-color);
 }

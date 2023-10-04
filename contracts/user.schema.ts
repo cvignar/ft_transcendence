@@ -64,6 +64,7 @@ export const UserSchema = zod.object({
   chanBlocked: zod.array(ChannelSchema),
   Muted: zod.array(MuteSchema),
   messages: zod.array(MessageSchema),
+  jwtAccess: zod.string().default(""),
 });
 
 export namespace User {
@@ -89,6 +90,7 @@ export namespace MemberPreview {
 
 const ProfileSchema = zod.object({
   id: zod.number().int(),
+  id42: zod.number().int(),
 	updatedAt: zod.date(),
 	email: zod.string().email(),
 	username: zod.string(),

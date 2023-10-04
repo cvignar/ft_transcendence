@@ -7,6 +7,7 @@ import { AppDispatch } from '../../store/store';
 import { userActions } from '../../store/user.slice';
 import { Pong } from '../Pong/pong';
 import styles from './Layout.module.css';
+import { removeCookie } from 'typescript-cookie';
 
 export function Layout() {
 	const navigate = useNavigate();
@@ -20,6 +21,7 @@ export function Layout() {
 	const logout = () => {
 		dispatch(userActions.logout());
 		dispatch(channelActions.logout());
+		removeCookie('accessToken');
 		window.location.reload();
 		//navigate('/Auth');
 	};

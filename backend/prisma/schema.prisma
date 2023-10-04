@@ -25,6 +25,7 @@ model User {
 	hashedRtoken	String?
 	twoFAsecret		String?
 	twoFA			Boolean?	@default(false)
+	jwtAccess		String? 	@default("")
 
   prefferedTableSide  Int @default(3)
   pongColorScheme Int @default(1)
