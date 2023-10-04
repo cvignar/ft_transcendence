@@ -1,17 +1,24 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, Injectable, ContextType } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-	constructor(
-	) {
-		super();
-	}
 
-	handleRequest(err, user, info: Error) {
-		if (err || !user) {
-			throw err || new UnauthorizedException("Unauthorised");
-		}
-		return user;
-	}
+	// handleRequest(context: ExecutionContext) {
+	// 	const req = context.switchToHttp().getRequest();
+	// 	console.log(req.user)
+	// 	const user = req.user;
+	// 	if (!user) {
+	// 		console.log('computer says no');
+	// 		throw new UnauthorizedException("Unauthorised");
+	// 	}
+	// 	return user;
+	// }
+	// getRequest(context: ExecutionContext) {
+	// 	console.log('running');
+	// 	if (context.getType<ContextType | 'graphql'>() === 'graphql')
+	// 	  return GqlExecutionContext.create(context).getContext().req;
+	
+	// 	return context.switchToHttp().getRequest();
+	//   }
 }

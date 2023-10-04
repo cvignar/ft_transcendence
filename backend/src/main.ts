@@ -1,6 +1,7 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 //import {Z} from 'nestjs-zod';
 import {
 	SwaggerModule,
@@ -37,7 +38,8 @@ async function bootstrap() {
 	) {
 		response.setHeader('Access-Control-Allow-Origin', '*');
 		next();
-	});
+	},
+	cookieParser());
 
 	//const { httpAdapter } = app.get(HttpAdapterHost);
 	//app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));

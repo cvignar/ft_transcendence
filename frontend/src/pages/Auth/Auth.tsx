@@ -12,11 +12,8 @@ import { getCookie } from 'typescript-cookie';
 
 export function AuthForm() {
 	const navigate = useNavigate();
-	const dispatch = useDispatch<AppDispatch>();
 	const accessToken = getCookie('accessToken');
 
-	const { token, authErrorMessage, userId, profile } = useSelector((s: RootState) => s.user);
-	// const token = getCookie('accessToken');
 	const uri = 'http://localhost:3000/auth/intra42';
 	const getIntraUserCode = () =>
 	{

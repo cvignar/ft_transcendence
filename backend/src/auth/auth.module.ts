@@ -6,6 +6,8 @@ import { AuthController, AuthGateway } from './auth.controller';
 import { AuthService } from './auth.service';
 import { jwtConstants } from './constants';
 import { Oauth42Strategy } from './oauth42.strategy';
+import { JwtAuthGuard } from './jwt.guard';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -15,10 +17,10 @@ import { Oauth42Strategy } from './oauth42.strategy';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '300m' },
     }),
-    PassportModule,
+    // PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGateway, Oauth42Strategy],
+  providers: [AuthService, AuthGateway, Oauth42Strategy, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
