@@ -3,3 +3,4 @@ package-lock.json
 Icon?
 dist
 .env
+.DS_Store

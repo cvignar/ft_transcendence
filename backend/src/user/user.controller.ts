@@ -5,6 +5,8 @@ import {
 	Param,
 	ParseIntPipe,
 	Post,
+	Req,
+	UseGuards,
 	UsePipes,
 } from '@nestjs/common';
 import { ZodValidationPipe } from 'nestjs-zod';
@@ -12,7 +14,9 @@ import { UserService } from './user.service';
 import { CreateUser } from '../../../contracts/user.schema--';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/jwt.guard';
 @Controller('user')
+@UseGuards(JwtAuthGuard)
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 	@UsePipes(ZodValidationPipe)
