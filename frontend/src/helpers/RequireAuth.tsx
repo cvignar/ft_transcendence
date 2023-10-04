@@ -8,8 +8,9 @@ import { getCookie } from 'typescript-cookie'
 export const RequireAuth = ({ children }: { children: ReactNode }) => {
 
 	// const token = useSelector((s: RootState) => s.user.token);
-	const token = getCookie('accessToken')
-	if (!token) {
+	const access_token : string | undefined = getCookie('accessToken')
+	console.log('access_token: ', access_token);
+	if (!access_token) {
 		return <Navigate to='/Auth' replace />;
 	}	
 	return <>{children}</>;

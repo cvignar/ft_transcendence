@@ -22,7 +22,17 @@ import { CreateChannelFrom } from './pages/CreateChannelForm/CreateChannelForm';
 const router = createBrowserRouter([
 	{
 		path: '/Auth',
-		element: <AuthForm></AuthForm>
+		element: <AuthForm></AuthForm>,
+		// children: [
+		// 	{
+		// 		path: '/Auth/2FA',
+		// 		element: <Auth2FaForm></Auth2FaForm>
+		// 	},
+		// ],
+	},
+	{
+		path: '/Auth/2FA',
+		element: <></>,
 	},
 	{ // FIXME!!!! FAKE AUTH
 		path: '/',
