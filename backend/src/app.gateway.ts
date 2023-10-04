@@ -24,7 +24,7 @@ import { GameService } from './game/game.service';
 import { JwtAuthGuard } from './auth/jwt.guard';
 import { UseGuards } from '@nestjs/common/decorators';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(

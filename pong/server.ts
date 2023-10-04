@@ -1,14 +1,14 @@
-import { config } from 'dotenv'
+import { config } from "dotenv";
 config();
-import http from 'http';
-import * as socketIO from 'socket.io';
-import express from 'express';
-import { GameCmd, GameCommand, GameMode, GameScheme, Side } from './static/common.js';
-import { Pong } from './Pong.js';
-import { routes } from './routes.js';
-import { GamesSet} from './GamesSet.js';
-import {io as ioc} from 'socket.io-client'
-import { ControlOptions, Options } from './static/options.js';
+import http from "http";
+import * as socketIO from "socket.io";
+import express from "express";
+import { GameCmd, GameCommand, GameMode, GameScheme, Side } from "./static/common.js";
+import { Pong } from "./Pong.js";
+import { routes } from "./routes.js";
+import { GamesSet } from "./GamesSet.js";
+import { io as ioc } from "socket.io-client";
+import { ControlOptions, Options } from "./static/options.js";
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
 const server = new http.Server(app);
@@ -26,13 +26,13 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 	const playersDeletedPong = games.deletePong(socketId);
 	if (playersDeletedPong) {
 		if (playersDeletedPong.owner) {
-			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit('pong deleted');
-			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit('partner game off');
-			gebugPprinting(playersDeletedPong.owner.name, 'pong deleted');
+			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit("pong deleted");
+			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit("partner game off");
+			gebugPprinting(playersDeletedPong.owner.name, "pong deleted");
 		}
 		if (playersDeletedPong.partner) {
-			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit('pong deleted');
-			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit('partner game off');
+			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit("pong deleted");
+			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit("partner game off");
 		}
 	}
 }
@@ -40,37 +40,36 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 routes(app, port);
 if (port) {
 	server.listen(port, () => {
-		console.log('Server starts on port', port);
+		console.log("Server starts on port", port);
 	});
 } else {
-	console.log('port is not assigned');
+	console.log("port is not assigned");
 	process.exit(1);
 }
 
-io.on('connection', (socket) => {
-
-	socket.on('new player', (user: {name: string, id: number, side: Side, scheme: GameScheme} | undefined) => {
+io.on("connection", (socket) => {
+	socket.on("new player", (user: { name: string; id: number; side: Side; scheme: GameScheme } | undefined) => {
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
-			socket.emit('player created', user?.scheme);
+			socket.emit("player created", user?.scheme);
 		} else {
-			socket.emit('player not created');
+			socket.emit("player not created");
 		}
-		gebugPprinting(player?.name, player ? 'new player' : 'new player not created');
+		gebugPprinting(player?.name, player ? "new player" : "new player not created");
 	});
 
-	socket.on('disconnect', (reason) => {
+	socket.on("disconnect", (reason) => {
 		const player = games.deletePlayer(socket.id);
 		gebugPprinting(player?.name, reason);
 	});
 
-	socket.on('get partners list', () => {
+	socket.on("get partners list", () => {
 		const partnersList = games.getPartnersList(socket.id);
-		socket.emit('partners list', partnersList);
-		gebugPprinting(games.getPlayer(socket.id)?.name+' partnersList: ', partnersList);
+		socket.emit("partners list", partnersList);
+		gebugPprinting(games.getPlayer(socket.id)?.name + " partnersList: ", partnersList);
 	});
 
-	socket.on('controls', (msg) => {
+	socket.on("controls", (msg) => {
 		const player = games.getPlayer(socket.id);
 		if (player) {
 			let pong = games.getPong(player.socketId);
@@ -80,84 +79,84 @@ io.on('connection', (socket) => {
 					pong.setControls(msg, player.side);
 					if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
 						if (pong.owner?.socketId) {
-							io.sockets.sockets.get(pong.owner.socketId)?.emit('players', pong.getPlayerNames());
+							io.sockets.sockets.get(pong.owner.socketId)?.emit("players", pong.getPlayerNames());
 						}
 						if (pong.partner?.socketId) {
-							io.sockets.sockets.get(pong.partner.socketId)?.emit('players', pong.getPlayerNames());
+							io.sockets.sockets.get(pong.partner.socketId)?.emit("players", pong.getPlayerNames());
 						}
 					}
 				}
 			} else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
 				pong = games.nwePong(player);
-				socket.emit('pong launched', msg.cmd);
+				socket.emit("pong launched", msg.cmd);
 			}
 		}
 		if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
-			gebugPprinting(player?.name, GameCommand[msg.cmd]+' controls');
+			gebugPprinting(player?.name, GameCommand[msg.cmd] + " controls");
 		}
 	});
 
-	socket.on('partner choosed', (socket_id) => {
+	socket.on("partner choosed", (socket_id) => {
 		const partner = games.getPlayer(socket.id);
 		if (partner) {
 			const choosedOwner = games.getPlayer(socket_id);
 			if (choosedOwner) {
 				const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
 				if (choosedOwnerSocket) {
-					setTimeout(function() {
-						choosedOwnerSocket?.emit('confirm partner', [ socket.id, partner.name ]);
-					}, ControlOptions.game_startTime );
+					setTimeout(function () {
+						choosedOwnerSocket?.emit("confirm partner", [socket.id, partner.name]);
+					}, ControlOptions.game_startTime);
 					return;
 				}
 			}
 		}
-		socket.emit('partner unavailable');
+		socket.emit("partner unavailable");
 	});
 
-	socket.on('partner confirmation', (socket_id) => {
+	socket.on("partner confirmation", (socket_id) => {
 		const partner = games.setPartner(socket.id, socket_id);
 		const pong = games.getPong(socket.id);
 		if (partner && pong) {
-			io.sockets.sockets.get(partner.socketId)?.emit('pong launched');
+			io.sockets.sockets.get(partner.socketId)?.emit("pong launched");
 		} else {
-			socket.emit('partner unavailable');
-			io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
+			socket.emit("partner unavailable");
+			io.sockets.sockets.get(socket_id)?.emit("partner unavailable");
 		}
 	});
 
-	socket.on('refusal', (socket_id) => {
+	socket.on("refusal", (socket_id) => {
 		if (games.getPlayer(socket.id)) {
-			io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
+			io.sockets.sockets.get(socket_id)?.emit("partner unavailable");
 		}
 	});
 
-	socket.on('start partner game', () => {
+	socket.on("start partner game", () => {
 		let opposer = games.getOpposer(socket.id);
 		if (opposer) {
 			let opposerSocket = io.sockets.sockets.get(opposer);
 			if (opposerSocket) {
-				setTimeout(function() {
-					opposerSocket?.emit('start partner game');
-				}, ControlOptions.game_startTime );
+				setTimeout(function () {
+					opposerSocket?.emit("start partner game");
+				}, ControlOptions.game_startTime);
 			}
 		}
 	});
 
-	socket.on('partner refused', () => {
+	socket.on("partner refused", () => {
 		let opposer = games.getOpposer(socket.id);
 		if (opposer) {
 			let opposerSocket = io.sockets.sockets.get(opposer);
 			if (opposerSocket) {
-				setTimeout(function() {
-					opposerSocket?.emit('partner refused');
-				}, ControlOptions.game_startTime );
+				setTimeout(function () {
+					opposerSocket?.emit("partner refused");
+				}, ControlOptions.game_startTime);
 			}
 		}
 	});
 });
 
 // Calculation loop
-setInterval(function() {
+setInterval(function () {
 	let socketIdForDelete = undefined;
 	for (const socketId of games.getPongs().keys()) {
 		const pong = games.getPong(socketId);
@@ -170,24 +169,24 @@ setInterval(function() {
 			}
 			pong.calculate();
 			if (pong.owner) {
-				io.sockets.sockets.get(pong.owner.socketId)?.emit('state', pong.getPongState(pong.owner.side));
+				io.sockets.sockets.get(pong.owner.socketId)?.emit("state", pong.getPongState(pong.owner.side));
 				if (pong.partnerGameOn) {
-					io.sockets.sockets.get(pong.owner.socketId)?.emit('partner game on');
+					io.sockets.sockets.get(pong.owner.socketId)?.emit("partner game on");
 					pong.partnerGameOn = false;
 				}
 				if (pong.partnerGameOff) {
-					io.sockets.sockets.get(pong.owner.socketId)?.emit('partner game off');
+					io.sockets.sockets.get(pong.owner.socketId)?.emit("partner game off");
 					pong.partnerGameOff = false;
 				}
 			}
 			if (pong.partner) {
-				io.sockets.sockets.get(pong.partner.socketId)?.emit('state', pong.getPongState(pong.partner.side));
+				io.sockets.sockets.get(pong.partner.socketId)?.emit("state", pong.getPongState(pong.partner.side));
 				if (pong.partnerGameOn) {
-					io.sockets.sockets.get(pong.partner.socketId)?.emit('partner game on');
+					io.sockets.sockets.get(pong.partner.socketId)?.emit("partner game on");
 					pong.partnerGameOn = false;
 				}
 				if (pong.partnerGameOff) {
-					io.sockets.sockets.get(pong.partner.socketId)?.emit('partner game off');
+					io.sockets.sockets.get(pong.partner.socketId)?.emit("partner game off");
 					pong.partnerGameOff = false;
 				}
 			}
@@ -208,7 +207,7 @@ async function tokenRequest() {
 		password: process.env.PONG_PASS,
 	};
 	const headers = new Headers();
-	headers.append("Content-Type", "application/json")
+	headers.append("Content-Type", "application/json");
 	const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
 		method: "POST",
 		headers: headers,
@@ -217,12 +216,12 @@ async function tokenRequest() {
 	try {
 		access_token = await (await fetch(request)).json();
 	} catch (e) {
-		if (access_token) {
-			console.log('cannot get new token');
-		}
+		// if (access_token) {
+		console.log("cannot get new token: ", e);
+		// }
 	}
 	if (access_token) {
-		gebugPprinting('access_token: ', access_token.access_token);
+		gebugPprinting("access_token: ", access_token.jwtAccess);
 	}
 }
 
@@ -231,22 +230,22 @@ if (access_token) {
 }
 
 // Send game results loop
-setInterval(async function() {
+setInterval(async function () {
 	const result = games.getNextResult();
 	if (access_token) {
 		if (result) {
 			const sockOpt = {
-				transposts: ['websocket'],
+				transposts: ["websocket"],
 				transportOptions: {
 					polling: {
 						extraHeaders: {
-							Token: access_token.access_token
-						}
-					}
-				}
+							Token: access_token.access_token,
+						},
+					},
+				},
 			};
 			const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-			socket.emit('save game', result.get());
+			socket.emit("save game", result.get());
 		}
 	} else {
 		await tokenRequest();
