@@ -15,6 +15,7 @@ import { CreateUser } from '../../../contracts/user.schema--';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
+import { Request } from 'express';
 @Controller('user')
 // @UseGuards(JwtAuthGuard)
 export class UserController {
@@ -30,9 +31,11 @@ export class UserController {
 		return this.userService.createUser(userData);
 	}
 
-	@Get('getProfile/:id')
-	async getProfile(@Param('id', ParseIntPipe) userId: number) {
-		return await this.userService.getProfile(userId);
+	@Get('getProfile')
+	async getProfile(@Req() req: Request) {
+		// const userId = req.cookies.userId;
+		// console.log(userId, typeof userId);
+		return await this.userService.getProfile(10);
 	}
 
 	@Post('updateProfile/:id')

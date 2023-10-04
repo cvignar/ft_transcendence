@@ -5,14 +5,16 @@ import { AuthResponse } from "../interfaces/auth.interface";
 import { Profile, UpdateUser } from "../interfaces/user.interface";
 import { loadState } from "./storage";
 import { store } from "./store";
+import { getCookie } from "typescript-cookie";
 //import { RootState } from './store';
 
+axios.defaults.withCredentials = true;
 export const JWT_PERSISTENT_STATE = "userToken";
 export const EMAIL_PERSISTENT_STATE = "userEmail";
 export const USERNAME_PERSISTENT_STATE = "userName";
 export const USERID_PERSISTENT_STATE = "userId";
 export const PROFILE_PERSISTENT_STATE = "userProfile";
-const uri = "http://localhost:3000/auth/intra42";
+const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
 
 export interface UserState {
 	token: string | null;
@@ -48,7 +50,12 @@ export const auth = createAsyncThunk("auth/login", async () => {
 
 export const getProfile = createAsyncThunk("/getProfile", async (id: number | null) => {
 	try {
-		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`);
+		console.log(id);
+		console.log(`${BACK_PREFIX}/user/getProfile`);
+		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile`, {
+			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
+		});
+		console.log(data);
 		return { profile: data };
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -98,6 +105,7 @@ export const userSlice = createSlice({
 			console.log(action.error);
 		});
 		builder.addCase(getProfile.fulfilled, (state, action) => {
+			console.log("fulfiled!", action.payload);
 			if (!action.payload) {
 				return;
 			}

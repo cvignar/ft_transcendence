@@ -1,129 +1,129 @@
-import { useSelector } from 'react-redux';
-import { GameCmd, GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from '../../../../pong/static/common';
-import { Controls, Selector } from '../../../../pong/static/controls';
-import { Score, Image, Sounds } from '../../../../pong/static/image';
-import { ControlOptions } from '../../../../pong/static/options';
-import { RootState } from '../../store/store';
-
+import { useSelector } from "react-redux";
+import { GameCmd, GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from "../../../../pong/static/common";
+import { Controls, Selector } from "../../../../pong/static/controls";
+import { Score, Image, Sounds } from "../../../../pong/static/image";
+import { ControlOptions } from "../../../../pong/static/options";
+import { RootState } from "../../store/store";
 
 export function game(socket: any, user: any) {
-
-	const pong_path = 'http://' + import.meta.env.VITE_PONG_HOST + ':' + import.meta.env.VITE_PONG_PORT + '/';
+	const pong_path = "http://" + import.meta.env.VITE_PONG_HOST + ":" + import.meta.env.VITE_PONG_PORT + "/";
 	const browserState = new ServerMsg();
-	const image = new Image('canvas');
+	const image = new Image("canvas");
 	const controls = new Controls(socket, image);
-	const selector = new Selector('PARTNERS');
+	const selector = new Selector("PARTNERS");
 	const sounds = new Sounds(pong_path);
 	const score = new Score();
 
 	// Player
 	console.log(user);
-	socket.emit('new player', {name: user.username, id: user.userId, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
-	socket.on('player not created', function() {
-		let nickname: string | null = '';
-		while(!nickname) {
-			nickname = window.prompt('Enter Your Nickname:');
+	socket.emit("new player", { name: user.profile.username, id: user.profile.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme });
+	socket.on("player not created", function () {
+		let nickname: string | null = "";
+		while (!nickname) {
+			nickname = window.prompt("Enter Your Nickname:");
 		}
-		socket.emit('new player', ({name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL}));
+		socket.emit("new player", { name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL });
 	});
 	socket.on('player created', function(scheme: GameScheme) {
-		console.log('scheme: ', scheme);
-		image.changeScheme(scheme);
+		if (scheme) {
+			console.log('scheme: ', scheme);//FIXME
+			image.changeScheme(scheme);
+		}
 	});
-	socket.on('players', function(players: string[]) {
+	socket.on("players", function (players: string[]) {
 		score.setPlayers(players[0], players[1]);
 		score.showPlayers();
 	});
 
 	// Select partners
-	selector.select.addEventListener('focusin', function() {
+	selector.select.addEventListener("focusin", function () {
 		selector.clear();
-		socket.emit('get partners list');
+		socket.emit("get partners list");
 	});
-	socket.on('partners list', function(partnersList: any) {
+	socket.on("partners list", function (partnersList: any) {
 		selector.fill(partnersList);
 		sounds.playSound(Sound.SPEEDUP);
 	});
-	selector.select.addEventListener('change', function(socket_id: { target: { value: any; }; }) {
-		socket.emit('partner choosed', socket_id.target.value);
+	selector.select.addEventListener("change", function (socket_id: { target: { value: any } }) {
+		socket.emit("partner choosed", socket_id.target.value);
 		sounds.playSound(Sound.SPEEDUP);
 	});
 
 	// Confirm partner
-	socket.on('confirm partner', function(partner: any[]) {
+	socket.on("confirm partner", function (partner: any[]) {
 		let pauseBefor = true;
 		if (controls.gameStatus != GameStatus.PAUSED) {
 			pauseBefor = false;
 			controls.pause();
 		}
 		sounds.playSound(Sound.SPEEDUP);
-		const yes = window.confirm('Player '+partner[1]+' wants to join your game');
+		const yes = window.confirm("Player " + partner[1] + " wants to join your game");
 		if (yes) {
-			socket.emit('partner confirmation', partner[0]);
+			socket.emit("partner confirmation", partner[0]);
 			controls.new();
 			controls.gameIsOn = false;
 		} else {
 			if (!pauseBefor) {
 				controls.pause();
 			}
-			socket.emit('refusal', partner[0]);
+			socket.emit("refusal", partner[0]);
 		}
 	});
-	
+
 	// Alert 'partner unavailable'
-	socket.on('partner unavailable', function() {
+	socket.on("partner unavailable", function () {
 		let pauseBefor = true;
 		if (controls.gameStatus != GameStatus.PAUSED) {
 			pauseBefor = false;
 			controls.pause();
 		}
 		sounds.playSound(Sound.SPEEDUP);
-		alert('Sorry, partner is unavailable');
+		alert("Sorry, partner is unavailable");
 		if (!pauseBefor) {
 			controls.pause();
 		}
 	});
 
 	// Confirm start partner game
-	socket.on('start partner game', function() {
+	socket.on("start partner game", function () {
 		sounds.playSound(Sound.SPEEDUP);
-		const yes = window.confirm('Start new game?');
+		const yes = window.confirm("Start new game?");
 		if (yes) {
-			setTimeout(function() {
+			setTimeout(function () {
 				controls.new();
-			}, ControlOptions.game_startTime );
+			}, ControlOptions.game_startTime);
 		} else {
-			socket.emit('partner refused');
+			socket.emit("partner refused");
 			controls.stop();
 		}
 	});
 
 	// Alert 'partner refused'
-	socket.on('partner refused', function() {
+	socket.on("partner refused", function () {
 		sounds.playSound(Sound.SPEEDUP);
-		alert('Sorry, partner refused');
+		alert("Sorry, partner refused");
 	});
 
 	// Pong events
-	socket.on('pong launched', function(cmd: GameCmd) {
+	socket.on("pong launched", function (cmd: GameCmd) {
 		if (image.valid()) {
 			if (cmd) {
-				setTimeout(function() {
+				setTimeout(function () {
 					controls.emitCmd(cmd);
-				}, ControlOptions.game_startTime );
+				}, ControlOptions.game_startTime);
 			}
 		}
 	});
-	socket.on('state', function(state: ServerMsg) {
+	socket.on("state", function (state: ServerMsg) {
 		browserState.copy(state);
 		if (score.mode == GameMode.STOPPING) {
 			controls.stop();
 		}
-		sounds.play(browserState);// This blok from pong launched
+		sounds.play(browserState); // This blok from pong launched
 		controls.colorizeButtons(browserState);
 		image.render(browserState, score.get(browserState));
 	});
-	socket.on('pong deleted', function() {
+	socket.on("pong deleted", function () {
 		sounds.playSound(Sound.SPEEDUP);
 		controls.gameIsOn = false;
 		controls.normalizeButtons();
