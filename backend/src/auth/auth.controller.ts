@@ -22,7 +22,6 @@ import { Oauth42Guard } from './oauth42.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import * as cookieParser from 'cookie-parser';
 
 @WebSocketGateway()
 export class AuthGateway {
@@ -72,12 +71,12 @@ export class AuthController {
 			res.redirect('http://localhost:5173/Auth');
 			throw new UnauthorizedException();
 		}
-		const payload = { sub: user.id42, username: user.username };
+		const payload = { sub: user.id, username: user.username };
 		const token = await this.jwtService.signAsync(payload);
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect('http://localhost:5173/');
+		res.redirect('http://localhost:5173/Auth');
 	}
 
 	@Get('intra42/return')

@@ -9,26 +9,35 @@ import { AppDispatch, RootState } from '../../store/store';
 import { auth, getProfile, userActions } from '../../store/user.slice';
 import { configureStore } from '@reduxjs/toolkit';
 import { getCookie } from 'typescript-cookie';
+import { channelActions } from '../../store/channels.slice';
 
 export function AuthForm() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const accessToken = getCookie('accessToken');
-
-	const { token, authErrorMessage, userId, profile } = useSelector((s: RootState) => s.user);
-	// const token = getCookie('accessToken');
+	
+	const { token, authErrorMessage, profile } = useSelector((s: RootState) => s.user);
 	const uri = 'http://localhost:3000/auth/intra42';
 	const getIntraUserCode = () =>
 	{
 		location.href = uri;
 	};
 	useEffect(() => {
+		const accessToken = getCookie('accessToken');
 		if (accessToken) {
+			localStorage.setItem('userToken', accessToken);
+			const userId = getCookie('userId');
+			if (userId) {
+				dispatch(getProfile(parseInt(userId)));
+				dispatch(channelActions.startConnecting);
+			}
 			// dispatch(profile); //FIXME!!!
-			navigate('/Chat');
 		}
 	}, []);
-
+	useEffect(() => {
+		if (profile) {
+			navigate('/Chat');
+		}
+	}, [profile]);
 
 	return (
 		<div className={styles['page']}>

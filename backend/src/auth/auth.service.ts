@@ -45,7 +45,7 @@ export class AuthService {
 		const user = await this.userService.getUserByEmail(email);
 		if (user) {
 			// return user;
-			const payload = { sub: user.id42, username: user.username };
+			const payload = { sub: user.id, username: user.username };
 			const token = await this.jwtService.signAsync(payload);
 			return this.userService.updateJWTAccess(user.id, token);
 		} else {
@@ -55,7 +55,7 @@ export class AuthService {
 				email: email,
 				id42: Number(id),
 			});
-			const payload = { sub: user.id42, username: user.username };
+			const payload = { sub: user.id, username: user.username };
 			const token = await this.jwtService.signAsync(payload);
 			return await this.userService.updateJWTAccess(user.id, token);
 		}

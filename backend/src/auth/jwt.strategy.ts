@@ -4,11 +4,7 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 // import { extractTokenFromHeaders } from './extractTokens';
 import { UserService } from '../user/user.service';
 import { Request } from 'express';
-
-export const JwtParams = {
-	secret: process.env.JWT_SECRET,
-	signOptions: { expiresIn: '1d' },
-};
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -17,9 +13,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 			ignoreExpiration: false,
 			jwtFromRequest: ExtractJwt.fromExtractors([
 				JwtStrategy.extractJWT,
+				JwtStrategy.socketJWT,
 				ExtractJwt.fromAuthHeaderAsBearerToken(),
 			]),
-			secretOrKey: JwtParams.secret,
+			secretOrKey: process.env.JWT_SECRET,
 		});
 	}
 
@@ -37,6 +34,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 	private static extractJWT(req: Request) {
 		if (req.cookies && req.cookies.accessToken) {
 			return req.cookies.accessToken;
+		} else {
+			return undefined;
+		}
+	}
+	private static socketJWT(socket: Socket) {
+		if (
+			socket &&
+			socket.handshake &&
+			socket.handshake.headers &&
+			socket.handshake.headers.token
+		) {
+			return socket.handshake.headers.token;
 		} else {
 			return undefined;
 		}

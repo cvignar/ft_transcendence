@@ -16,13 +16,15 @@ import {
 } from 'contracts/channel.schema';
 import { Status } from 'contracts/enums';
 import { Server, Socket } from 'socket.io';
-import { jwtConstants } from './auth/constants';
 import { ChannelGateway } from './channel/channel.gateway';
 import { ChannelService } from './channel/channel.service';
 import { UserService } from './user/user.service';
 import { SaveGame } from 'contracts/game.schema';
 import { GameService } from './game/game.service';
+import { JwtAuthGuard } from './auth/jwt.guard';
+import { UseGuards } from '@nestjs/common/decorators';
 
+@UseGuards(JwtAuthGuard)
 @WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(
@@ -41,23 +43,24 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(client: Socket) {
 		try {
+			console.log('connection');
 			client.setMaxListeners(20); //FIXME!!!!
-			const UserId: number = this.jwtService.verify(
-				String(client.handshake.headers.token),
-				{ secret: jwtConstants.secret },
-			).sub;
-			const user = this.userService.getUserById(UserId);
-			client.data.id = UserId;
-			if (!user) throw new WsException('Invalid token.');
+			// const UserId: number = this.jwtService.verify(
+			// 	String(client.handshake.headers.token),
+			// 	{ secret: process.env.JWT_SECRET },
+			// ).sub;
+			// const user = this.userService.getUserById(UserId);
+			// client.data.id = UserId;
+			// if (!user) throw new WsException('Invalid token.');
 
-			//setting status as online
-			this.userStatusMap.set(client.data.id, Status.online);
-			const serializedMap = [...this.userStatusMap.entries()];
-			this.server.emit('update-status', serializedMap);
-			//add to clientSocket
-			this.clientSocket.set(UserId, client);
-			console.log('connect userId', UserId, client.id);
-			await this.channelGateway.handleJoinSocket(UserId, client);
+			// //setting status as online
+			// this.userStatusMap.set(client.data.id, Status.online);
+			// const serializedMap = [...this.userStatusMap.entries()];
+			// this.server.emit('update-status', serializedMap);
+			// //add to clientSocket
+			// this.clientSocket.set(UserId, client);
+			// console.log('connect userId', UserId, client.id);
+			// await this.channelGateway.handleJoinSocket(UserId, client);
 		} catch (e) {
 			console.log(e);
 			return false;
