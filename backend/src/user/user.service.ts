@@ -173,7 +173,7 @@ export class UserService {
 
 	async getUsers(): Promise<
 		{ id: number; username: string; avatar: string }[]
-		> {
+	> {
 		try {
 			const users = await this.prismaService.user.findMany({
 				select: {
@@ -269,7 +269,6 @@ export class UserService {
 		}
 	}
 
-
 	async updateJWTAccess(userId: number, jwt: string): Promise<User> {
 		try {
 			const updateUser = await this.prismaService.user.update({
@@ -277,8 +276,7 @@ export class UserService {
 				data: { jwtAccess: jwt },
 			});
 			return updateUser;
-		}
-		catch (error) {
+		} catch (error) {
 			console.log(`updateJWTAcces error: ${error}`);
 		}
 	}

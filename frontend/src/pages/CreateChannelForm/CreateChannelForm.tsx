@@ -43,12 +43,12 @@ export function CreateChannelFrom() {
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
-			<Headling>Create a new channel:</Headling>
+			<Headling>Create a new channel</Headling>
 			{channelState.error ? <div>Error!</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>
 				<label htmlFor='type-radio' className={styles['radio-set']}>
-					Type of your channel:
+					Type of your channel
 				</label>
 				<div id='type-radio' className={styles['radio-set']}>
 					<input type="radio" id="public" name="type" value="public" defaultChecked />
@@ -63,7 +63,6 @@ export function CreateChannelFrom() {
 			</fieldset>
 			{isProtected && <Input type='password' placeholder='Password' name='password' className={styles['input']}/>}
 			<Button className={styles['button']}>Create</Button>
-
 		</form>
 	</>;
 }

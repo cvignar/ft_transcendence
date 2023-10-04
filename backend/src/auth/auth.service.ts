@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, Req, Res} from '@nestjs/common';
+import { Injectable, UnauthorizedException, Req, Res } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
@@ -37,29 +37,27 @@ export class AuthService {
 		return await this.userService.updateJWTAccess(user.id, access_token);
 	}
 
-  async validateIntraUser(id: number, username : string, email : string) : Promise<any>{
-    const user = await this.userService.getUserByEmail(email);
-    if (user)
-    {
-      // return user;
-      const payload = { sub: user.id42, username: user.username };
-      const token = await this.jwtService.signAsync(payload);
-      return {
-        access_token: token,
-        user: user,
-      };
-    }
-    else
-    {
-      const user = await this.userService.createUser({
-        username: username,
-        hash: "",
-        email: email,
-        id42: Number(id),
-      });
-      const payload = { sub: user.id42, username: user.username };
-      const token = await this.jwtService.signAsync(payload);
-      return await this.userService.updateJWTAccess(user.id, token);
-    }
-  }
+	async validateIntraUser(
+		id: number,
+		username: string,
+		email: string,
+	): Promise<any> {
+		const user = await this.userService.getUserByEmail(email);
+		if (user) {
+			// return user;
+			const payload = { sub: user.id42, username: user.username };
+			const token = await this.jwtService.signAsync(payload);
+			return this.userService.updateJWTAccess(user.id, token);
+		} else {
+			const user = await this.userService.createUser({
+				username: username,
+				hash: '',
+				email: email,
+				id42: Number(id),
+			});
+			const payload = { sub: user.id42, username: user.username };
+			const token = await this.jwtService.signAsync(payload);
+			return await this.userService.updateJWTAccess(user.id, token);
+		}
+	}
 }

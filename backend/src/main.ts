@@ -35,10 +35,7 @@ async function bootstrap() {
 		response: Response,
 		next: NextFunction,
 	) {
-		response.setHeader(
-			'Access-Control-Allow-Origin',
-			'*',
-		);
+		response.setHeader('Access-Control-Allow-Origin', '*');
 		next();
 	});
 
