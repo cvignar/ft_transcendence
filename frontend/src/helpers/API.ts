@@ -2,12 +2,13 @@ export const BACK_PREFIX = `http://${import.meta.env.VITE_BACK_HOST}:${import.me
 export const BACK_SOCKET_PREFIX = `ws://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}`;
 
 export const sockOpt = {
-	transposts: ['websocket'],
+	transposts: ["websocket"],
 	transportOptions: {
 		polling: {
+			headers: {},
 			extraHeaders: {
-				Token: localStorage.getItem('userToken')?.replace(/"/g, '')
-			}
-		}
-	}
+				Token: localStorage.getItem("userToken")?.replace(/"/g, ""),
+			},
+		},
+	},
 };

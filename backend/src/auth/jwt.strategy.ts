@@ -3,12 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { UserService } from '../user/user.service';
 import { Request } from 'express';
-import { jwtConstants } from './constants';
-
-export const JwtParams = {
-	secret: jwtConstants.secret,
-	signOptions: { expiresIn: '1d' },
-};
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -16,10 +11,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		super({
 			ignoreExpiration: false,
 			jwtFromRequest: ExtractJwt.fromExtractors([
-				JwtStrategy.extractJWTFromCookie,
+				JwtStrategy.extractJWT,
+				JwtStrategy.socketJWT,
 				ExtractJwt.fromAuthHeaderAsBearerToken(),
 			]),
-			secretOrKey: JwtParams.secret,
+			secretOrKey: process.env.JWT_SECRET,
 		});
 	}
 
@@ -36,11 +32,25 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		return { name: payload.username, id: payload.sub };
 	}
 
-	private static extractJWTFromCookie(req: Request): string | null{
+	private static extractJWT(req: Request): string | null{
 		if (req.cookies && req.cookies.accessToken) {
 			return req.cookies.accessToken;
+		} else {
+			return undefined;
 		}
-		console.log('accessToken missing');
-		return null;
 	}
+
+	private static socketJWT(socket: Socket) {
+		if (
+			socket &&
+			socket.handshake &&
+			socket.handshake.headers &&
+			socket.handshake.headers.token
+		) {
+			return socket.handshake.headers.token;
+		} else {
+			return undefined;
+		}
+	}
+
 }

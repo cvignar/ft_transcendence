@@ -65,11 +65,10 @@ export class AuthController {
 
 	@Get('callback')
 	@UseGuards(Oauth42Guard)
-	// @Redirect("http://localhost:5173/Auth")
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect('http://localhost:5173/Auth');
+			res.redirect(`http://${process.env.DB_HOST}/Auth`);
 			throw new UnauthorizedException();
 		}
     if (!user.twoFA) {
@@ -78,10 +77,10 @@ export class AuthController {
       this.userService.updateJWTAccess(user.id, token);
       res.cookie('accessToken', token);
       res.cookie('userId', user.id);
-      res.redirect('http://localhost:5173/');
+      res.redirect(`http://${process.env.DB_HOST}:5173/Auth`);
     }
     else {
-      res.redirect('http://localhost:5173/Auth/2FA');
+      res.redirect('http://${process.env.DB_HOST}:5173/Auth/2FA');
     }
 	}
 
@@ -89,7 +88,7 @@ export class AuthController {
   // @UseGuards(Oauth42Guard) // Not sure it is neccessary
   async login2fa (@Req() req:any, @Res() res: Response, @Body() code)
   {
-    res.redirect('http://localhost:5173/');
+    res.redirect(`http://${process.env.DB_HOST}:5173/Auth`);
   }
 
 	@Get('intra42/return')
