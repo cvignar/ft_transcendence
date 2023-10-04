@@ -7,17 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { config } from 'dotenv';
+import { config } from "dotenv";
 config();
-import http from 'http';
-import * as socketIO from 'socket.io';
-import express from 'express';
-import { GameCmd, GameCommand, GameMode } from './static/common.js';
-import { Pong } from './Pong.js';
-import { routes } from './routes.js';
-import { GamesSet } from './GamesSet.js';
-import { io as ioc } from 'socket.io-client';
-import { ControlOptions, Options } from './static/options.js';
+import http from "http";
+import * as socketIO from "socket.io";
+import express from "express";
+import { GameCmd, GameCommand, GameMode } from "./static/common.js";
+import { Pong } from "./Pong.js";
+import { routes } from "./routes.js";
+import { GamesSet } from "./GamesSet.js";
+import { io as ioc } from "socket.io-client";
+import { ControlOptions, Options } from "./static/options.js";
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
 const server = new http.Server(app);
@@ -34,48 +34,48 @@ export function deletePongAndNotifyPlayers(socketId) {
     const playersDeletedPong = games.deletePong(socketId);
     if (playersDeletedPong) {
         if (playersDeletedPong.owner) {
-            (_a = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong deleted');
-            (_b = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner game off');
-            gebugPprinting(playersDeletedPong.owner.name, 'pong deleted');
+            (_a = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("pong deleted");
+            (_b = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("partner game off");
+            gebugPprinting(playersDeletedPong.owner.name, "pong deleted");
         }
         if (playersDeletedPong.partner) {
-            (_c = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _c === void 0 ? void 0 : _c.emit('pong deleted');
-            (_d = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('partner game off');
+            (_c = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _c === void 0 ? void 0 : _c.emit("pong deleted");
+            (_d = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit("partner game off");
         }
     }
 }
 routes(app, port);
 if (port) {
     server.listen(port, () => {
-        console.log('Server starts on port', port);
+        console.log("Server starts on port", port);
     });
 }
 else {
-    console.log('port is not assigned');
+    console.log("port is not assigned");
     process.exit(1);
 }
-io.on('connection', (socket) => {
-    socket.on('new player', (user) => {
+io.on("connection", (socket) => {
+    socket.on("new player", (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
-            socket.emit('player created', user === null || user === void 0 ? void 0 : user.scheme);
+            socket.emit("player created", user === null || user === void 0 ? void 0 : user.scheme);
         }
         else {
-            socket.emit('player not created');
+            socket.emit("player not created");
         }
-        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? 'new player' : 'new player not created');
+        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? "new player" : "new player not created");
     });
-    socket.on('disconnect', (reason) => {
+    socket.on("disconnect", (reason) => {
         const player = games.deletePlayer(socket.id);
         gebugPprinting(player === null || player === void 0 ? void 0 : player.name, reason);
     });
-    socket.on('get partners list', () => {
+    socket.on("get partners list", () => {
         var _a;
         const partnersList = games.getPartnersList(socket.id);
-        socket.emit('partners list', partnersList);
-        gebugPprinting(((_a = games.getPlayer(socket.id)) === null || _a === void 0 ? void 0 : _a.name) + ' partnersList: ', partnersList);
+        socket.emit("partners list", partnersList);
+        gebugPprinting(((_a = games.getPlayer(socket.id)) === null || _a === void 0 ? void 0 : _a.name) + " partnersList: ", partnersList);
     });
-    socket.on('controls', (msg) => {
+    socket.on("controls", (msg) => {
         var _a, _b, _c, _d;
         const player = games.getPlayer(socket.id);
         if (player) {
@@ -87,24 +87,24 @@ io.on('connection', (socket) => {
                     pong.setControls(msg, player.side);
                     if (msg.cmd == GameCmd.NEW || msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
                         if ((_a = pong.owner) === null || _a === void 0 ? void 0 : _a.socketId) {
-                            (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('players', pong.getPlayerNames());
+                            (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("players", pong.getPlayerNames());
                         }
                         if ((_c = pong.partner) === null || _c === void 0 ? void 0 : _c.socketId) {
-                            (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('players', pong.getPlayerNames());
+                            (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit("players", pong.getPlayerNames());
                         }
                     }
                 }
             }
             else if (msg.cmd == GameCmd.AUTO || msg.cmd == GameCmd.TRNNG) {
                 pong = games.nwePong(player);
-                socket.emit('pong launched', msg.cmd);
+                socket.emit("pong launched", msg.cmd);
             }
         }
         if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
-            gebugPprinting(player === null || player === void 0 ? void 0 : player.name, GameCommand[msg.cmd] + ' controls');
+            gebugPprinting(player === null || player === void 0 ? void 0 : player.name, GameCommand[msg.cmd] + " controls");
         }
     });
-    socket.on('partner choosed', (socket_id) => {
+    socket.on("partner choosed", (socket_id) => {
         const partner = games.getPlayer(socket.id);
         if (partner) {
             const choosedOwner = games.getPlayer(socket_id);
@@ -112,50 +112,50 @@ io.on('connection', (socket) => {
                 const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
                 if (choosedOwnerSocket) {
                     setTimeout(function () {
-                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit('confirm partner', [socket.id, partner.name]);
+                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit("confirm partner", [socket.id, partner.name]);
                     }, ControlOptions.game_startTime);
                     return;
                 }
             }
         }
-        socket.emit('partner unavailable');
+        socket.emit("partner unavailable");
     });
-    socket.on('partner confirmation', (socket_id) => {
+    socket.on("partner confirmation", (socket_id) => {
         var _a, _b;
         const partner = games.setPartner(socket.id, socket_id);
         const pong = games.getPong(socket.id);
         if (partner && pong) {
-            (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('pong launched');
+            (_a = io.sockets.sockets.get(partner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("pong launched");
         }
         else {
-            socket.emit('partner unavailable');
-            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit('partner unavailable');
+            socket.emit("partner unavailable");
+            (_b = io.sockets.sockets.get(socket_id)) === null || _b === void 0 ? void 0 : _b.emit("partner unavailable");
         }
     });
-    socket.on('refusal', (socket_id) => {
+    socket.on("refusal", (socket_id) => {
         var _a;
         if (games.getPlayer(socket.id)) {
-            (_a = io.sockets.sockets.get(socket_id)) === null || _a === void 0 ? void 0 : _a.emit('partner unavailable');
+            (_a = io.sockets.sockets.get(socket_id)) === null || _a === void 0 ? void 0 : _a.emit("partner unavailable");
         }
     });
-    socket.on('start partner game', () => {
+    socket.on("start partner game", () => {
         let opposer = games.getOpposer(socket.id);
         if (opposer) {
             let opposerSocket = io.sockets.sockets.get(opposer);
             if (opposerSocket) {
                 setTimeout(function () {
-                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('start partner game');
+                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit("start partner game");
                 }, ControlOptions.game_startTime);
             }
         }
     });
-    socket.on('partner refused', () => {
+    socket.on("partner refused", () => {
         let opposer = games.getOpposer(socket.id);
         if (opposer) {
             let opposerSocket = io.sockets.sockets.get(opposer);
             if (opposerSocket) {
                 setTimeout(function () {
-                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit('partner refused');
+                    opposerSocket === null || opposerSocket === void 0 ? void 0 : opposerSocket.emit("partner refused");
                 }, ControlOptions.game_startTime);
             }
         }
@@ -176,24 +176,24 @@ setInterval(function () {
             }
             pong.calculate();
             if (pong.owner) {
-                (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('state', pong.getPongState(pong.owner.side));
+                (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("state", pong.getPongState(pong.owner.side));
                 if (pong.partnerGameOn) {
-                    (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner game on');
+                    (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("partner game on");
                     pong.partnerGameOn = false;
                 }
                 if (pong.partnerGameOff) {
-                    (_c = io.sockets.sockets.get(pong.owner.socketId)) === null || _c === void 0 ? void 0 : _c.emit('partner game off');
+                    (_c = io.sockets.sockets.get(pong.owner.socketId)) === null || _c === void 0 ? void 0 : _c.emit("partner game off");
                     pong.partnerGameOff = false;
                 }
             }
             if (pong.partner) {
-                (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit('state', pong.getPongState(pong.partner.side));
+                (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit("state", pong.getPongState(pong.partner.side));
                 if (pong.partnerGameOn) {
-                    (_e = io.sockets.sockets.get(pong.partner.socketId)) === null || _e === void 0 ? void 0 : _e.emit('partner game on');
+                    (_e = io.sockets.sockets.get(pong.partner.socketId)) === null || _e === void 0 ? void 0 : _e.emit("partner game on");
                     pong.partnerGameOn = false;
                 }
                 if (pong.partnerGameOff) {
-                    (_f = io.sockets.sockets.get(pong.partner.socketId)) === null || _f === void 0 ? void 0 : _f.emit('partner game off');
+                    (_f = io.sockets.sockets.get(pong.partner.socketId)) === null || _f === void 0 ? void 0 : _f.emit("partner game off");
                     pong.partnerGameOff = false;
                 }
             }
@@ -224,12 +224,12 @@ function tokenRequest() {
             access_token = yield (yield fetch(request)).json();
         }
         catch (e) {
-            if (access_token) {
-                console.log('cannot get new token');
-            }
+            // if (access_token) {
+            console.log("cannot get new token: ", e);
+            // }
         }
         if (access_token) {
-            gebugPprinting('access_token: ', access_token.access_token);
+            gebugPprinting("access_token: ", access_token.jwtAccess);
         }
     });
 }
@@ -243,17 +243,17 @@ setInterval(function () {
         if (access_token) {
             if (result) {
                 const sockOpt = {
-                    transposts: ['websocket'],
+                    transposts: ["websocket"],
                     transportOptions: {
                         polling: {
                             extraHeaders: {
-                                Token: access_token.access_token
-                            }
-                        }
-                    }
+                                Token: access_token.access_token,
+                            },
+                        },
+                    },
                 };
                 const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-                socket.emit('save game', result.get());
+                socket.emit("save game", result.get());
             }
         }
         else {
