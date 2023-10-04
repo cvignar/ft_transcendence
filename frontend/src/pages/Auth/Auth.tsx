@@ -16,7 +16,7 @@ export function AuthForm() {
 	const dispatch = useDispatch<AppDispatch>();
 	
 	const { token, authErrorMessage, profile } = useSelector((s: RootState) => s.user);
-	const uri = 'http://localhost:3000/auth/intra42';
+	const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
 	const getIntraUserCode = () =>
 	{
 		location.href = uri;
@@ -34,9 +34,12 @@ export function AuthForm() {
 		}
 	}, []);
 	useEffect(() => {
-		if (profile) {
-			navigate('/Chat');
-		}
+		const timerId = setTimeout(() => {
+			if (profile) {
+				navigate('/Chat');
+			}
+		}, 1000);
+		return () => clearTimeout(timerId);
 	}, [profile]);
 
 	return (
