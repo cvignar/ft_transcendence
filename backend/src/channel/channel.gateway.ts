@@ -19,7 +19,10 @@ import {
 	CreateDirectChannel,
 	UpdateChannel,
 } from 'contracts/channel.schema';
-import { CreateMessage, MessagePreview } from '../../../contracts/message.schema';
+import {
+	CreateMessage,
+	MessagePreview,
+} from '../../../contracts/message.schema';
 import { MemberPreview } from 'contracts/user.schema';
 import { Role } from 'contracts/enums';
 
@@ -91,7 +94,6 @@ export class ChannelGateway {
 				channelId,
 				channelData.email,
 			);
-			console.log(preview);
 			client.join(preview.name);
 			client.emit('add preview', preview);
 			this.server.in('all').emit('update channel request');
