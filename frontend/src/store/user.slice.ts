@@ -5,7 +5,7 @@ import { AuthResponse } from "../interfaces/auth.interface";
 import { Profile, UpdateUser } from "../interfaces/user.interface";
 import { loadState } from "./storage";
 import { store } from "./store";
-import { getCookie } from "typescript-cookie";
+import { getCookie, setCookie} from "typescript-cookie";
 //import { RootState } from './store';
 
 axios.defaults.withCredentials = true;
@@ -15,6 +15,7 @@ export const USERNAME_PERSISTENT_STATE = "userName";
 export const USERID_PERSISTENT_STATE = "userId";
 export const PROFILE_PERSISTENT_STATE = "userProfile";
 const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
+const uri2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/2fa`;
 
 export interface UserState {
 	token: string | null;
@@ -43,6 +44,20 @@ export const auth = createAsyncThunk("auth/login", async () => {
 		return { data: data };
 	} catch (e) {
 		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const auth2fa = createAsyncThunk("auth/2fa", async (params: {code: string | null}) => {
+	try {
+		const { data } = await axios.post<any>(`${uri2fa}`, params);
+		console.log(data);
+		return { data: data };
+	} catch (e) {
+		console.log(e);
+		if (e instanceof AxiosError) {
+			
 			throw new Error(e.response?.data.message);
 		}
 	}
@@ -103,6 +118,14 @@ export const userSlice = createSlice({
 		builder.addCase(auth.rejected, (state, action) => {
 			state.authErrorMessage = action.error.message;
 			console.log(action.error);
+		});
+		builder.addCase(auth2fa.rejected, (state, action) => {
+			console.log('return went wrong in 2fa');
+		});
+		builder.addCase(auth2fa.fulfilled, (state, action) => {
+			console.log('return in 2fa fullfilled');
+			if (action.payload.data)
+				console.log(action.payload.data);
 		});
 		builder.addCase(getProfile.fulfilled, (state, action) => {
 			console.log("fulfiled!", action.payload);

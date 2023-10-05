@@ -7,7 +7,6 @@ import { UserModule } from './user/user.module';
 import { ChannelModule } from './channel/channel.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './auth/constants';
 import { AppGateway } from './app.gateway';
 import { GameModule } from './game/game.module';
 import { GameService } from './game/game.service';
