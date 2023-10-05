@@ -28,9 +28,7 @@ export function AuthForm() {
 			const userId = getCookie('userId');
 			if (userId) {
 				dispatch(getProfile(parseInt(userId)));
-				dispatch(channelActions.startConnecting);
 			}
-			// dispatch(profile); //FIXME!!!
 		}
 	}, []);
 	useEffect(() => {
@@ -38,7 +36,7 @@ export function AuthForm() {
 			if (profile) {
 				navigate('/Chat');
 			}
-		}, 1000);
+		}, 0);
 		return () => clearTimeout(timerId);
 	}, [profile]);
 

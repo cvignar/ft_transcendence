@@ -32,10 +32,10 @@ export class UserController {
 	}
 
 	@Get('getProfile')
-	async getProfile(@Req() req: Request) {
+	async getProfile(@Param('id', ParseIntPipe) id: number) {
 		// const userId = req.cookies.userId;
 		// console.log(userId, typeof userId);
-		return await this.userService.getProfile(10);
+		return await this.userService.getProfile(id);
 	}
 
 	@Post('updateProfile/:id')

@@ -75,5 +75,4 @@ ImageOptions.score_fontSize = 18 * _d.line_width;
 ImageOptions.score_font = _d.score_fontSize.toString() + 'px ' + 'Courier Prime';
 ImageOptions.score_font1 = _d.score_fontSize.toString() + 'px ' + 'Share Tech Mono';
 ImageOptions.score_font2 = _d.score_fontSize.toString() + 'px ' + 'VT323';
-ImageOptions.rendering_period = 1000 / 100;
 export { ImageOptions };

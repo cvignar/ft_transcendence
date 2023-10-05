@@ -7,8 +7,8 @@ import { ControlOptions } from './static/options.js';
 export class Player {
 	socketId: string;
 	name: string;
-	id: number;
-	side: Side;
+	id: number = 0;
+	side: Side = 0;
 	constructor(socketId: string, user: {name: string, id: number, side: Side}) {
 		this.socketId = socketId;
 		this.name = user.name;
@@ -36,12 +36,16 @@ export class Result {
 		if (pong.mode == GameMode.PARTNER_GAME) {
 			this.player1 = pong.getLeftPlayer()?.id;
 			this.player2 = pong.getRightPlayer()?.id;
-			this.score1 = pong.leftScore;
-			this.score2 = pong.rightScore;
-			this.startTime = pong.gameStartTime;
-			this.endTime = pong.gameEndTime;
-			this.duration = pong.gameEndTime - pong.gameStartTime;
-			this.isActual = true;
+			if (this.player1 && this.player2) {
+				if (this.player1 > 0 && this.player2 > 0) {
+					this.score1 = pong.leftScore;
+					this.score2 = pong.rightScore;
+					this.startTime = pong.gameStartTime;
+					this.endTime = pong.gameEndTime;
+					this.duration = pong.gameEndTime - pong.gameStartTime;
+					this.isActual = true;
+				}
+			}
 		}
 	}
 	get(): {
@@ -70,7 +74,6 @@ export class GamesSet {
 	private pongs:			Map<string, Pong>;
 	private pongsIdx:		Map<string, Pong>;
 	private resultQueue:	Result[];
-
 	constructor() {
 		this.players = new Map<string, Player>;
 		this.pongs = new Map<string, Pong>;
@@ -90,6 +93,15 @@ export class GamesSet {
 		const player = this.players.get(socketId);
 		if (player) {
 			return player;
+		}
+		return undefined;
+	}
+	getPlayerById(userId: number): Player | undefined {
+		for (const socketId of this.players.keys()) {
+			const player = this.getPlayer(socketId);
+			if (player && player.id == userId) {
+				return player;
+			}
 		}
 		return undefined;
 	}
@@ -176,7 +188,7 @@ export class GamesSet {
 		}
 		return partnersList;
 	}
-	getOpposer(socketId: string): string | undefined {
+	getOpposerSocketId(socketId: string): string | undefined {
 		let player = this.getPlayer(socketId);
 		if (player) {
 			let pong = this.getPong(socketId);
@@ -198,10 +210,16 @@ export class GamesSet {
 			pong.gameResult.setIsActual(false);
 		}
 	}
-	getNextResult():Result | undefined {
+	getNextResultFromQueue():Result | undefined {
 		if (this.resultQueue.length) {
 			return this.resultQueue.shift();
 		}
 		return undefined;
+	}
+	isResultInQueue(): boolean {
+		if (this.resultQueue.length) {
+			return true;
+		}
+		return false;
 	}
 }

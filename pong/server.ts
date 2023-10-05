@@ -7,7 +7,7 @@ import { GameCmd, GameCommand, GameMode, GameScheme, Side } from "./static/commo
 import { Pong } from "./Pong.js";
 import { routes } from "./routes.js";
 import { GamesSet } from "./GamesSet.js";
-import { io as ioc } from "socket.io-client";
+import { io as ioc, Socket } from "socket.io-client";
 import { ControlOptions, Options } from "./static/options.js";
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
@@ -15,6 +15,7 @@ const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
 let access_token: any = undefined;
+let socketToBackend: Socket;
 
 export function gebugPprinting(param1: any | undefined, param2: any | undefined) {
 	if (Options.debug) {
@@ -113,6 +114,40 @@ io.on("connection", (socket) => {
 		socket.emit("partner unavailable");
 	});
 
+	socket.on("invite partner", (user_id: number) => {
+		const inviter = games.getPlayer(socket.id);
+		if (inviter) {
+			const invited = games.getPlayerById(user_id);
+			if (invited) {
+				const invitedSocket = io.sockets.sockets.get(invited.socketId);
+				if (invitedSocket) {
+					setTimeout(function () {
+						invitedSocket?.emit("confirm partner", [socket.id, inviter.name]);
+					}, ControlOptions.game_startTime);
+					return;
+				}
+			}
+		}
+		socket.emit("partner unavailable");
+	});
+
+	socket.on('invite partner', (user_id: number) => {
+		const inviter = games.getPlayer(socket.id);
+		if (inviter) {
+			const invited = games.getPlayerById(user_id);
+			if (invited) {
+				const invitedSocket = io.sockets.sockets.get(invited.socketId);
+				if (invitedSocket) {
+					setTimeout(function() {
+						invitedSocket?.emit('confirm partner', [ socket.id, inviter.name ]);
+					}, ControlOptions.game_startTime );
+					return;
+				}
+			}
+		}
+		socket.emit('partner unavailable');
+	});
+
 	socket.on("partner confirmation", (socket_id) => {
 		const partner = games.setPartner(socket.id, socket_id);
 		const pong = games.getPong(socket.id);
@@ -122,6 +157,22 @@ io.on("connection", (socket) => {
 			socket.emit("partner unavailable");
 			io.sockets.sockets.get(socket_id)?.emit("partner unavailable");
 		}
+	socket.on('partner confirmation', (socket_id) => {
+		const player = games.getPlayer(socket.id);
+		if (player) {
+			let pong = games.getPong(socket.id);
+			if (!pong) {
+				pong = games.nwePong(player);
+				socket.emit('pong launched');
+			}
+			const partner = games.setPartner(socket.id, socket_id);
+			if (partner && pong) {
+				io.sockets.sockets.get(partner.socketId)?.emit('pong launched');
+				return;
+			}
+		}
+		socket.emit('partner unavailable');
+		io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
 	});
 
 	socket.on("refusal", (socket_id) => {
@@ -134,6 +185,10 @@ io.on("connection", (socket) => {
 		let opposer = games.getOpposer(socket.id);
 		if (opposer) {
 			let opposerSocket = io.sockets.sockets.get(opposer);
+	socket.on('start partner game', () => {
+		let opposerSocketId = games.getOpposerSocketId(socket.id);
+		if (opposerSocketId) {
+			let opposerSocket = io.sockets.sockets.get(opposerSocketId);
 			if (opposerSocket) {
 				setTimeout(function () {
 					opposerSocket?.emit("start partner game");
@@ -146,6 +201,10 @@ io.on("connection", (socket) => {
 		let opposer = games.getOpposer(socket.id);
 		if (opposer) {
 			let opposerSocket = io.sockets.sockets.get(opposer);
+	socket.on('partner refused', () => {
+		let opposerSocketId = games.getOpposerSocketId(socket.id);
+		if (opposerSocketId) {
+			let opposerSocket = io.sockets.sockets.get(opposerSocketId);
 			if (opposerSocket) {
 				setTimeout(function () {
 					opposerSocket?.emit("partner refused");
@@ -232,6 +291,7 @@ if (access_token) {
 // Send game results loop
 setInterval(async function () {
 	const result = games.getNextResult();
+setInterval(async function() {
 	if (access_token) {
 		if (result) {
 			const sockOpt = {
@@ -246,6 +306,27 @@ setInterval(async function () {
 			};
 			const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
 			socket.emit("save game", result.get());
+		if (games.isResultInQueue()) {
+			if (!socketToBackend.connected) {
+				const sockOpt = {
+					transposts: ['websocket'],
+					transportOptions: {
+						polling: {
+							extraHeaders: {
+								Token: access_token.access_token
+							}
+						}
+					}
+				};
+				socketToBackend = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+			}
+			if (socketToBackend.connected) {
+				const result = games.getNextResultFromQueue();
+				socketToBackend.emit('save game', result?.get());
+				gebugPprinting(result?.get().endTime, 'game result sended');
+			} else {
+				gebugPprinting('game result NOT sended', '');
+			}
 		}
 	} else {
 		await tokenRequest();

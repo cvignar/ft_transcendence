@@ -30,10 +30,13 @@ async function bootstrap() {
 	app.useGlobalPipes(new ZodValidationPipe());
 
 	const whitelist = [
-		`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}`,
+		`http://${process.env.FRONT_HOST}`,
 		`http://localhost:${process.env.FRONT_PORT}`,
+		`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}`,
 		`http://${process.env.PONG_HOST}:${process.env.PONG_PORT}`,
 		`http://localhost:${process.env.PONG_PORT}`,
+		`http://${process.env.DB_HOST}:${process.env.FRONT_PORT}`,
+		`http://${process.env.DB_HOST}`,
 	];
 	const corsOptions = {
 		credentials: true,
