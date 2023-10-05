@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux";
 import { GameCmd, GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from "../../../../pong/static/common";
 import { Controls, Selector } from "../../../../pong/static/controls";
 import { Score, Image, Sounds } from "../../../../pong/static/image";
 import { ControlOptions } from "../../../../pong/static/options";
-import { RootState } from "../../store/store";
 
 export function game(socket: any, user: any) {
 	const pong_path = "http://" + import.meta.env.VITE_PONG_HOST + ":" + import.meta.env.VITE_PONG_PORT + "/";
@@ -24,9 +22,11 @@ export function game(socket: any, user: any) {
 		}
 		socket.emit("new player", { name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL });
 	});
-	socket.on("player created", function (scheme: GameScheme) {
-		console.log("scheme: ", scheme);
-		image.changeScheme(scheme);
+	socket.on('player created', function(scheme: GameScheme) {
+		if (scheme) {
+			console.log('scheme: ', scheme);//FIXME
+			image.changeScheme(scheme);
+		}
 	});
 	socket.on("players", function (players: string[]) {
 		score.setPlayers(players[0], players[1]);

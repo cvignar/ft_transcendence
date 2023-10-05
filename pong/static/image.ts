@@ -373,13 +373,13 @@ export class Image extends ImageOptions {
 		this.context.fill();
 	}
 	changeScheme(scheme: GameScheme) {
-		if (scheme = GameScheme.GENERAL) {
+		if (scheme == GameScheme.GENERAL) {
 			Image.color_back = 'black';
 			Image.color_dividingNet = 'Silver';
 			Image.color_ball = 'white';
 			Image.color_paddle = 'white';
 			Image.color_score = 'Silver';
-		} else if (scheme = GameScheme.REVERSE) {
+		} else if (scheme == GameScheme.REVERSE) {
 			Image.color_back = 'white';
 			Image.color_dividingNet = 'Silver';
 			Image.color_ball = 'black';
