@@ -28,14 +28,13 @@ export function AuthForm() {
 			const userId = getCookie('userId');
 			if (userId) {
 				dispatch(getProfile(parseInt(userId)));
-				dispatch(channelActions.startConnecting);
 			}
-			// dispatch(profile); //FIXME!!!
 		}
 	}, []);
 	useEffect(() => {
 		const timerId = setTimeout(() => {
 			if (profile) {
+				dispatch(channelActions.startConnecting());
 				navigate('/Chat');
 			}
 		}, 1000);

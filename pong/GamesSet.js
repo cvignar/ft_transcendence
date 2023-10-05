@@ -3,6 +3,8 @@ import { deletePongAndNotifyPlayers } from './server.js';
 import { GameMode } from './static/common.js';
 export class Player {
     constructor(socketId, user) {
+        this.id = 0;
+        this.side = 0;
         this.socketId = socketId;
         this.name = user.name;
         this.id = user.id;
@@ -31,12 +33,16 @@ export class Result {
         if (pong.mode == GameMode.PARTNER_GAME) {
             this.player1 = (_a = pong.getLeftPlayer()) === null || _a === void 0 ? void 0 : _a.id;
             this.player2 = (_b = pong.getRightPlayer()) === null || _b === void 0 ? void 0 : _b.id;
-            this.score1 = pong.leftScore;
-            this.score2 = pong.rightScore;
-            this.startTime = pong.gameStartTime;
-            this.endTime = pong.gameEndTime;
-            this.duration = pong.gameEndTime - pong.gameStartTime;
-            this.isActual = true;
+            if (this.player1 && this.player2) {
+                if (this.player1 > 0 && this.player2 > 0) {
+                    this.score1 = pong.leftScore;
+                    this.score2 = pong.rightScore;
+                    this.startTime = pong.gameStartTime;
+                    this.endTime = pong.gameEndTime;
+                    this.duration = pong.gameEndTime - pong.gameStartTime;
+                    this.isActual = true;
+                }
+            }
         }
     }
     get() {
@@ -71,6 +77,15 @@ export class GamesSet {
         const player = this.players.get(socketId);
         if (player) {
             return player;
+        }
+        return undefined;
+    }
+    getPlayerById(userId) {
+        for (const socketId of this.players.keys()) {
+            const player = this.getPlayer(socketId);
+            if (player && player.id == userId) {
+                return player;
+            }
         }
         return undefined;
     }
@@ -158,7 +173,7 @@ export class GamesSet {
         }
         return partnersList;
     }
-    getOpposer(socketId) {
+    getOpposerSocketId(socketId) {
         let player = this.getPlayer(socketId);
         if (player) {
             let pong = this.getPong(socketId);
@@ -181,10 +196,16 @@ export class GamesSet {
             pong.gameResult.setIsActual(false);
         }
     }
-    getNextResult() {
+    getNextResultFromQueue() {
         if (this.resultQueue.length) {
             return this.resultQueue.shift();
         }
         return undefined;
+    }
+    isResultInQueue() {
+        if (this.resultQueue.length) {
+            return true;
+        }
+        return false;
     }
 }
