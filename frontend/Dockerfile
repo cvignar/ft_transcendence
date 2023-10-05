@@ -5,10 +5,10 @@ RUN apt-get install unzip -y
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
 
-COPY frontend.zip .
+# COPY frontend.zip .
 
-RUN unzip -q frontend.zip \
-	&& rm -f frontend.zip
+# RUN unzip -q frontend.zip \
+# 	&& rm -f frontend.zip
 
 WORKDIR /frontend
 
