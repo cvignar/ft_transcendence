@@ -76,5 +76,4 @@ export class ImageOptions extends Options {
 	static score_font: string = this.score_fontSize.toString() + 'px ' + 'Courier Prime';
 	static score_font1: string = this.score_fontSize.toString() + 'px ' + 'Share Tech Mono';
 	static score_font2: string = this.score_fontSize.toString() + 'px ' + 'VT323';
-	static rendering_period: number = 1000 / 100;
 }
