@@ -316,10 +316,10 @@ export class UserService {
 		return null;
 	}
 
-	async disable2fa (user_id: number): Promise<any> {
+	async disable2fa (user_id: string): Promise<any> {
 		try {
 			const user = await this.prismaService.user.update({
-				where: { id: user_id},
+				where: { id: Number(user_id)},
 				data: {
 					twoFAsecret: null,
 					twoFA: false,
