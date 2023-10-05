@@ -196,10 +196,16 @@ export class GamesSet {
             pong.gameResult.setIsActual(false);
         }
     }
-    getNextResult() {
+    getNextResultFromQueue() {
         if (this.resultQueue.length) {
             return this.resultQueue.shift();
         }
         return undefined;
+    }
+    isResultInQueue() {
+        if (this.resultQueue.length) {
+            return true;
+        }
+        return false;
     }
 }
