@@ -45,4 +45,16 @@ export class UserController {
 	) {
 		return await this.userService.updateUser(userId, userData);
 	}
+
+	@Get('enable2fa')
+	async enable2fa (@Req() req: Request) {
+		if (req.cookies && req.cookies.userId)
+			return await this.userService.enable2fa(req.cookies.userId);
+	}
+
+	@Get('disable2fa')
+	async disable2fa (@Req() req: Request) {
+		if (req.cookies && req.cookies.userId)
+			return await this.userService.disable2fa(req.cookies.userId);
+	}
 }

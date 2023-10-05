@@ -89,10 +89,9 @@ export class AuthController {
   @Post('2fa')
   async login2fa (@Req() req:any, @Res({passthrough: true}) res: Response, @Body() body: any)
   {
-	// validate everything with second factor
-	console.log('user_id: ', req.cookies.userId)
+	// console.log('user_id: ', req.cookies.userId)
 	const code2fa = body.code;
-	console.log('2fa incoming: ', code2fa);
+	// console.log('2fa incoming: ', code2fa);
 	let user_id: number | null = null;
 	if (req.cookies && req.cookies.userId) {
 		// if (Number.isNaN(req.cookies.userId))
@@ -109,14 +108,14 @@ export class AuthController {
 		let totp = new OTPAuth.TOTP({
 			issuer: user.username,
 			label: "PingPong72",
-			algorithm: "SHA1",
+			algorithm: "SHA512",
 			digits: 6,
 			period: 30,
 			secret: user.twoFAsecret,
 		});
 		let valid_token = totp.generate();
-		// console.log(totp.toString())
-		// console.log('test_token totp: ', valid_token);
+		console.log(totp.toString())
+		console.log('test_token totp: ', valid_token);
 		if (valid_token === code2fa) {
 			const payload = { sub: user.id, username: user.username };
 			access_token = await this.jwtService.signAsync(payload);
