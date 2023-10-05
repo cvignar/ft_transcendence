@@ -9,6 +9,7 @@ import { PongChat } from './pages/PongChat/PongChat';
 //import { Chat } from './pages/Chat/Chat';
 import { Pong } from './pages/Pong/pong';
 import { AuthForm } from './pages/Auth/Auth';
+import { Auth2FaForm } from './pages/Auth/Auth2FA';
 import { RequireAuth } from './helpers/RequireAuth';
 import { Layout } from './pages/Layout/Layout';
 import Chat from './pages/Chat/Chat';
@@ -23,16 +24,10 @@ const router = createBrowserRouter([
 	{
 		path: '/Auth',
 		element: <AuthForm></AuthForm>,
-		// children: [
-		// 	{
-		// 		path: '/Auth/2FA',
-		// 		element: <Auth2FaForm></Auth2FaForm>
-		// 	},
-		// ],
 	},
 	{
 		path: '/Auth/2FA',
-		element: <></>,
+		element: <Auth2FaForm></Auth2FaForm>,
 	},
 	{ // FIXME!!!! FAKE AUTH
 		path: '/',

@@ -14,11 +14,4 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 	// 	}
 	// 	return user;
 	// }
-	// getRequest(context: ExecutionContext) {
-	// 	console.log('running');
-	// 	if (context.getType<ContextType | 'graphql'>() === 'graphql')
-	// 	  return GqlExecutionContext.create(context).getContext().req;
-	
-	// 	return context.switchToHttp().getRequest();
-	//   }
 }
