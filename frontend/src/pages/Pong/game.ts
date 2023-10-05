@@ -1,9 +1,7 @@
-import { useSelector } from "react-redux";
 import { GameCmd, GameMode, GameScheme, GameStatus, ServerMsg, Side, Sound } from "../../../../pong/static/common";
 import { Controls, Selector } from "../../../../pong/static/controls";
 import { Score, Image, Sounds } from "../../../../pong/static/image";
 import { ControlOptions } from "../../../../pong/static/options";
-import { RootState } from "../../store/store";
 
 export function game(socket: any, user: any) {
 	const pong_path = "http://" + import.meta.env.VITE_PONG_HOST + ":" + import.meta.env.VITE_PONG_PORT + "/";
