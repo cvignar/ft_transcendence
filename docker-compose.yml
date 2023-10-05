@@ -80,9 +80,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - frontend:/frontend
+      - frontend:/backend
+      - backend:/backend
+      - contracts:/contracts
       - pong:/pong
-      - upload:/upload
     networks:
       - ft_trancendence
 
@@ -97,6 +98,7 @@ services:
     ports:
       - "80:5173"
     volumes:
+      - frontend:/backend
       - backend:/backend
       - contracts:/contracts
       - pong:/pong
@@ -113,6 +115,8 @@ services:
       - backend
     ports:
       - "12080:12080"
+     volumes:
+      - pong:/pong
     networks:
       - ft_trancendence
 
