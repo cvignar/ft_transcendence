@@ -7,7 +7,7 @@ import { GameCmd, GameCommand, GameMode, GameScheme, Side } from './static/commo
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
 import { GamesSet} from './GamesSet.js';
-import {io as ioc} from 'socket.io-client'
+import {io as ioc, Socket} from 'socket.io-client'
 import { ControlOptions, Options } from './static/options.js';
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
@@ -15,6 +15,8 @@ const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
 let access_token: any = undefined;
+let socketToBackend: Socket;
+
 
 export function gebugPprinting(param1: any | undefined, param2: any | undefined) {
 	if (Options.debug) {
@@ -256,21 +258,28 @@ if (access_token) {
 
 // Send game results loop
 setInterval(async function() {
-	const result = games.getNextResult();
 	if (access_token) {
-		if (result) {
-			const sockOpt = {
-				transposts: ['websocket'],
-				transportOptions: {
-					polling: {
-						extraHeaders: {
-							Token: access_token.access_token
+		if (games.isResultInQueue()) {
+			if (!socketToBackend.connected) {
+				const sockOpt = {
+					transposts: ['websocket'],
+					transportOptions: {
+						polling: {
+							extraHeaders: {
+								Token: access_token.access_token
+							}
 						}
 					}
-				}
-			};
-			const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-			socket.emit('save game', result.get());
+				};
+				socketToBackend = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+			}
+			if (socketToBackend.connected) {
+				const result = games.getNextResultFromQueue();
+				socketToBackend.emit('save game', result?.get());
+				gebugPprinting(result?.get().endTime, 'game result sended');
+			} else {
+				gebugPprinting('game result NOT sended', '');
+			}
 		}
 	} else {
 		await tokenRequest();

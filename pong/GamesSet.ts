@@ -210,10 +210,16 @@ export class GamesSet {
 			pong.gameResult.setIsActual(false);
 		}
 	}
-	getNextResult():Result | undefined {
+	getNextResultFromQueue():Result | undefined {
 		if (this.resultQueue.length) {
 			return this.resultQueue.shift();
 		}
 		return undefined;
+	}
+	isResultInQueue(): boolean {
+		if (this.resultQueue.length) {
+			return true;
+		}
+		return false;
 	}
 }
