@@ -24,6 +24,7 @@ const server = new http.Server(app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
 let access_token = undefined;
+let socketToBackend;
 export function gebugPprinting(param1, param2) {
     if (Options.debug) {
         console.log(param1, param2);
@@ -261,21 +262,29 @@ if (access_token) {
 // Send game results loop
 setInterval(function () {
     return __awaiter(this, void 0, void 0, function* () {
-        const result = games.getNextResult();
         if (access_token) {
-            if (result) {
-                const sockOpt = {
-                    transposts: ['websocket'],
-                    transportOptions: {
-                        polling: {
-                            extraHeaders: {
-                                Token: access_token.access_token
+            if (games.isResultInQueue()) {
+                if (!socketToBackend.connected) {
+                    const sockOpt = {
+                        transposts: ['websocket'],
+                        transportOptions: {
+                            polling: {
+                                extraHeaders: {
+                                    Token: access_token.access_token
+                                }
                             }
                         }
-                    }
-                };
-                const socket = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
-                socket.emit('save game', result.get());
+                    };
+                    socketToBackend = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+                }
+                if (socketToBackend.connected) {
+                    const result = games.getNextResultFromQueue();
+                    socketToBackend.emit('save game', result === null || result === void 0 ? void 0 : result.get());
+                    gebugPprinting(result === null || result === void 0 ? void 0 : result.get().endTime, 'game result sended');
+                }
+                else {
+                    gebugPprinting('game result NOT sended', '');
+                }
             }
         }
         else {
