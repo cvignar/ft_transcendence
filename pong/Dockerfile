@@ -10,12 +10,24 @@ ENV NODE_VERSION 18
 # RUN unzip -q pong.zip \
 # 	&& rm -f pong.zip
 
-WORKDIR /pong
+# WORKDIR /pong
 
-RUN npm install \
-	&& npm install -g npm@10.0.0 \
-	&& npm i
+# RUN npm install \
+# 	&& npm install -g npm@10.0.0 \
+# 	&& npm i
+
+# EXPOSE 12080
+
+# CMD [ "npm", "start" ]
+
+# ==================================
 
 EXPOSE 12080
 
-CMD [ "npm", "start" ]
+COPY start.sh .
+
+RUN chmod +x /start.sh
+
+WORKDIR /pong
+
+ENTRYPOINT [ "/start.sh" ]

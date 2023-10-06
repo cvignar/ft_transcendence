@@ -72,8 +72,6 @@ export class Pong extends PongOptions {
 	serveCounter: number = 0;
 	newGame: boolean = true;
 	atGameStart: boolean = false;
-	partnerGameOn: boolean = false;
-	partnerGameOff: boolean = false;
 	pathStartTime: number = 0;
 	pathStart: geometry.Vec = new geometry.Vec(0, 0);
 	ballSpeed: geometry.Vec = new geometry.Vec(0, 0);
@@ -167,8 +165,6 @@ export class Pong extends PongOptions {
 					this.gameEndTime = Date.now();
 					this.gameResult.set(this);
 					this.ball.visibility = false;
-					this.partnerGameOn = false;
-					this.partnerGameOff = true;
 					this.newGame = true;
 					this.status = GameStatus.INACTIVE;
 				} else {
@@ -276,10 +272,7 @@ export class Pong extends PongOptions {
 			this.setSound(Sound.GAME_START);
 			this.gameStartTime = Date.now()
 			this.pathStartTime = Date.now();
-			if (this.mode == GameMode.PARTNER_GAME) {
-				this.partnerGameOn = true;
-				this.partnerGameOff = false;
-			}
+			this.gameResult.set(this);
 			this.atGameStart = false;
 		}
 		this.ball.visibility = true;

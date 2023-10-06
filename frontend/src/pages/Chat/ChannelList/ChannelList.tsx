@@ -7,19 +7,20 @@ import Headling from '../../../components/Headling/Headling';
 import Search from '../../../components/Search/Search';
 import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import CardNavLink from '../../../components/CardNavLink/CardNavLink';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../store/store';
 import { channelActions } from '../../../store/channels.slice';
+import { FocusEvent } from 'react';
+
 export function ChannelList({ channels, setChannel, isActive, setActive }: ChannelListProps) {
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
+	const channelState = useSelector((s: RootState) => s.channel);
+
 	return (
 		<div className={styles['list']} >
 			<div className={styles['control-row']}>
 				<Headling>Channels</Headling>
-				<div className={styles['search']}>
-					<Search className={styles['search']} placeholder='Search'></Search>
-				</div>
 				<div className={styles['btn']}>
 					<button className={styles['add-channel']} onClick={() => navigate('/Chat/createChannel')}>
 						<img className={styles['svg']} src='/increase.svg' alt='add channel'/>
@@ -41,7 +42,8 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 						data={c}
 					/>
 				</CardNavLink>
-			))}
+			))
+		}
 		</div>
 	);
 }

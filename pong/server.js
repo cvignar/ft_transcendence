@@ -186,11 +186,12 @@ io.on("connection", (socket) => {
 });
 // Calculation loop
 setInterval(function () {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b;
     let socketIdForDelete = undefined;
     for (const socketId of games.getPongs().keys()) {
         const pong = games.getPong(socketId);
         if (pong) {
+            games.checkResult(pong);
             if (pong.mode == GameMode.STOPPING) {
                 if (!socketIdForDelete) {
                     socketIdForDelete = socketId;
@@ -200,27 +201,10 @@ setInterval(function () {
             pong.calculate();
             if (pong.owner) {
                 (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("state", pong.getPongState(pong.owner.side));
-                if (pong.partnerGameOn) {
-                    (_b = io.sockets.sockets.get(pong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("partner game on");
-                    pong.partnerGameOn = false;
-                }
-                if (pong.partnerGameOff) {
-                    (_c = io.sockets.sockets.get(pong.owner.socketId)) === null || _c === void 0 ? void 0 : _c.emit("partner game off");
-                    pong.partnerGameOff = false;
-                }
             }
             if (pong.partner) {
-                (_d = io.sockets.sockets.get(pong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit("state", pong.getPongState(pong.partner.side));
-                if (pong.partnerGameOn) {
-                    (_e = io.sockets.sockets.get(pong.partner.socketId)) === null || _e === void 0 ? void 0 : _e.emit("partner game on");
-                    pong.partnerGameOn = false;
-                }
-                if (pong.partnerGameOff) {
-                    (_f = io.sockets.sockets.get(pong.partner.socketId)) === null || _f === void 0 ? void 0 : _f.emit("partner game off");
-                    pong.partnerGameOff = false;
-                }
+                (_b = io.sockets.sockets.get(pong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("state", pong.getPongState(pong.partner.side));
             }
-            games.checkResult(pong);
         }
     }
     if (socketIdForDelete) {
@@ -247,9 +231,7 @@ function tokenRequest() {
             access_token = yield (yield fetch(request)).json();
         }
         catch (e) {
-            // if (access_token) {
-            console.log("cannot get new token: ", e);
-            // }
+            gebugPprinting("cannot get new token, ", ``);
         }
         if (access_token) {
             gebugPprinting("access_token: ", access_token.jwtAccess);
@@ -264,13 +246,13 @@ setInterval(function () {
     return __awaiter(this, void 0, void 0, function* () {
         if (access_token) {
             if (games.isResultInQueue()) {
-                if (!socketToBackend.connected) {
+                if (!socketToBackend || !(socketToBackend === null || socketToBackend === void 0 ? void 0 : socketToBackend.connected)) {
                     const sockOpt = {
                         transposts: ['websocket'],
                         transportOptions: {
                             polling: {
                                 extraHeaders: {
-                                    Token: access_token.access_token
+                                    Token: access_token.jwtAccess
                                 }
                             }
                         }
@@ -280,10 +262,10 @@ setInterval(function () {
                 if (socketToBackend.connected) {
                     const result = games.getNextResultFromQueue();
                     socketToBackend.emit('save game', result === null || result === void 0 ? void 0 : result.get());
-                    gebugPprinting(result === null || result === void 0 ? void 0 : result.get().endTime, 'game result sended');
+                    gebugPprinting('game start or result sended', '');
                 }
                 else {
-                    gebugPprinting('game result NOT sended', '');
+                    gebugPprinting('game start or result NOT sended', '');
                 }
             }
         }

@@ -1,6 +1,7 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
 import { GameMode } from './static/common.js';
+import { Options } from './static/options.js';
 export class Player {
     constructor(socketId, user) {
         this.id = 0;
@@ -40,6 +41,7 @@ export class Result {
                     this.startTime = pong.gameStartTime;
                     this.endTime = pong.gameEndTime;
                     this.duration = pong.gameEndTime - pong.gameStartTime;
+                    this.duration = this.duration > 0 ? this.duration : 0;
                     this.isActual = true;
                 }
             }
@@ -116,6 +118,14 @@ export class GamesSet {
     deletePlayer(socketId) {
         const pong = this.getPong(socketId);
         if (pong) {
+            if (pong.mode == GameMode.PARTNER_GAME &&
+                pong.leftScore < Options.maxWins &&
+                pong.rightScore < Options.maxWins) {
+                // Generating the signal that the game is interrupted
+                pong.leftScore = Options.maxWins;
+                pong.rightScore = Options.maxWins;
+                pong.gameResult.set(pong);
+            }
             pong.mode = GameMode.STOPPING;
         }
         const player = this.players.get(socketId);

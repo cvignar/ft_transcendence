@@ -128,7 +128,6 @@ export function game(socket: any, user: any) {
 		score.clear();
 		image.clear();
 	});
-
 	// socket.on('disconnect', function() {
 	// 	clearInterval(renderTimer);
 	// });

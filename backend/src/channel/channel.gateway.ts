@@ -41,7 +41,7 @@ export class ChannelGateway {
 
 	async handleJoinSocket(id: number, @ConnectedSocket() client: Socket) {
 		const channels = await this.channelService.getChannelsByUserId(id);
-		await client.join('all');
+		// await client.join('all');
 		if (channels)
 			for (const channel of channels) {
 				await client.join(channel);
@@ -52,11 +52,6 @@ export class ChannelGateway {
 	async getPreview(@MessageBody() email: string) {
 		const previews = await this.channelService.getPreviews(email);
 		return previews;
-	}
-
-	@SubscribeMessage('hello')
-	async sayHello() {
-		return 'hello!';
 	}
 
 	@SubscribeMessage('add preview')
@@ -70,6 +65,19 @@ export class ChannelGateway {
 		);
 		client.join(preview.name);
 		client.emit('add preview', preview);
+	}
+
+	@SubscribeMessage('get selected channel')
+	async getSelectedChannel(
+		@MessageBody() data: any,
+		@ConnectedSocket() client: Socket,
+	) {
+		const preview = await this.channelService.getPreview(
+			data.channelId,
+			data.email,
+		);
+		client.join(preview.name);
+		client.emit('get selected channel', preview);
 	}
 
 	@SubscribeMessage('get blocked')
@@ -285,6 +293,9 @@ export class ChannelGateway {
 			const channelName = await this.channelService.getChannelNameById(
 				messageData.channelId,
 			);
+			const data = await this.channelService.getMessages(messageData.channelId);
+			client.emit('get messages', data);
+
 			this.server.in(channelName).emit('update channel request');
 		} else
 			client.emit(
@@ -379,6 +390,7 @@ export class ChannelGateway {
 		@MessageBody() email: string,
 		@ConnectedSocket() client: Socket,
 	) {
+		console.log('Search request!');
 		const search = await this.channelService.getSearchPreviews(email);
 		client.emit('update search', search);
 	}

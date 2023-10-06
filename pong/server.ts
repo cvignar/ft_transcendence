@@ -187,6 +187,7 @@ setInterval(function () {
 	for (const socketId of games.getPongs().keys()) {
 		const pong = games.getPong(socketId);
 		if (pong) {
+			games.checkResult(pong);
 			if (pong.mode == GameMode.STOPPING) {
 				if (!socketIdForDelete) {
 					socketIdForDelete = socketId;
@@ -196,27 +197,10 @@ setInterval(function () {
 			pong.calculate();
 			if (pong.owner) {
 				io.sockets.sockets.get(pong.owner.socketId)?.emit("state", pong.getPongState(pong.owner.side));
-				if (pong.partnerGameOn) {
-					io.sockets.sockets.get(pong.owner.socketId)?.emit("partner game on");
-					pong.partnerGameOn = false;
-				}
-				if (pong.partnerGameOff) {
-					io.sockets.sockets.get(pong.owner.socketId)?.emit("partner game off");
-					pong.partnerGameOff = false;
-				}
 			}
 			if (pong.partner) {
 				io.sockets.sockets.get(pong.partner.socketId)?.emit("state", pong.getPongState(pong.partner.side));
-				if (pong.partnerGameOn) {
-					io.sockets.sockets.get(pong.partner.socketId)?.emit("partner game on");
-					pong.partnerGameOn = false;
-				}
-				if (pong.partnerGameOff) {
-					io.sockets.sockets.get(pong.partner.socketId)?.emit("partner game off");
-					pong.partnerGameOff = false;
-				}
 			}
-			games.checkResult(pong);
 		}
 	}
 	if (socketIdForDelete) {
@@ -242,9 +226,7 @@ async function tokenRequest() {
 	try {
 		access_token = await (await fetch(request)).json();
 	} catch (e) {
-		// if (access_token) {
-		console.log("cannot get new token: ", e);
-		// }
+		gebugPprinting("cannot get new token, ", ``);
 	}
 	if (access_token) {
 		gebugPprinting("access_token: ", access_token.jwtAccess);
@@ -259,13 +241,13 @@ if (access_token) {
 setInterval(async function() {
 	if (access_token) {
 		if (games.isResultInQueue()) {
-			if (!socketToBackend.connected) {
+			if (!socketToBackend || !socketToBackend?.connected) {
 				const sockOpt = {
 					transposts: ['websocket'],
 					transportOptions: {
 						polling: {
 							extraHeaders: {
-								Token: access_token.access_token
+								Token: access_token.jwtAccess
 							}
 						}
 					}
@@ -275,9 +257,9 @@ setInterval(async function() {
 			if (socketToBackend.connected) {
 				const result = games.getNextResultFromQueue();
 				socketToBackend.emit('save game', result?.get());
-				gebugPprinting(result?.get().endTime, 'game result sended');
+				gebugPprinting('game start or result sended', '');
 			} else {
-				gebugPprinting('game result NOT sended', '');
+				gebugPprinting('game start or result NOT sended', '');
 			}
 		}
 	} else {
