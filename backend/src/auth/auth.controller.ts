@@ -67,7 +67,7 @@ export class AuthController {
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect(`http://${process.env.DB_HOST}/Auth`);
+			res.redirect(`http://${process.env.DOMAIN}/Auth`);
 			throw new UnauthorizedException();
 		}
 		const payload = { sub: user.id, username: user.username };
@@ -75,7 +75,7 @@ export class AuthController {
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.DB_HOST}/Auth`);
+		res.redirect(`http://${process.env.DOMAIN}/Auth`);
 	}
 
 	@Get('intra42/return')

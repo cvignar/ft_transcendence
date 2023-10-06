@@ -19,6 +19,7 @@ export enum ChannelsEvent {
 	getPreview = 'get preview',
 	getMembers = 'get members',
 	updateSearch = 'update search',
+	getUpdateSearch = 'get search update',
 	getOwners = 'get owners',
 	getAdmins = 'get admins',
 	getInvoteds = 'get inviteds',
@@ -28,14 +29,16 @@ export enum ChannelsEvent {
 	getRole = 'get role',
 	sendMessage = 'new message',
 	recieveMessage = 'broadcast',
-	createChannel = 'create channel'
+	createChannel = 'create channel',
+	getSelectedChannel = 'get selected channel',
+	updateStatus = 'update-status',
 }
 
 export interface ChannelsState {
 	channels: ChannelPreview[];
 	messages: Message[];
 	selectedChannel: ChannelPreview;
-
+	search: any[];
 
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
@@ -57,6 +60,7 @@ const initialState: ChannelsState = {
 		ownerEmail: '',
 		ownerId: -1
 	},
+	search: [],
 	isEstablishingConnection: false,
 	isConnected: false,
 	state: 0
@@ -93,11 +97,11 @@ const channelSlice = createSlice({
 		getChannel: ((state, action: PayloadAction<number>) => {
 			return;
 		}),
-		setSelectedChannel: ((state, action: PayloadAction<{
-			channel: ChannelPreview
-		}>) => {
-			state.selectedChannel = action.payload.channel;
-		}),
+		// setSelectedChannel: ((state, action: PayloadAction<{
+		// 	channel: ChannelPreview
+		// }>) => {
+		// 	state.selectedChannel = action.payload.channel;
+		// }),
 		setChannel: ((state, action: PayloadAction<{
 			channel: ChannelPreview
 		}>) => {
@@ -131,7 +135,19 @@ const channelSlice = createSlice({
 			state.state = state.state + 1;
 		}),
 		setError: ((state, action: PayloadAction<string>) => {
-			state.error = action;
+			state.error = action.payload;
+		}),
+		getUpdateSearch: ((state, action: PayloadAction<any>) => {
+			return;
+		}),
+		setSearchUpdate: ((state, action: PayloadAction<any>) => {
+			state.search = action.payload;
+		}),
+		getSelectedChannel: ((state, action: PayloadAction<any>) => {
+			return;
+		}),
+		setSelectedChannel: ((state, action: PayloadAction<any>) => {
+			state.selectedChannel = action.payload;
 		})
 	}
 });

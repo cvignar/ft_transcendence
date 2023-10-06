@@ -885,7 +885,7 @@ export class ChannelService {
 				for (const [key, usr] of filter.entries()) {
 					const preview: SearchPreview.Response = {
 						id: usr.id,
-						key: usersLength + key,
+						key: channelsLength + key,
 						name: usr.username,
 						picture: usr.avatar,
 						tag: 'user',

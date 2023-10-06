@@ -10,12 +10,24 @@ ENV NODE_VERSION 18
 # RUN unzip -q frontend.zip \
 # 	&& rm -f frontend.zip
 
-WORKDIR /frontend
+# WORKDIR /frontend
 
-RUN npm install \
-	&& npm install -g npm@10.0.0 \
-	&& npm i
+# RUN npm install \
+# 	&& npm install -g npm@10.0.0 \
+# 	&& npm i
+
+# EXPOSE 5173
+
+# CMD [ "npm", "run", "dev"]
+
+# ==================================
 
 EXPOSE 5173
 
-CMD [ "npm", "run", "dev"]
+COPY start.sh .
+
+RUN chmod +x /start.sh
+
+WORKDIR /frontend
+
+ENTRYPOINT [ "/start.sh" ]

@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button/Button';
 import Chat from '../Chat/Chat';
 import { Pong } from '../Pong/pong';
-import styles from './PongChat.module.css';
+import styles from './SearchPage.module.css';
 import { AppDispatch, RootState } from '../../store/store';
 import { userActions } from '../../store/user.slice';
 import {socket} from '../Pong/pong';
@@ -14,34 +14,36 @@ import ChatWindow from '../Chat/ChatWindow/ChatWindow';
 import { channelActions } from '../../store/channels.slice';
 import { Outlet } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
+import Search from '../../components/Search/Search';
+import { SearchList } from './SearchList/SearchList';
 
-export function PongChat() {
+export function SearchPage() {
 	const dispatch = useDispatch<AppDispatch>();
-	const {email} = useSelector((s: RootState) => s.user);
+	// const {email} = useSelector((s: RootState) => s.user);
 	const channelState = useSelector((s: RootState) => s.channel);
 	const [isActive, setActive] = useState<number>(-1);
 
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 	
-	const [isProtected, setIsProtected] = useState<boolean>(false);
+	// const [isProtected, setIsProtected] = useState<boolean>(false);
 
-	let subtitle;
-	const [modalIsOpen, setIsOpen] = useState(false);
+	// let subtitle;
+	// const [modalIsOpen, setIsOpen] = useState(false);
 
-	const openModal = () => {
-		setIsOpen(true);
-	};
+	// const openModal = () => {
+	// 	setIsOpen(true);
+	// };
 
-	const afterOpenModal = () => {
-		// references are now sync'd and can be accessed.
-		subtitle.style.color = '#f00';
-	};
+	// const afterOpenModal = () => {
+	// 	// references are now sync'd and can be accessed.
+	// 	subtitle.style.color = '#f00';
+	// };
 
-	const closeModal = () => {
-		setIsOpen(false);
-	};
+	// const closeModal = () => {
+	// 	setIsOpen(false);
+	// };
 
-	const onSubmit = (event: FormEvent) => {};
+	// const onSubmit = (event: FormEvent) => {};
 
 	useEffect(() => {
 		const timerId = setTimeout(() => {
@@ -55,20 +57,18 @@ export function PongChat() {
 		return () => clearTimeout(timerId);
 	}, [dispatch]);
 
-	useEffect(() => {
-		const timerId = setTimeout(() => {
-			// if (channelState.isEstablishingConnection) {
-				// dispatch(channelActions.getChannels());
-			// }
-		}, 10);
-		return () => clearTimeout(timerId);
-	}, [channelState.isConnected, channelState.state, dispatch]);
-
-
+	// useEffect(() => {
+	// 	const timerId = setTimeout(() => {
+	// 		// if (channelState.isEstablishingConnection) {
+	// 			// dispatch(channelActions.getChannels());
+	// 		// }
+	// 	}, 10);
+	// 	return () => clearTimeout(timerId);
+	// }, [channelState.isConnected, channelState.state, dispatch]);
 
 	return (
 		<>
-			<ChannelList channels={channelState.channels} setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
+			<SearchList setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
 			<div className={styles['other']}>
 				<Outlet/>
 			</div>

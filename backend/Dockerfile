@@ -13,16 +13,28 @@ ENV NODE_VERSION 18
 # 	&& rm -f backend.zip \
 # 	&& rm -f contracts.zip
 
-WORKDIR /contracts
+# WORKDIR /contracts
 
-RUN npm install \
-	&& npm install -g npm@10.0.0 \
-	&& npm i
+# RUN npm install \
+# 	&& npm install -g npm@10.0.0 \
+# 	&& npm i
 
-WORKDIR /backend
+# WORKDIR /backend
 
-RUN npm i
+# RUN npm i
+
+# EXPOSE 3000
+
+# CMD [ "npm", "run", "start:dev" ]
+
+# ==================================
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start:dev" ]
+COPY start.sh .
+
+RUN chmod +x /start.sh
+
+WORKDIR /backend
+
+ENTRYPOINT [ "/start.sh" ]

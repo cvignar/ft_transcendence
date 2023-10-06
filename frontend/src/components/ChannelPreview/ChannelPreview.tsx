@@ -7,7 +7,6 @@ import { ChannelPreviewProps } from './ChannelPreview.props';
 //import { ChannelPreviewProps } from './ChannelPreview.props';
 
 function ChannelPreview(props: ChannelPreviewProps) {
-	const	formatedDate = new Intl.DateTimeFormat('lt-LT').format(new Date(props.data.updatedAt));
 	return (
 		<div className={styles['preview']}>
 			<ChannelShortInfo appearence='list' props={props.data}/>

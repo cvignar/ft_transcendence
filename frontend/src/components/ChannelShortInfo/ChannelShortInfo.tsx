@@ -18,7 +18,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 
 			<div className={styles['header-message']}>
 				<div className={styles['header']}>{props?.name}</div>
-				{appearence === 'list' ? <div className={styles['message']}>{props?.lastMessage ? props.lastMessage : 'Empty chat'}</div> : ''}
+				{appearence === 'list' ? <div className={styles['message']}>{props?.lastMessage ? props.lastMessage : ''}</div> : ''}
 			</div>
 		</div>
 	);

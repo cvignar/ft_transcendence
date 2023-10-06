@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { BACK_PREFIX } from "../helpers/API";
 import { AuthResponse } from "../interfaces/auth.interface";
@@ -6,6 +6,7 @@ import { Profile, UpdateUser } from "../interfaces/user.interface";
 import { loadState } from "./storage";
 import { store } from "./store";
 import { getCookie } from "typescript-cookie";
+import { Status } from '../helpers/enums';
 //import { RootState } from './store';
 
 axios.defaults.withCredentials = true;
@@ -25,6 +26,8 @@ export interface UserState {
 	userId: number | null;
 	profile: Profile | null;
 	profileError?: string;
+	selectedUser: Profile | null;
+	statuses: any;
 	//registerError?: string;
 }
 
@@ -34,6 +37,8 @@ const initialState: UserState = {
 	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? "",
 	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null,
 	profile: loadState<Profile>(PROFILE_PERSISTENT_STATE) ?? null,
+	selectedUser: loadState<Profile>('selectedUser') ?? null,
+	statuses: loadState<any>('statuses') ?? null,
 };
 
 export const auth = createAsyncThunk("auth/login", async () => {
@@ -50,9 +55,21 @@ export const auth = createAsyncThunk("auth/login", async () => {
 
 export const getProfile = createAsyncThunk("/getProfile", async (id: number | null) => {
 	try {
-		console.log(id);
-		console.log(`${BACK_PREFIX}/user/getProfile`);
-		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile`, {
+		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`, {
+			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
+		});
+		console.log(data);
+		return { profile: data };
+	} catch (e) {
+		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const getUserProfile = createAsyncThunk("/getUserProfile", async (id: number | null) => {
+	try {
+		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`, {
 			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
 		});
 		console.log(data);
@@ -89,6 +106,22 @@ export const userSlice = createSlice({
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
 		},
+		setUser: ((state, action: PayloadAction<any>) => {
+			state.email = action.payload.email;
+			state.userId = action.payload.userId;
+		}),
+		setStatuses: ((state, action: PayloadAction<any>) => {
+			state.statuses = action.payload;
+		}),
+		setProfile: ((state, action: PayloadAction<UpdateUser>) => {
+			if (state.profile && action.payload) {
+				state.profile.username = action.payload.username ?? state.profile?.username;
+				state.profile.avatar = action.payload.avatar ?? state.profile?.avatar;
+				state.profile.prefferedTableSide = action.payload.prefferedTableSide ?? state.profile?.prefferedTableSide;
+				state.profile.pongColorScheme = action.payload.pongColorScheme ?? state.profile?.pongColorScheme;
+			}
+
+		})
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
@@ -125,6 +158,17 @@ export const userSlice = createSlice({
 			state.profileError = action.error.message;
 			console.log(action.error);
 		});
+		builder.addCase(getUserProfile.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+			state.selectedUser = action.payload.profile;
+		});
+		builder.addCase(getUserProfile.rejected, (state, action) => {
+			state.profileError = action.error.message;
+			console.log(action.error);
+		});
+		
 	},
 });
 

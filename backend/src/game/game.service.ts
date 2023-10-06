@@ -26,20 +26,20 @@ export class GameService {
 	}
 
 	async saveGame(gameData: SaveGame.Request) {
-		const game = await this.prismaService.game.create({
-			data: {
-				player1: gameData.player1,
-				player2: gameData.player2,
-				score1: gameData.score1,
-				score2: gameData.score2,
-				startTime: new Date(gameData.startTime),
-				endTime: new Date(gameData.endTime),
-				duration: gameData.duration,
-			},
-		});
-		this.userService.updatePlayTime(gameData.player1, gameData.duration);
-		this.userService.updatePlayTime(gameData.player2, gameData.duration);
 		try {
+			const game = await this.prismaService.game.create({
+				data: {
+					player1: gameData.player1,
+					player2: gameData.player2,
+					score1: gameData.score1,
+					score2: gameData.score2,
+					startTime: new Date(gameData.startTime),
+					endTime: new Date(gameData.endTime),
+					duration: gameData.duration,
+				},
+			});
+			this.userService.updatePlayTime(gameData.player1, gameData.duration);
+			this.userService.updatePlayTime(gameData.player2, gameData.duration);
 			const looserId =
 				gameData.score1 < gameData.score2
 					? gameData.player1
@@ -76,6 +76,7 @@ export class GameService {
 			});
 			this.userService.updateRanks();
 		} catch (e) {
+			console.log(e);
 			throw new ForbiddenException('saveGame error: ', e);
 		}
 	}
