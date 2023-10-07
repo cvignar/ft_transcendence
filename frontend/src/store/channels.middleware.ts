@@ -5,7 +5,8 @@ import { ChannelsEvent } from './channels.slice';
 import { BACK_SOCKET_PREFIX, sockOpt } from '../helpers/API';
 import { ChannelPreview } from '../interfaces/channel.interface';
 import { Message } from '../interfaces/message.interface';
-import { userActions } from './user.slice';
+import { userActions, UserEvents } from './user.slice';
+import { Profile } from '../interfaces/user.interface';
  
 const channelsMiddleware: Middleware = store => {
 	let socket: Socket;
@@ -53,6 +54,9 @@ const channelsMiddleware: Middleware = store => {
 			});
 			socket.on(ChannelsEvent.getSelectedChannel, (channel: any) => {
 				store.dispatch(channelActions.setSelectedChannel(channel));
+			});
+			socket.on(UserEvents.updateProfile, (profile: Profile) => {
+				store.dispatch(userActions.updateProfile(profile));
 			})
 		}
  
@@ -84,6 +88,18 @@ const channelsMiddleware: Middleware = store => {
 		}
 		if (channelActions.getSelectedChannel.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.getSelectedChannel, {email: store.getState().user.profile.email, channelId: action.payload});
+		}
+		if (userActions.addFriend.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.addFriend, {
+				selfId: action.payload.selfId,
+				friendId: action.payload.friendId
+			});
+		}
+		if (userActions.removeFriend.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.removeFriend, {
+				selfId: action.payload.selfId,
+				friendId: action.payload.friendId
+			});
 		}
 		next(action);
 	};

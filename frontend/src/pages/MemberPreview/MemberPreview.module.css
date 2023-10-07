@@ -48,6 +48,11 @@
 	flex-direction: column;
 }
 
+.btn-dark:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
+}
+
 .inActive {
 	background: var(--white-color);
 	color: var(--white-hover-color);
@@ -58,6 +63,8 @@
 	background: var(--white-color);
 	cursor: auto;
 }
+
+
 
 /*.head {
 	height: 50px;

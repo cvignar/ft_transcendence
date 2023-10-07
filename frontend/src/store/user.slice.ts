@@ -17,6 +17,11 @@ export const USERID_PERSISTENT_STATE = "userId";
 export const PROFILE_PERSISTENT_STATE = "userProfile";
 const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
 
+export enum UserEvents {
+	updateProfile = 'update profile',
+	addFriend = 'add friend',
+	removeFriend = 'remove friend',
+}
 export interface UserState {
 	token: string | null;
 	email?: string;
@@ -120,8 +125,19 @@ export const userSlice = createSlice({
 				state.profile.prefferedTableSide = action.payload.prefferedTableSide ?? state.profile?.prefferedTableSide;
 				state.profile.pongColorScheme = action.payload.pongColorScheme ?? state.profile?.pongColorScheme;
 			}
-
-		})
+		}),
+		addFriend: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+			return ;
+		}),
+		updateProfile: ((state, action: PayloadAction<Profile>) => {
+			if (action.payload) {
+				console.log(action.payload);
+				state.profile = action.payload;
+			}
+		}),
+		removeFriend: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+			return;
+		}),
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
