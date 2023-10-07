@@ -9,6 +9,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { getProfile, updateProfile, userActions } from '../../store/user.slice';
 import { socket } from '../Pong/pong';
 import { msToTime } from '../../helpers/functions';
+import Button from '../../components/Button/Button';
 
 export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
@@ -19,14 +20,15 @@ export function Settings() {
 		console.log(e.currentTarget.side.value);
 		console.log(e.currentTarget.scheme.value);
 		const updateData: UpdateUser = {
-			id: user.userId,
-			username: user.username, //FIXME!!! username from the form
+			id: user.profile?.id,
+			username: user.profile?.username, //FIXME!!! username from the form
 			avatar: user.profile?.avatar, //FIXME!!! avatar from the form
 			prefferedTableSide: parseInt(e.currentTarget.side.value),
 			pongColorScheme: parseInt(e.currentTarget.scheme.value)
 		};
-		console.log('new player');
+		console.log('new player', user.profile);
 		socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
+		dispatch(userActions.setProfile(updateData));
 		dispatch(updateProfile(updateData));
 	};
 
@@ -39,8 +41,8 @@ export function Settings() {
 			<div className={styles['profile-card']}>
 				<form className={styles['profile-form']} onSubmit={onSubmit}>
 					<img className={styles['avatar']} src={user.profile?.avatar ? user.profile.avatar : '/default_avatar.png'}/>
-					<Headling>{user.username}</Headling>
-					<div>{user.email}</div>
+					<Headling>{user.profile?.username}</Headling>
+					<div>{user.profile?.email}</div>
 					<fieldset>
 						<label htmlFor='side' className={styles['label-head']}>Preffered table side:</label>
 						<div id='side' className={styles['radio-set']}>
@@ -79,9 +81,7 @@ export function Settings() {
 							</div>
 						</div>
 					</fieldset>
-					<button className={styles['done-button']}>
-						<img src='/done.svg' className={styles['done']}/>
-					</button>
+					<Button className={styles['submit']}>Submit</Button>
 				</form>
 				<div className={styles['stats']}>
 					<div className={styles['row']}>

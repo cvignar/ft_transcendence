@@ -19,6 +19,8 @@ import { Leaderboard } from './pages/Leaderboard/Leaderboard';
 import ChatWindow from './pages/Chat/ChatWindow/ChatWindow';
 import MemberPreview from './pages/MemberPreview/MemberPreview';
 import { CreateChannelFrom } from './pages/CreateChannelForm/CreateChannelForm';
+import { SearchPage } from './pages/Search/SearchPage';
+import ChannelSettings from './pages/ChannelSettings/ChannelSettings';
 
 const router = createBrowserRouter([
 	{
@@ -48,6 +50,20 @@ const router = createBrowserRouter([
 					{
 						path: '/Chat/createChannel',
 						element: <CreateChannelFrom/>
+					}
+				]
+			},
+			{
+				path: '/Search',
+				element: <SearchPage/>,
+				children: [
+					{
+						path: '/Search/user/:userId',
+						element: <MemberPreview/>
+					},
+					{
+						path: '/Search/channel/:channelId',
+						element: <ChannelSettings/>
 					}
 				]
 			},

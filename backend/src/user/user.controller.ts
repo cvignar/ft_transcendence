@@ -6,6 +6,7 @@ import {
 	ParseIntPipe,
 	Post,
 	Req,
+	Res,
 	UseGuards,
 	UsePipes,
 } from '@nestjs/common';
@@ -31,11 +32,9 @@ export class UserController {
 		return this.userService.createUser(userData);
 	}
 
-	@Get('getProfile')
-	async getProfile(@Req() req: Request) {
-		// const userId = req.cookies.userId;
-		// console.log(userId, typeof userId);
-		return await this.userService.getProfile(10);
+	@Get('getProfile/:id')
+	async getProfile(@Param('id', ParseIntPipe) id: number) {
+		return await this.userService.getProfile(id);
 	}
 
 	@Post('updateProfile/:id')
