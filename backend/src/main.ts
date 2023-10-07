@@ -36,7 +36,9 @@ async function bootstrap() {
 		`http://localhost:${process.env.FRONT_PORT}`,
 		`http://${process.env.PONG_HOST}:${process.env.PONG_PORT}`,
 		`http://localhost:${process.env.PONG_PORT}`,
+		`http://${process.env.PONG_HOST}`,
 	];
+
 	const corsOptions = {
 		credentials: true,
 		origin: (origin, callback) => {

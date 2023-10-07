@@ -23,8 +23,9 @@ import { SaveGame } from 'contracts/game.schema';
 import { GameService } from './game/game.service';
 import { JwtAuthGuard } from './auth/jwt.guard';
 import { UseGuards } from '@nestjs/common/decorators';
+import { Options } from 'pong/static/options';
 
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @WebSocketGateway({ cors: true })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	constructor(
@@ -43,24 +44,23 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(client: Socket) {
 		try {
-			console.log('connection');
 			client.setMaxListeners(20); //FIXME!!!!
-			// const UserId: number = this.jwtService.verify(
-			// 	String(client.handshake.headers.token),
-			// 	{ secret: process.env.JWT_SECRET },
-			// ).sub;
-			// const user = this.userService.getUserById(UserId);
-			// client.data.id = UserId;
-			// if (!user) throw new WsException('Invalid token.');
-
-			// //setting status as online
-			// this.userStatusMap.set(client.data.id, Status.online);
-			// const serializedMap = [...this.userStatusMap.entries()];
-			// this.server.emit('update-status', serializedMap);
-			// //add to clientSocket
-			// this.clientSocket.set(UserId, client);
-			// console.log('connect userId', UserId, client.id);
-			// await this.channelGateway.handleJoinSocket(UserId, client);
+			const UserId: number = this.jwtService.verify(
+				String(client.handshake.headers.token),
+				{ secret: process.env.JWT_SECRET },
+			).sub;
+			const user = this.userService.getUserById(UserId);
+			client.data.id = UserId;
+			if (!user) throw new WsException('Invalid token.');
+			client.join('all');
+			//setting status as online
+			this.userStatusMap.set(client.data.id, Status.online);
+			const serializedMap = [...this.userStatusMap.entries()];
+			this.server.emit('update-status', serializedMap);
+			//add to clientSocket
+			this.clientSocket.set(UserId, client);
+			console.log('connect userId', UserId, client.id);
+			await this.channelGateway.handleJoinSocket(UserId, client);
 		} catch (e) {
 			console.log(e);
 			return false;
@@ -71,7 +71,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		if (client.data.id != undefined) {
 			this.userStatusMap.set(client.data.id, Status.offline);
 			const serializedMap = [...this.userStatusMap.entries()];
-			client.emit('update-status', serializedMap);
+			this.server.emit('update-status', serializedMap);
 			this.clientSocket.delete(client.data.id);
 			console.log('disconnect userId', client.data.id, client.id);
 		}
@@ -118,6 +118,34 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('save game')
 	async saveGame(@MessageBody() gameData: SaveGame.Request) {
-		await this.gameService.saveGame(gameData);
+		try {
+			let serializedMap;
+			// game just started
+			if (gameData.score1 === 0 && gameData.score2 === 0) {
+				this.userStatusMap.set(gameData.player1, Status.playing);
+				this.userStatusMap.set(gameData.player2, Status.playing);
+			}
+			// game was interrupted
+			else if (gameData.score1 === Options.maxWins && gameData.score2 === Options.maxWins) {
+				const playerStatus1 = this.userStatusMap?.get(gameData.player1);
+				const playerStatus2 = this.userStatusMap?.get(gameData.player2);
+				if (playerStatus1 && playerStatus1 === Status.playing) {
+					this.userStatusMap.set(gameData.player1, Status.online);
+				}
+				if (playerStatus2 && playerStatus2 === Status.playing) {
+					this.userStatusMap.set(gameData.player2, Status.online);
+				}
+			}
+			// game is finished
+			else {
+				await this.gameService.saveGame(gameData);
+				this.userStatusMap.set(gameData.player1, Status.online);
+				this.userStatusMap.set(gameData.player2, Status.online);
+			}
+			serializedMap = [...this.userStatusMap.entries()];
+			this.server.emit('update-status', serializedMap);
+		} catch (e) {
+			throw e;
+		}
 	}
 }

@@ -24,6 +24,8 @@ store.subscribe(() => {
 	saveState(store.getState().user.email, EMAIL_PERSISTENT_STATE);
 	saveState(store.getState().user.username, USERNAME_PERSISTENT_STATE);
 	saveState(store.getState().user.profile, PROFILE_PERSISTENT_STATE);
+	saveState(store.getState().user.statuses, 'statuses');
+	saveState(store.getState().user.selectedUser, 'selectedUser');
 	saveState(store.getState().channel.selectedChannel, 'selectedChannel');
 	saveState(store.getState().channel.messages, 'messages');
 	//saveState(store.getState().channel);
