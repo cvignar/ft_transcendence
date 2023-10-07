@@ -44,15 +44,15 @@ model User {
 	adding		Int[]	
 	added		Int[]		
 
-	blocks		Int[]
-	blocking	Int[]
-	blocked		Int[]
+	blocks		Int[] //FIXME!!!! remove field!
+	blocking	Int[] // who are blocked by this user
+	blocked		Int[] // who blocked this user
 
   owner       Channel[] @relation("owner")
   admin       Channel[] @relation("admin")
   member      Channel[] @relation("member")
   invited     Channel[] @relation("invite")
-  chanBlocked Channel[] @relation("blocked")
+  chanBlocked Channel[] @relation("blocked") // channels where the user is blocked
 
   Muted       Mute[]
 

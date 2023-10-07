@@ -153,6 +153,40 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	@SubscribeMessage('block user')
+	async blockUser(@MessageBody() data: {selfId: number, friendId: number}) {
+		console.log('BLOCK user event, ids: ', data.selfId, data.friendId);
+		const client = this.clientSocket.get(data.selfId);
+		try {
+			const blockers = await this.userService.blockUser(data.selfId, data.friendId);
+			const client1 = this.clientSocket.get(data.friendId);
+			client.emit('update profile', blockers[0]);
+			client1.emit('update profile', blockers[1]);
+		} catch (e) {
+			client.emit('exception', 'Failed to block friend');
+		}
+	}
+
+	@SubscribeMessage('unblock user')
+	async unblockUser(@MessageBody() data: {selfId: number, friendId: number}) {
+		console.log('unblock user event, ids: ', data.selfId, data.friendId);
+		const client = this.clientSocket.get(data.selfId);
+		try {
+			const blockers = await this.userService.unblockUser(data.selfId, data.friendId);
+			const client1 = this.clientSocket.get(data.friendId);
+			client.emit('update profile', blockers[0]);
+			client1.emit('update profile', blockers[1]);
+		} catch (e) {
+			client.emit('exception', 'Failed to block friend');
+		}
+	}
+	//  @MessageBody() data: updateUser,
+	//  @ConnectedSocket() client: Socket,
+	//) {
+	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
+	//  await this.userService.unblockUser(id, data.otherId);
+	//  client.emit('update channel request');
+	//}
 
 	@SubscribeMessage('save game')
 	async saveGame(@MessageBody() gameData: SaveGame.Request) {
@@ -186,15 +220,4 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			throw e;
 		}
 	}
-
-		//@SubscribeMessage('block user')
-	//async blockUser(
-	//  @MessageBody() data: updateUser,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-	//  await this.userService.blockUser(id, data.otherId);
-	//  client.emit('update channel request');
-	//}
-
 }

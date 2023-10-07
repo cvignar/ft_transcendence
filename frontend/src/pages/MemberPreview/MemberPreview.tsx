@@ -39,9 +39,28 @@ function MemberPreview() {
 		return false;
 	};
 
+	const isBlocking = () => {
+		if (profile && selectedUser && profile.blocking.includes(selectedUser.id)) {
+			return true;
+		}
+		return false;
+	};
+
 	const emitRemoveFriend = () => {
 		if (profile && selectedUser) {
 			dispatch(userActions.removeFriend({selfId: profile.id, friendId: selectedUser.id}));
+		}
+	};
+
+	const emitBlockUser = () => {
+		if (profile && selectedUser) {
+			dispatch(userActions.blockUser({selfId: profile.id, friendId: selectedUser.id}));
+		}
+	};
+
+	const emitUnblockUser = () => {
+		if (profile && selectedUser) {
+			dispatch(userActions.unblockUser({selfId: profile.id, friendId: selectedUser.id}));
 		}
 	};
 
@@ -65,7 +84,9 @@ function MemberPreview() {
 							onClick={emitInvite}>Invite to game</Button>
 					</div>
 					<div className={styles['col']}>
-						<Button className={styles['btn-dark']}>Block</Button>
+						{isBlocking() === true
+							? <Button className={styles['btn-dark']} onClick={emitUnblockUser}>Unblock</Button>
+							: <Button className={styles['btn-dark']} onClick={emitBlockUser}>Block</Button>}
 						<Button className={styles['btn-dark']}>Mute</Button>
 					</div>
 				</div>
