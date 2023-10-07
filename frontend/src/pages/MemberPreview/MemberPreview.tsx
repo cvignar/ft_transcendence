@@ -4,11 +4,24 @@ import { RootState } from '../../store/store';
 import Headling from '../../components/Headling/Headling';
 import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
+import { Status } from '../../helpers/enums';
+import { socket } from '../Pong/pong';
 
 
 function MemberPreview() {
 	const profile = useSelector((s: RootState) => s.user.selectedUser);
-
+	const statusMap = useSelector((s: RootState) => s.user.statuses);
+	const findStatus = (statuses: any) => {
+		for (const status of statuses) {
+			if (Number(status[0]) === Number(profile?.id))
+				return status[1];
+		}
+	};
+	const emitInvite = () => {
+		if (profile && findStatus(statusMap) === Status.online) {
+			socket.emit('invite partner', Number(profile.id));
+		}
+	};
 	return (
 		<>
 			<div className={styles['member-card']} onLoad={() => {}}>
@@ -19,7 +32,11 @@ function MemberPreview() {
 					<div className={styles['col']}>
 						<Button>Add to friends</Button>
 						<Button>Direct chat</Button>
-						<Button className={styles['inActive']}>Invite to game</Button>
+						<Button
+							className={findStatus(statusMap) !== Status.online
+								? styles['inActive']
+								: ''}
+							onClick={emitInvite}>Invite to game</Button>
 					</div>
 					<div className={styles['col']}>
 						<Button>Block</Button>
