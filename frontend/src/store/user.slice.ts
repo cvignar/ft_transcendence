@@ -21,6 +21,8 @@ export enum UserEvents {
 	updateProfile = 'update profile',
 	addFriend = 'add friend',
 	removeFriend = 'remove friend',
+	blockUser = 'block user',
+	unblockUser = 'unblock user',
 }
 export interface UserState {
 	token: string | null;
@@ -136,6 +138,12 @@ export const userSlice = createSlice({
 			}
 		}),
 		removeFriend: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+			return;
+		}),
+		blockUser: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+			return;
+		}),
+		unblockUser: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
 			return;
 		}),
 	},

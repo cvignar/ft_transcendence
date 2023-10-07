@@ -101,6 +101,18 @@ const channelsMiddleware: Middleware = store => {
 				friendId: action.payload.friendId
 			});
 		}
+		if (userActions.blockUser.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.blockUser, {
+				selfId: action.payload.selfId,
+				friendId: action.payload.friendId
+			});
+		}
+		if (userActions.unblockUser.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.unblockUser, {
+				selfId: action.payload.selfId,
+				friendId: action.payload.friendId
+			});
+		}
 		next(action);
 	};
 };

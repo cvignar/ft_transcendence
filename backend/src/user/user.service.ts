@@ -191,14 +191,38 @@ export class UserService {
 		return [user1, user2];
 	}
 
-	async isBlocked(userId1: number, userId2: number) {
+	// async isBlocked(userId1: number, userId2: number) {
+	// 	try {
+	// 		const user = await this.prismaService.user.findUnique({
+	// 			where: {
+	// 				id: userId1,
+	// 			},
+	// 		});
+	// 		if (user.blocks.includes(userId2)) {
+	// 			return true;
+	// 		}
+	// 		const user2 = await this.prismaService.user.findUnique({
+	// 			where: {
+	// 				id: userId2,
+	// 			},
+	// 		});
+	// 		if (user2.blocks.includes(userId1)) {
+	// 			return true;
+	// 		}
+	// 		return false;
+	// 	} catch (e) {
+	// 		throw new ForbiddenException('isBlocked error: ' + e);
+	// 	}
+	// }
+
+	async isBlocking(userId1: number, userId2: number) {
 		try {
 			const user = await this.prismaService.user.findUnique({
 				where: {
 					id: userId1,
 				},
 			});
-			if (user.blocks.includes(userId2)) {
+			if (user.blocking.includes(userId2)) {
 				return true;
 			}
 			const user2 = await this.prismaService.user.findUnique({
@@ -206,26 +230,73 @@ export class UserService {
 					id: userId2,
 				},
 			});
-			if (user2.blocks.includes(userId1)) {
+			if (user2.blocking.includes(userId1)) {
 				return true;
 			}
 			return false;
 		} catch (e) {
-			throw new ForbiddenException('isBlocked error: ' + e);
+			throw new ForbiddenException('isBlocking error: ' + e);
 		}
 	}
+
+
 	async blockUser(userId: number, blockId: number) {
-		if (userId == blockId || (await this.isBlocked(userId, blockId))) {
+		if (userId == blockId || (await this.isBlocking(userId, blockId))) {
 			throw new ForbiddenException('Failed to block this user');
 		}
 		if (await this.isFriend(userId, blockId)) {
 			await this.removeFriend(userId, blockId);
 		}
-		const user = await this.prismaService.user.update({
+		const user1 = await this.prismaService.user.update({
 			where: { id: userId },
-			data: { blocks: { push: blockId } },
+			data: { blocking: { push: blockId } },
 		});
-		return user;
+		const user2 = await this.prismaService.user.update({
+			where: { id: blockId },
+			data: { blocked: { push: userId } }
+		})
+		return [user1, user2];
+	}
+
+	async unblockUser(userId: number, blockId: number) {
+		if (userId == blockId || !(await this.isBlocking(userId, blockId))) {
+			throw new ForbiddenException('Cannot unblock this user');
+		}
+		let user1 = await this.prismaService.user.findUnique({
+			where: {
+				id: userId,
+			},
+		});
+		const index1 = user1.blocking.indexOf(blockId);
+		if (index1 != -1) {
+			user1.blocking.splice(index1, 1);
+		}
+		user1 = await this.prismaService.user.update({
+			where: {
+				id: userId,
+			},
+			data: {
+				blocking: user1.blocking,
+			},
+		});
+		let user2 = await this.prismaService.user.findUnique({
+			where: {
+				id: blockId,
+			},
+		});
+		const index2 = user2.blocked.indexOf(userId);
+		if (index2 != -1) {
+			user2.blocked.splice(index2, 1);
+		}
+		user2 = await this.prismaService.user.update({
+			where: {
+				id: blockId,
+			},
+			data: {
+				blocked: user2.blocked,
+			},
+		});
+		return [user1, user2];
 	}
 
 	async getUsers(): Promise<
