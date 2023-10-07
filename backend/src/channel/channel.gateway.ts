@@ -5,6 +5,7 @@ import {
 	SubscribeMessage,
 	WebSocketGateway,
 	WebSocketServer,
+	WsException,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UserService } from '../user/user.service';
@@ -23,7 +24,7 @@ import {
 	CreateMessage,
 	MessagePreview,
 } from '../../../contracts/message.schema';
-import { MemberPreview } from 'contracts/user.schema';
+import { MemberPreview, UpdateUser } from 'contracts/user.schema';
 import { Role } from 'contracts/enums';
 
 @UsePipes(new ZodValidationPipe())
@@ -498,25 +499,6 @@ export class ChannelGateway {
 	//@SubscribeMessage('mute user')
 	//async handleMuteUser(@MessageBody() data: mute) {
 	//  await this.chatservice.new__mute(data);
-	//}
-
-	//@SubscribeMessage('add friend')
-	//async addFriend(
-	//  @MessageBody() data: updateUser,
-	//  // @ConnectedSocket() client: Socket,
-	//) {
-	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-	//  await this.userService.addFriend(id, data.otherId);
-	//}
-
-	//@SubscribeMessage('block user')
-	//async blockUser(
-	//  @MessageBody() data: updateUser,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-	//  await this.userService.blockUser(id, data.otherId);
-	//  client.emit('update channel request');
 	//}
 
 	//@SubscribeMessage('unblock user')

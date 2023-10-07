@@ -4,4 +4,4 @@ Icon?
 dist
 .env
 .DS_Store
-core.91
+core.*

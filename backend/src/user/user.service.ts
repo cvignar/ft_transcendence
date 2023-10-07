@@ -93,9 +93,24 @@ export class UserService {
 		}
 	}
 
+	async isAdding(userId1: number, userId2: number) {
+		try {
+			const user = await this.prismaService.user.findUnique({
+				where: { id: userId1 },
+			});
+			if (user.adding.includes(userId2)) {
+				return true;
+			} else {
+				return false;
+			}
+		} catch (e) {
+			console.log('IsFriend error: ', e);
+		}
+	}
+
 	async removeFriend(user1Id: number, user2Id: number) {
 		if (user1Id == user2Id || !(await this.isFriend(user1Id, user2Id))) {
-			throw new ForbiddenException('Cannot remove this friend');
+			return;
 		}
 		const user1 = await this.prismaService.user.findUnique({
 			where: {
@@ -132,6 +147,48 @@ export class UserService {
 			},
 		});
 		return user1;
+	}
+
+	async removeAdding(user1Id: number, user2Id: number) {
+		if (user1Id == user2Id || !(await this.isAdding(user1Id, user2Id))) {
+			console.log("removeFriend?");
+			throw new ForbiddenException('Cannot remove this friend');
+		}
+		let user1 = await this.prismaService.user.findUnique({
+			where: {
+				id: user1Id,
+			},
+		});
+		const index1 = user1.adding.indexOf(user2Id);
+		if (index1 != -1) {
+			user1.adding.splice(index1, 1);
+		}
+		user1 = await this.prismaService.user.update({
+			where: {
+				id: user1Id,
+			},
+			data: {
+				adding: user1.adding,
+			},
+		});
+		let user2 = await this.prismaService.user.findUnique({
+			where: {
+				id: user2Id,
+			},
+		});
+		const index2 = user2.added.indexOf(user1Id);
+		if (index2 != -1) {
+			user2.added.splice(index2, 1);
+		}
+		user2 = await this.prismaService.user.update({
+			where: {
+				id: user2Id,
+			},
+			data: {
+				added: user2.added,
+			},
+		});
+		return [user1, user2];
 	}
 
 	async isBlocked(userId1: number, userId2: number) {
@@ -279,5 +336,20 @@ export class UserService {
 		} catch (error) {
 			console.log(`updateJWTAcces error: ${error}`);
 		}
+	}
+
+	async addFriend(userId: number, friendId) {
+		if (userId == friendId || (await this.isFriend(userId, friendId))) {
+			throw new ForbiddenException('Failed to add this user');
+		}
+		const user = await this.prismaService.user.update({
+			where: { id: userId },
+			data: { adding: { push: friendId } }
+		});
+		const friend = await this.prismaService.user.update({
+			where: { id: friendId },
+			data: { added: { push: userId } }
+		});
+		return [user, friend];
 	}
 }

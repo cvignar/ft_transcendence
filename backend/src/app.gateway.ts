@@ -116,6 +116,44 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		}
 	}
 
+	@SubscribeMessage('add friend')
+	async addFriend(
+		@MessageBody() data: {selfId: number, friendId: number},
+	) {
+		console.log('add friend event, ids: ', data.selfId, data.friendId);
+		if (await this.userService.isAdding(data.selfId, data.friendId)) {
+			console.log(this.userService.isAdding(data.selfId, data.friendId));
+			return;
+		}
+		const client = this.clientSocket.get(data.selfId);
+		try {
+			const friends = await this.userService.addFriend(data.selfId, data.friendId);
+			const client1 = this.clientSocket.get(data.friendId);
+			client.emit('update profile', friends[0]);
+			client1.emit('update profile', friends[1]);
+		} catch (e) {
+			client.emit('exception', 'Failed to add friend');
+		}
+	}
+
+	@SubscribeMessage('remove friend')
+	async removeFriend(
+		@MessageBody() data: {selfId: number, friendId: number},
+	) {
+		console.log('remove friend event, ids: ', data.selfId, data.friendId);
+		const client = this.clientSocket.get(data.selfId);
+		try {
+			await this.userService.removeFriend(data.selfId, data.friendId);
+			const friends = await this.userService.removeAdding(data.selfId, data.friendId);
+			const client1 = this.clientSocket.get(data.friendId);
+			client.emit('update profile', friends[0]);
+			client1.emit('update profile', friends[1]);
+		} catch (e) {
+			client.emit('exception', 'Failed to remove friend');
+		}
+	}
+
+
 	@SubscribeMessage('save game')
 	async saveGame(@MessageBody() gameData: SaveGame.Request) {
 		try {
@@ -148,4 +186,15 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			throw e;
 		}
 	}
+
+		//@SubscribeMessage('block user')
+	//async blockUser(
+	//  @MessageBody() data: updateUser,
+	//  @ConnectedSocket() client: Socket,
+	//) {
+	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
+	//  await this.userService.blockUser(id, data.otherId);
+	//  client.emit('update channel request');
+	//}
+
 }

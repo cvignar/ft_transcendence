@@ -29,12 +29,10 @@ export function deletePongAndNotifyPlayers(socketId: string) {
 	if (playersDeletedPong) {
 		if (playersDeletedPong.owner) {
 			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit("pong deleted");
-			io.sockets.sockets.get(playersDeletedPong.owner.socketId)?.emit("partner game off");
 			gebugPprinting(playersDeletedPong.owner.name, "pong deleted");
 		}
 		if (playersDeletedPong.partner) {
 			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit("pong deleted");
-			io.sockets.sockets.get(playersDeletedPong.partner.socketId)?.emit("partner game off");
 		}
 	}
 }
