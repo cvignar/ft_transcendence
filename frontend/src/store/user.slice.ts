@@ -140,7 +140,7 @@ export const getUserProfile = createAsyncThunk("/getUserProfile", async (id: num
 export const updateProfile = createAsyncThunk("/updateProfile", async (params: UpdateUser) => {
 	try {
 		console.log("id:", params.id);
-		const { data } = await axios.post<UpdateUser>(`${BACK_PREFIX}/user/updateProfile/${params.id}`, params);
+		const { data } = await axios.post<any>(`${BACK_PREFIX}/user/updateProfile/${params.id}`, params);
 		return data;
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -258,6 +258,7 @@ export const userSlice = createSlice({
 			if (!action.payload) {
 				return;
 			}
+			state.profile = action.payload;
 		});
 		builder.addCase(updateProfile.rejected, (state, action) => {
 			state.profileError = action.error.message;

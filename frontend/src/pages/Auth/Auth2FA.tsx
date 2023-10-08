@@ -48,7 +48,7 @@ export function Auth2FaForm() {
 	return (
 		<div className={styles['page']}>
 			<div className={styles['login']}>
-				<Headling>PingPong 2FA</Headling>
+				<Headling>Pong 2FA</Headling>
 				<form className={styles['form']} onSubmit={submit}>
 					<div className={styles['field']}>
 						<label htmlFor='code2fa'>Code</label>
