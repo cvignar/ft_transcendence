@@ -11,9 +11,9 @@ import { Profile } from '../interfaces/user.interface';
 const channelsMiddleware: Middleware = store => {
 	let socket: Socket;
 	return next => (action) => {
-		const isConnectionEstablished = socket && store.getState().channel.isConnected;
-		console.log(action);
-		if (channelActions.startConnecting.match(action)) {
+		let isConnectionEstablished = (socket && socket.connected) ? true : false;
+		console.log(isConnectionEstablished);
+		if (channelActions.startConnecting.match(action) && !isConnectionEstablished) {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
 			socket.on('connect', () => {
 				store.dispatch(channelActions.connectionEstablished());
@@ -23,6 +23,10 @@ const channelsMiddleware: Middleware = store => {
 				//	store.dispatch(channelActions.getChannels({ channels }));
 				//});
 			});
+			// socket.on('disconnect', (reason) => {
+			// 	console.log(reason);
+			// 	socket.connect();
+			// });
 			socket.on(ChannelsEvent.updateStatus, (statusMap: any) => {
 				console.log(statusMap);
 				store.dispatch(userActions.setStatuses(statusMap));
@@ -42,24 +46,29 @@ const channelsMiddleware: Middleware = store => {
 			socket.on(ChannelsEvent.AddPreview, (channel: ChannelPreview) => {
 				store.dispatch(channelActions.setChannel({channel: channel}));
 			});
-			socket.on(ChannelsEvent.update, () => {
-				store.dispatch(channelActions.updateState());
+			// socket.on(ChannelsEvent.update, () => {
+				// store.dispatch(channelActions.updateState());
 				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
 				//	store.dispatch(channelActions.getChannels({ channels }));
 				//});
-			});
- 
+			// });
 			socket.on(ChannelsEvent.getError, (error: string) => {
 				store.dispatch(channelActions.setError(error));
 			});
 			socket.on(ChannelsEvent.getSelectedChannel, (channel: any) => {
 				store.dispatch(channelActions.setSelectedChannel(channel));
 			});
+			socket.on(ChannelsEvent.getDirectChannel, (channelId: number) => {
+				store.dispatch(channelActions.getSelectedChannel(channelId));
+			});
+
 			socket.on(UserEvents.updateProfile, (profile: Profile) => {
 				store.dispatch(userActions.updateProfile(profile));
-			})
+			});
+			socket.on(UserEvents.getGameHistory, (gameHistory: any) => {
+				store.dispatch(userActions.setGameHistory(gameHistory));
+			});
 		}
- 
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
 			console.log(action.payload);
 			socket.emit(ChannelsEvent.createChannel, action.payload);
@@ -70,7 +79,6 @@ const channelsMiddleware: Middleware = store => {
 			});
 		}
 		if (channelActions.sendMessage.match(action) && isConnectionEstablished) {
-			console.log(action.payload);
 			socket.emit(ChannelsEvent.sendMessage, action.payload);
 		}
 		if (channelActions.getMessages.match(action) && isConnectionEstablished) {
@@ -88,6 +96,12 @@ const channelsMiddleware: Middleware = store => {
 		}
 		if (channelActions.getSelectedChannel.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.getSelectedChannel, {email: store.getState().user.profile.email, channelId: action.payload});
+		}
+		if (channelActions.getDirectChannel.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.getDirectChannel, {
+				id: action.payload.targetId,
+				email: action.payload.selfEmail
+			});
 		}
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.addFriend, {
@@ -112,6 +126,9 @@ const channelsMiddleware: Middleware = store => {
 				selfId: action.payload.selfId,
 				friendId: action.payload.friendId
 			});
+		}
+		if (userActions.getGameHistory.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.getGameHistory, action.payload);
 		}
 		next(action);
 	};

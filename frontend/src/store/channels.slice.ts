@@ -32,6 +32,7 @@ export enum ChannelsEvent {
 	createChannel = 'create channel',
 	getSelectedChannel = 'get selected channel',
 	updateStatus = 'update-status',
+	getDirectChannel = 'get direct channel',
 }
 
 export interface ChannelsState {
@@ -94,6 +95,10 @@ const channelSlice = createSlice({
 			state.isConnected = true;
 			state.isEstablishingConnection = true;
 		}),
+		connsctionNotEstablished: (state => {
+			state.isConnected = false;
+			state.isEstablishingConnection = false;
+		}),
 		getChannel: ((state, action: PayloadAction<number>) => {
 			return;
 		}),
@@ -125,10 +130,11 @@ const channelSlice = createSlice({
 			state.messages = action.payload;
 		}),
 		recieveMessage: ((state, action: PayloadAction<Message>) => {
-			state.messages.push(action.payload);
+			if (!state.messages.includes(action.payload)) {
+				state.messages.push(action.payload);
+			}
 		}),
 		createChannel: ((state, action: PayloadAction<CreateChannel>) => {
-			console.log('!');
 			return;
 		}),
 		updateState: (state => {
@@ -148,6 +154,9 @@ const channelSlice = createSlice({
 		}),
 		setSelectedChannel: ((state, action: PayloadAction<any>) => {
 			state.selectedChannel = action.payload;
+		}),
+		getDirectChannel: ((state, action: PayloadAction<{targetId: number, selfEmail: string}>) => {
+			return;
 		})
 	}
 });

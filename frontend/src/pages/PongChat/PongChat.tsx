@@ -47,9 +47,9 @@ export function PongChat() {
 		const timerId = setTimeout(() => {
 			const token = getCookie('accessToken');
 			if (token) {
-				dispatch(channelActions.startConnecting());
-				//console.log('dispatch');
-				//dispatch(channelActions.getChannels(email));
+				// dispatch(channelActions.startConnecting());
+				// console.log('dispatch');
+				dispatch(channelActions.getChannels(email));
 			}
 		}, 10);
 		return () => clearTimeout(timerId);

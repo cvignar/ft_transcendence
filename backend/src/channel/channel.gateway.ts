@@ -252,22 +252,25 @@ export class ChannelGateway {
 		this.server.in(channelName).emit('update channel request');
 	}
 
-	@SubscribeMessage('new direct channel')
+	@SubscribeMessage('get direct channel')
 	async newDirectChannel(
 		@MessageBody() channelData: CreateDirectChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
+		console.log('new dm event');
 		const channelId =
-			await this.channelService.createDirectChannel(channelData);
+			await this.channelService.getDirectChannel(channelData);
 		const preview = await this.channelService.getPreview(
 			channelId,
 			channelData.email,
 		);
+		console.log(preview);
 		const channelName =
 			await this.channelService.getChannelNameById(channelId);
 		await client.join(channelName);
 		client.emit('add preview', preview);
-		return channelId;
+		client.emit('get direct channel', channelId);
+		// return channelId;
 	}
 
 	@SubscribeMessage('get messages')
@@ -295,8 +298,8 @@ export class ChannelGateway {
 				messageData.channelId,
 			);
 			const data = await this.channelService.getMessages(messageData.channelId);
-			client.emit('get messages', data);
-
+			// client.emit('get messages', data);
+			// this.broadcast('get messages', data, messageData.channelId);
 			this.server.in(channelName).emit('update channel request');
 		} else
 			client.emit(
@@ -307,13 +310,14 @@ export class ChannelGateway {
 
 	async broadcast(
 		event: string,
-		message: MessagePreview.Response,
+		data: any,
 		channelId: number,
 	) {
 		const channelName =
 			await this.channelService.getChannelNameById(channelId);
-		this.server.in(channelName).emit(event, message);
+		this.server.in(channelName).emit(event, data);
 	}
+	
 
 	async getRole(
 		email: string,
@@ -496,8 +500,12 @@ export class ChannelGateway {
 	//  this.updateChannelRequest('update channel request', cName);
 	//}
 
-	//@SubscribeMessage('mute user')
+	@SubscribeMessage('mute user')
+	async muteUser(@MessageBody() data: any) /*FIXME!!!!*/ {
+		//mute in channel
+	}
 	//async handleMuteUser(@MessageBody() data: mute) {
 	//  await this.chatservice.new__mute(data);
 	//}
+
 }

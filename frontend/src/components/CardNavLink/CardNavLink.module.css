@@ -14,3 +14,8 @@
 .active {
 	background: var(--white-hover-color);
 }
+
+.no-link {
+	text-decoration: none;
+	color: var(--text-color);
+}

@@ -45,17 +45,17 @@ export function SearchPage() {
 
 	// const onSubmit = (event: FormEvent) => {};
 
-	useEffect(() => {
-		const timerId = setTimeout(() => {
-			const token = getCookie('accessToken');
-			if (token) {
-				dispatch(channelActions.startConnecting());
+	// useEffect(() => {
+	// 	const timerId = setTimeout(() => {
+	// 		const token = getCookie('accessToken');
+	// 		if (token) {
+				// dispatch(channelActions.startConnecting());
 				//console.log('dispatch');
 				//dispatch(channelActions.getChannels(email));
-			}
-		}, 10);
-		return () => clearTimeout(timerId);
-	}, [dispatch]);
+	// 		}
+	// 	}, 10);
+	// 	return () => clearTimeout(timerId);
+	// }, [dispatch]);
 
 	// useEffect(() => {
 	// 	const timerId = setTimeout(() => {

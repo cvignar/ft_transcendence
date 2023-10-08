@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import {
+	ConnectedSocket,
 	MessageBody,
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -44,7 +45,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleConnection(client: Socket) {
 		try {
-			client.setMaxListeners(20); //FIXME!!!!
 			const UserId: number = this.jwtService.verify(
 				String(client.handshake.headers.token),
 				{ secret: process.env.JWT_SECRET },
@@ -58,6 +58,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const serializedMap = [...this.userStatusMap.entries()];
 			this.server.emit('update-status', serializedMap);
 			//add to clientSocket
+			const oldClient = this.clientSocket.get(UserId)
+			if (oldClient) {
+				oldClient.disconnect();
+			}
 			this.clientSocket.set(UserId, client);
 			console.log('connect userId', UserId, client.id);
 			await this.channelGateway.handleJoinSocket(UserId, client);
@@ -180,13 +184,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			client.emit('exception', 'Failed to block friend');
 		}
 	}
-	//  @MessageBody() data: updateUser,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const id = await this.chatservice.get__id__ByEmail(data.selfEmail);
-	//  await this.userService.unblockUser(id, data.otherId);
-	//  client.emit('update channel request');
-	//}
 
 	@SubscribeMessage('save game')
 	async saveGame(@MessageBody() gameData: SaveGame.Request) {
@@ -219,5 +216,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		} catch (e) {
 			throw e;
 		}
+	}
+
+	@SubscribeMessage('get gameHistory')
+	async	getGameHistory(
+		@MessageBody() userId: number,
+		@ConnectedSocket() client: Socket,
+	) {
+		const gameHistory = await this.gameService.getGameHistory(userId);
+		client.emit('get gameHistory', gameHistory);
 	}
 }

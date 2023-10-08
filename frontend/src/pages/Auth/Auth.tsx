@@ -33,9 +33,9 @@ export function AuthForm() {
 	}, []);
 	useEffect(() => {
 		const timerId = setTimeout(() => {
-			if (profile) {
+			if (profile != null) {
+				console.log('must navigate?: ', profile);
 				dispatch(userActions.setUser(profile));
-				dispatch(channelActions.startConnecting());
 				navigate('/Chat');
 			}
 		}, 1000);

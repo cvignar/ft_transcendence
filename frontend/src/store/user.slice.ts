@@ -23,6 +23,7 @@ export enum UserEvents {
 	removeFriend = 'remove friend',
 	blockUser = 'block user',
 	unblockUser = 'unblock user',
+	getGameHistory = 'get gameHistory',
 }
 export interface UserState {
 	token: string | null;
@@ -35,6 +36,7 @@ export interface UserState {
 	profileError?: string;
 	selectedUser: Profile | null;
 	statuses: any;
+	selectedGameHistory: any;
 	//registerError?: string;
 }
 
@@ -46,6 +48,7 @@ const initialState: UserState = {
 	profile: loadState<Profile>(PROFILE_PERSISTENT_STATE) ?? null,
 	selectedUser: loadState<Profile>('selectedUser') ?? null,
 	statuses: loadState<any>('statuses') ?? null,
+	selectedGameHistory: [],
 };
 
 export const auth = createAsyncThunk("auth/login", async () => {
@@ -146,6 +149,12 @@ export const userSlice = createSlice({
 		unblockUser: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
 			return;
 		}),
+		getGameHistory: ((state, action: PayloadAction<number>) => {
+			return;
+		}),
+		setGameHistory: ((state, action: PayloadAction<any>) => {
+			state.selectedGameHistory = action.payload;
+		})
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
