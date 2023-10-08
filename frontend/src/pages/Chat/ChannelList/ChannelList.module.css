@@ -11,6 +11,11 @@
 	align-items: top;
 }
 
+.no-link {
+	text-decoration: none;
+	color: var(--text-color);
+}
+
 .control-row {
 	display: flex;
 	flex-direction: row;

@@ -1,0 +1,15 @@
+.row {
+	display: flex;
+	flex-direction: row;
+	font-size: 90%;
+	width: 120%;
+	border-bottom: 1px solid var(--white-color);
+	justify-content: space-between;
+	height: 30px;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}

@@ -225,14 +225,14 @@ export class UserService {
 			if (user.blocking.includes(userId2)) {
 				return true;
 			}
-			const user2 = await this.prismaService.user.findUnique({
-				where: {
-					id: userId2,
-				},
-			});
-			if (user2.blocking.includes(userId1)) {
-				return true;
-			}
+			// const user2 = await this.prismaService.user.findUnique({
+			// 	where: {
+			// 		id: userId2,
+			// 	},
+			// });
+			// if (user2.blocking.includes(userId1)) {
+			// 	return true;
+			// }
 			return false;
 		} catch (e) {
 			throw new ForbiddenException('isBlocking error: ' + e);

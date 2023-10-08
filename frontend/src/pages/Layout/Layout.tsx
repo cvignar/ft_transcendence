@@ -7,7 +7,8 @@ import { AppDispatch } from '../../store/store';
 import { userActions } from '../../store/user.slice';
 import { Pong } from '../Pong/pong';
 import styles from './Layout.module.css';
-import { removeCookie } from 'typescript-cookie';
+import { getCookie, removeCookie } from 'typescript-cookie';
+import { useEffect } from 'react';
 
 export function Layout() {
 	const navigate = useNavigate();
@@ -25,6 +26,13 @@ export function Layout() {
 		window.location.reload();
 		//navigate('/Auth');
 	};
+
+	useEffect(() => {
+		const token = getCookie('accessToken');
+		if (token) {
+			dispatch(channelActions.startConnecting());
+		}
+	}, [dispatch]);
 
 	return <div className={styles['layout']}>
 		<div className={styles['sidebar']}>

@@ -78,8 +78,12 @@ body {
     display: none;
 }
 
-a:-webkit-any-link {
+a.mail-link {
+  text-decoration: underline;
+}
+
+/* a:-webkit-any-link {
     color: var(--text-color);
     cursor: pointer;
     text-decoration: none;
-}
+} */

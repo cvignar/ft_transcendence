@@ -114,15 +114,36 @@ export class ChannelService {
 		}
 	}
 
-	async createDirectChannel(target: CreateDirectChannel.Request) {
+	async getDirectChannel(data: CreateDirectChannel.Request) {
 		try {
+			const userEmail = data.email;
+			const targetId = data.id;
 			const ids: number[] = [];
-			const user = await this.userService.getUserByEmail(target.email);
-			ids.push(user.id, target.id);
+			const user = await this.userService.getUserByEmail(userEmail);
+			const targetUser = await this.userService.getUserById(targetId);
+
+			ids.push(user.id, data.id);
+			let channels = await this.prismaService.channel.findMany({
+				where: { type: typeEnum.DIRECT },
+				select: {
+					id: true,
+					owners: true
+				}
+			});
+			if (channels) {
+				for (const channel of channels) {
+					if ((channel.owners[0].id === targetUser.id || channel.owners[0].id === user.id)
+						&& (channel.owners[1].id === targetUser.id || channel.owners[1].id === user.id)) {
+						return channel.id;
+					}
+				}
+			}
 			const channel = await this.prismaService.channel.create({
 				data: {
 					type: typeEnum.DIRECT,
 					owners: { connect: ids.map((id) => ({ id: id })) },
+					admins: { connect: ids.map((id) => ({ id: id })) },
+					members: { connect: ids.map((id) => ({ id: id })) },
 				},
 			});
 			return channel.id;

@@ -65,7 +65,7 @@ export default function Chat() {
 	useEffect(() => {
 		const timerId = setTimeout(() => {
 			if (token) {
-				dispatch(channelActions.startConnecting());
+				// dispatch(channelActions.startConnecting());
 			}
 		}, 0);
 		return () => clearTimeout(timerId);

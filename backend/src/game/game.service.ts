@@ -98,4 +98,38 @@ export class GameService {
 		});
 		return games;
 	}
+
+	async getGameHistory(userId: number) {
+		const games = await this.prismaService.game.findMany({
+			where: {
+				OR: [
+					{ player1: userId },
+					{ player2: userId }
+				]
+			},
+			orderBy: {
+				startTime: 'desc'
+			}
+		});
+		const gameHistory = [];
+		if (games) {
+			let gamePreview: any;
+			for (const game of games) {
+				const user1 = await this.userService.getUserById(game.player1);
+				const user2 = await this.userService.getUserById(game.player2);
+				gamePreview = {
+					date: game.startTime,
+					duraction: game.duration,
+					player1: user1.username,
+					player2: user2.username,
+					playerId1: user1.id,
+					playerId2: user2.id,
+					score1: game.score1,
+					score2: game.score2,
+				};
+				gameHistory.push(gamePreview);
+			}
+		}
+		return gameHistory;
+	}
 }

@@ -7,12 +7,20 @@ import Button from '../../components/Button/Button';
 import { Status } from '../../helpers/enums';
 import { socket } from '../Pong/pong';
 import { userActions } from '../../store/user.slice';
+import { channelActions } from '../../store/channels.slice';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import GameHistoryItem from './GameHistoryItem/GameHistoryItem';
 
 
 function MemberPreview() {
-	const { profile, selectedUser } = useSelector((s: RootState) => s.user);
+	const { profile, selectedUser, selectedGameHistory } = useSelector((s: RootState) => s.user);
+	const { selectedChannel, channels } = useSelector((s: RootState) => s.channel);
 	const statusMap = useSelector((s: RootState) => s.user.statuses);
 	const dispatch = useDispatch<AppDispatch>();
+	const navigate = useNavigate();
+	const [goToDM, setGoToDM] = useState<boolean>(false);
+	const [showGH, setShowGH] = useState<boolean>(false);
 
 	const findStatus = (statuses: any) => {
 		for (const status of statuses) {
@@ -46,6 +54,13 @@ function MemberPreview() {
 		return false;
 	};
 
+	const isBlocked = () => {
+		if (profile && selectedUser && profile.blocked.includes(selectedUser.id)) {
+			return true;
+		}
+		return false;
+	};
+
 	const emitRemoveFriend = () => {
 		if (profile && selectedUser) {
 			dispatch(userActions.removeFriend({selfId: profile.id, friendId: selectedUser.id}));
@@ -64,30 +79,68 @@ function MemberPreview() {
 		}
 	};
 
+	const getDirectChannel = () => {
+		if (profile && selectedUser) {
+			dispatch(channelActions.setSelectedChannel(null));
+			dispatch(channelActions.getDirectChannel({targetId: selectedUser.id, selfEmail: profile?.email}));
+			setGoToDM(true);
+			// const timerId = setTimeout(() => {
+			// }, 500);
+			// return () => clearTimeout(timerId);
+		}
+	};
+
+	const showGameHistory = () => {
+		if (selectedUser && selectedUser.id) {
+			dispatch(userActions.getGameHistory(selectedUser.id));
+			setShowGH(true);
+		}
+	};
+
+	useEffect(() => {
+		if (goToDM && selectedChannel && selectedChannel.id) {
+			navigate(`/Chat/channel/${selectedChannel.id}`);
+		}
+	}, [selectedChannel]);
+
+	useEffect(() => {
+		setShowGH(false);
+	}, [selectedUser]);
+
 	return (
 		<>
 			<div className={styles['member-card']} onLoad={() => {}}>
+				<div className={styles['empty']}></div>
 				<img className={styles['avatar']} src={selectedUser?.avatar ? selectedUser.avatar : '/default_avatar.png'}/>
 				<Headling>{selectedUser?.username}</Headling>
-				<div>{selectedUser?.email}</div>
+				{isBlocked() === true
+					? <div>{`You are blocked by ${selectedUser?.username} :(`}</div>
+					: <a className={styles['mail-link']} href={`mailto:${selectedUser?.email}`}>{selectedUser?.email}</a>}
 				<div className={styles['table']}>
 					<div className={styles['col']}>
 						{isAdding() === true
 							? <Button className={styles['btn-dark']} onClick={emitRemoveFriend}>Remove friend</Button>
-							: <Button className={styles['btn-dark']} onClick={emitAdd}>Add to friends</Button>
+							: <Button className={isBlocked() === true
+													? styles['inActive']
+													: styles['btn-dark']
+												} onClick={emitAdd}>Add to friends</Button>
 						}
-						<Button className={styles['btn-dark']}>Direct chat</Button>
 						<Button
 							className={findStatus(statusMap) !== Status.online
-								? styles['inActive']
-								: styles['btn-dark']}
+								|| isBlocked() === true
+									? styles['inActive']
+									: styles['btn-dark']}
 							onClick={emitInvite}>Invite to game</Button>
 					</div>
 					<div className={styles['col']}>
+						<Button className={isBlocked() === true
+									? styles['inActive']
+									: styles['btn-dark']}
+								onClick={getDirectChannel}
+								>Direct chat</Button>
 						{isBlocking() === true
 							? <Button className={styles['btn-dark']} onClick={emitUnblockUser}>Unblock</Button>
 							: <Button className={styles['btn-dark']} onClick={emitBlockUser}>Block</Button>}
-						<Button className={styles['btn-dark']}>Mute</Button>
 					</div>
 				</div>
 				<div className={styles['stats']}>
@@ -115,6 +168,14 @@ function MemberPreview() {
 						<h4>Played total:</h4>
 						<p>{selectedUser?.gamesPlayed}</p>
 					</div>
+					{showGH === false
+						? <Button className={styles['btn-dark']} onClick={showGameHistory}>Show game history</Button>
+						: <> <h3>Game History</h3>
+							{selectedGameHistory && selectedGameHistory.length > 0
+								? selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
+								: <p>Empty</p>}
+						</>
+					}
 				</div>
 			</div>
 		</>
