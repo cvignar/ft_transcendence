@@ -84,6 +84,7 @@ services:
       - backend:/backend
       - contracts:/contracts
       - pong:/pong
+      - upload:/public/uploads
     networks:
       - ft_trancendence
 
