@@ -383,12 +383,23 @@ export class UserService {
 
 	async updateUser(userId: number, userData: any) {
 		try {
-			console.log(userData);
+			let user = await this.prismaService.user.findUnique({
+				where: { id: userId }
+			});
+			if (user && userData && user.username !== userData.username && userData.username && /\S/.test(userData.username)) {
+				let userUser = await this.prismaService.user.findFirst({
+					where: { username: userData.username }
+				});
+				if (!userUser) {
+					await this.prismaService.user.update({
+						where: { id: userId },
+						data: { username: userData.username }
+					});
+				}
+			}
 			return await this.prismaService.user.update({
 				where: { id: userId },
 				data: {
-					username: userData.username,
-					avatar: userData.avatar,
 					prefferedTableSide: userData.prefferedTableSide,
 					pongColorScheme: userData.pongColorScheme,
 				},

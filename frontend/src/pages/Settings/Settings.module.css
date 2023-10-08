@@ -171,6 +171,17 @@ legend {
 p {
 	padding-right: 10px;
 }
+
+.error {
+	color: red;
+	font-size: 90%;	
+}
+
+.username-input {
+	height: 24px;
+	border: none;
+	background: var(--white-hover-color);
+}
 /*input[type="radio"] {
 	-webkit-appearance: none;
 	appearance: none;

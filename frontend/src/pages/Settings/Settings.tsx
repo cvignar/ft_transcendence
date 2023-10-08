@@ -14,6 +14,11 @@ import GameHistoryItem from '../MemberPreview/GameHistoryItem/GameHistoryItem';
 import QRCode from 'qrcode';
 import { getCookie } from 'typescript-cookie';
 
+interface PreviousUserData {
+	username: string | undefined,
+	prefferedTableSide: Side | undefined,
+	pongColorScheme: GameScheme | undefined
+}
 
 export function Settings() {
 
@@ -22,9 +27,23 @@ export function Settings() {
 	const [showGH, setShowGH] = useState<boolean>(false);
 	const [twoFA, setTwoFA] = useState<boolean>(user.profile ? user.profile.twoFA : false);
 	const [changeUsername, setChangeUsername] = useState<boolean>(false);
+	const [error, setError] = useState<string>('');
+	const [previousUserData, setPreviousUserData] = useState<PreviousUserData>({
+		username: undefined,
+		prefferedTableSide: undefined,
+		pongColorScheme: undefined,
+	});
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		setPreviousUserData({
+			username: user.profile?.username,
+			prefferedTableSide: user.profile?.prefferedTableSide,
+			pongColorScheme: user.profile?.pongColorScheme,
+		});
+		console.log(previousUserData);
+
 		let username = user.profile?.username;
 		console.log(e.currentTarget.side.value);
 		console.log(e.currentTarget.scheme.value);
@@ -53,9 +72,14 @@ export function Settings() {
 			dispatch(disable2fa());
 		}
 		// console.log('new player', user.profile);
-		// socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
-		dispatch(userActions.setProfile(updateData));
-		dispatch(updateProfile(updateData));
+		if (updateData.username && /\S/.test(updateData.username) === true && 
+			(updateData.username != user.profile?.username ||
+			updateData.prefferedTableSide !== user.profile?.prefferedTableSide ||
+			updateData.pongColorScheme !== user.profile.pongColorScheme)) {
+				dispatch(updateProfile(updateData));
+		} else if (!updateData.username || /\S/.test(updateData.username) === false) {
+			setError('wrong username');
+		}
 		setChangeUsername(false);
 	};
 
@@ -81,12 +105,23 @@ export function Settings() {
 			dispatch(updateProfile(update_user));
 			window.location.reload(false);
 		}
-		
 	}
 
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
 	}, [dispatch, twoFA]);
+
+	useEffect(() => {
+		if (user.profile && previousUserData && previousUserData.username &&
+			(previousUserData.username !== user.profile.username ||
+			previousUserData.prefferedTableSide != user.profile.prefferedTableSide ||
+			previousUserData.pongColorScheme != user.profile.pongColorScheme)) {
+				socket.emit('new player', {name: user.profile?.username, id: user.profile?.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
+		} else if (previousUserData && previousUserData.username === user.profile?.username) {
+				setError('name exists');
+		}
+		console.log(previousUserData.username, user.profile?.username);
+	}, [user.profile]);
 
 	useEffect(() => {
 		if (user.profile) {
@@ -118,6 +153,12 @@ export function Settings() {
 		}
 	};
 
+	useEffect(() => {
+		if (error !== '') {
+			setTimeout(() => (setError('')), 2000);
+		}
+	}, [user.profile, error]);
+
 	return (
 		<>
 			<div className={styles['profile-card']}>
@@ -130,7 +171,7 @@ export function Settings() {
 				</div>
 				<form className={styles['profile-form']} onSubmit={onSubmit}>
 					{changeUsername === true
-						? <input type='text' name='username' placeholder={`${user.profile?.username}`}/>
+						? <input type='text' name='username' placeholder={`${user.profile?.username}`} className={styles['username-input']}/>
 						: <Headling onClick={() => (setChangeUsername(true))}>{user.profile?.username}</Headling>}
 					<div>{user.profile?.email}</div>
 					<fieldset>
@@ -177,7 +218,10 @@ export function Settings() {
 							? <input type='checkbox' name='twoFAbox' defaultChecked/>
 							: <input type='checkbox' name='twoFAbox'/>}
 					</div>
-					<Button className={styles['submit']}>Submit</Button>
+					<div className={styles['row']}>
+						<Button className={styles['submit']}>Submit</Button><div className={styles['error']}>{error}</div>
+					</div>
+
 				</form>
 				{twoFA === true
 				? <canvas id='qrcode'/>
