@@ -20,36 +20,45 @@ export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
 	const [showGH, setShowGH] = useState<boolean>(false);
+	const [twoFA, setTwoFA] = useState<boolean>(user.profile ? user.profile.twoFA : false);
+	const [changeUsername, setChangeUsername] = useState<boolean>(false);
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		let username = user.profile?.username;
 		console.log(e.currentTarget.side.value);
 		console.log(e.currentTarget.scheme.value);
-		console.log(e.currentTarget.enable.checked);
+		console.log(e.currentTarget.twoFAbox.checked);
+		if (e.currentTarget.username && e.currentTarget.username.value != username) {
+			username = e.currentTarget.username.value;
+		}
 		const updateData: UpdateUser = {
 			id: user.profile?.id,
-			username: user.profile?.username, //FIXME!!! username from the form
+			username: username, //FIXME!!! username from the form
 			avatar: user.profile?.avatar, //FIXME!!! avatar from the form
 			prefferedTableSide: parseInt(e.currentTarget.side.value),
 			pongColorScheme: parseInt(e.currentTarget.scheme.value)
 		};
-		if (e.currentTarget.enable.checked === true) {
+		// if (e.currentTarget.enable.checked === true) {
+		// 	dispatch(enable2fa());
+		// } else {
+		// 	dispatch(disable2fa());
+		// }
+		if (e.currentTarget.twoFAbox.checked === true && twoFA === false) {
 			dispatch(enable2fa());
-		} else {
+			setTwoFA(true);
+		}
+		if (e.currentTarget.twoFAbox.checked === false && twoFA === true) {
+			setTwoFA(false);
 			dispatch(disable2fa());
 		}
 		// console.log('new player', user.profile);
 		// socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
 		dispatch(userActions.setProfile(updateData));
 		dispatch(updateProfile(updateData));
+		setChangeUsername(false);
 	};
 
-	const showGameHistory = () => {
-		if (user.profile && user.profile.id) {
-			dispatch(userActions.getGameHistory(user.profile.id));
-			setShowGH(true);
-		}
-	};
 	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
 		const target = e.target as HTMLInputElement;
 		const user_id = Number(getCookie('userId'))
@@ -77,13 +86,13 @@ export function Settings() {
 
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
-	}, [dispatch, user.userId]);
+	}, [dispatch, twoFA]);
 
 	useEffect(() => {
 		if (user.profile) {
 			dispatch(userActions.getGameHistory(user.profile.id));
 		}
-	}, [dispatch, user.profile]);
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (user.qrUri) {
@@ -92,7 +101,23 @@ export function Settings() {
 				console.log('success!');
 			});
 		}
-	}, [user.qrUri]);
+	}, [user.qrUri, user.statuses]);
+
+	useEffect(() => {
+		// if (twoFA === true) {
+		// 	dispatch(enable2fa());
+		// } else {
+		// 	dispatch(disable2fa());
+		// }
+	}, user.statuses);
+
+	const showGameHistory = () => {
+		if (user.profile && user.profile.id) {
+			dispatch(userActions.getGameHistory(user.profile.id));
+			setShowGH(true);
+		}
+	};
+
 	return (
 		<>
 			<div className={styles['profile-card']}>
@@ -104,7 +129,9 @@ export function Settings() {
 					</div>
 				</div>
 				<form className={styles['profile-form']} onSubmit={onSubmit}>
-					<Headling>{user.profile?.username}</Headling>
+					{changeUsername === true
+						? <input type='text' name='username' placeholder={`${user.profile?.username}`}/>
+						: <Headling onClick={() => (setChangeUsername(true))}>{user.profile?.username}</Headling>}
 					<div>{user.profile?.email}</div>
 					<fieldset>
 						<label htmlFor='side' className={styles['label-head']}>Preffered table side:</label>
@@ -144,11 +171,17 @@ export function Settings() {
 							</div>
 						</div>
 					</fieldset>
-					<label htmlFor='enable' className={styles['label-head']}>enable</label>
-					<input id='enable' type='checkbox' name='enable'/>
-					<canvas id='qrcode'/>
+					<div className={styles['auth-row']}>
+						<label htmlFor='enable' className={styles['label-head']}>Google Authentication</label>
+							{twoFA === true
+							? <input type='checkbox' name='twoFAbox' defaultChecked/>
+							: <input type='checkbox' name='twoFAbox'/>}
+					</div>
 					<Button className={styles['submit']}>Submit</Button>
 				</form>
+				{twoFA === true
+				? <canvas id='qrcode'/>
+				: <></>}
 			</div>
 			<div className={styles['other']}>
 				<div className={styles['stats']}>
@@ -176,10 +209,18 @@ export function Settings() {
 						<h4>Played total:</h4>
 						<p>{user.profile?.gamesPlayed}</p>
 					</div>
-					<h3>Game History</h3>
+					{showGH === false
+						? <Button className={styles['btn-dark']} onClick={showGameHistory}>Show game history</Button>
+						: <> <h3>Game History</h3>
+							{user.selectedGameHistory && user.selectedGameHistory.length > 0
+								? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
+								: <p>Empty</p>}
+						</>
+					}
+					{/* <h3>Game History</h3>
 					{user.selectedGameHistory && user.selectedGameHistory.length > 0
 						? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
-						: <p>Empty</p>}
+						: <p>Empty</p>} */}
 				</div>
 			</div>
 		</>
