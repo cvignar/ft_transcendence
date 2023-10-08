@@ -6,11 +6,13 @@ import { UpdateUser } from '../../interfaces/user.interface';
 import { GameScheme, Side } from '../../../../pong/static/common';
 import Headling from '../../components/Headling/Headling';
 import { FormEvent, useEffect, useState } from 'react';
-import { getProfile, updateProfile, userActions } from '../../store/user.slice';
+import { disable2fa, enable2fa, getProfile, updateProfile, userActions } from '../../store/user.slice';
 import { socket } from '../Pong/pong';
 import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
 import GameHistoryItem from '../MemberPreview/GameHistoryItem/GameHistoryItem';
+import QRCode from 'qrcode';
+
 
 export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
@@ -21,6 +23,7 @@ export function Settings() {
 		e.preventDefault();
 		console.log(e.currentTarget.side.value);
 		console.log(e.currentTarget.scheme.value);
+		console.log(e.currentTarget.enable.checked);
 		const updateData: UpdateUser = {
 			id: user.profile?.id,
 			username: user.profile?.username, //FIXME!!! username from the form
@@ -28,8 +31,13 @@ export function Settings() {
 			prefferedTableSide: parseInt(e.currentTarget.side.value),
 			pongColorScheme: parseInt(e.currentTarget.scheme.value)
 		};
-		console.log('new player', user.profile);
-		socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
+		if (e.currentTarget.enable.checked === true) {
+			dispatch(enable2fa());
+		} else {
+			dispatch(disable2fa());
+		}
+		// console.log('new player', user.profile);
+		// socket.emit('new player', {name: updateData.username, id: updateData.id, side: updateData.prefferedTableSide, scheme: updateData.pongColorScheme});
 		dispatch(userActions.setProfile(updateData));
 		dispatch(updateProfile(updateData));
 	};
@@ -51,6 +59,14 @@ export function Settings() {
 		}
 	}, [dispatch, user.profile]);
 
+	useEffect(() => {
+		if (user.qrUri) {
+			QRCode.toCanvas(document.getElementById('qrcode'), user.qrUri, function (error) {
+				if (error) console.error(error)
+				console.log('success!');
+			});
+		}
+	}, [user.qrUri]);
 	return (
 		<>
 			<div className={styles['profile-card']}>
@@ -96,6 +112,9 @@ export function Settings() {
 							</div>
 						</div>
 					</fieldset>
+					<label htmlFor='enable' className={styles['label-head']}>enable</label>
+					<input id='enable' type='checkbox' name='enable'/>
+					<canvas id='qrcode'/>
 					<Button className={styles['submit']}>Submit</Button>
 				</form>
 			</div>

@@ -12,7 +12,6 @@ const channelsMiddleware: Middleware = store => {
 	let socket: Socket;
 	return next => (action) => {
 		let isConnectionEstablished = (socket && socket.connected) ? true : false;
-		console.log(isConnectionEstablished);
 		if (channelActions.startConnecting.match(action) && !isConnectionEstablished) {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
 			socket.on('connect', () => {

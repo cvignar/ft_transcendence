@@ -78,11 +78,11 @@ export class AuthController {
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth`);
+		res.redirect(`http://${process.env.PONG_HOST}/Auth`);
 		}
 		else {
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth/2FA`);
+		res.redirect(`http://${process.env.PONG_HOST}/Auth/2FA`);
 		}
 	}
 
