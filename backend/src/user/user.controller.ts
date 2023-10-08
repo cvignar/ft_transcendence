@@ -21,7 +21,7 @@ import { CreateUser } from '../../../contracts/user.schema--';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer'
 import * as fs from 'fs'
@@ -55,60 +55,36 @@ export class UserController {
 		return await this.userService.updateUser(userId, userData);
 	}
 
-	@Post('uploadAvatar/:id')
-	@UseInterceptors(FileInterceptor('avatar', {storage: diskStorage({destination: 'public/uploads', filename: (req, file, cb) => {cb(null, file.originalname);}})}))
+		@Post('uploadAvatar/:id')
+	@UseInterceptors(FileInterceptor('avatar'))
 	async updateAvatar(
 		@Param('id', ParseIntPipe) user_id: number,
-		@Req() req,
-		@Res({passthrough: true}) res,
+		@Req() req: Request,
+		@Res() res: Response,
 		@Body() userdata: any,
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new FileTypeValidator({ fileType: '.(png)'}), //'.(png|jpeg|jpg)' -> when all 3 should be supported
-					// new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4}),	// should be enabled in productive system
+					new FileTypeValidator({ fileType: '.(png|jpeg|jpg)'}), //'.(png|jpeg|jpg)' -> when all 3 should be supported
+					new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4}),	// should be enabled in productive system
 				],
 			})
 		) file: Express.Multer.File,
 	)
 	{
-		// const fs = require('fs');
-		// const path = require('path');
-
-		const file_extension = path.extname(file.originalname);
-		const public_path = '/user/avatars/';
-		const url_path = 'public/uploads/'
-		const old_path:string = url_path + file.originalname;
-		const new_name:string = user_id + file_extension;
-		const new_path:string = url_path + new_name;
-		// console.log(`old_path: ${old_path}`);
-		// console.log(`new_path: ${new_path}`);
-		
-		try {
-			// const jpeg = url_path + user_id + ".jpeg";
-			// const jpg = url_path + user_id + ".jpg";
-			const png = url_path + user_id + ".png";
-			// fs.unlink(jpeg, (err) => {if (err) {/*console.error(err);*/}});
-			// fs.unlink(jpg, (err) => {if (err) {/*console.error(err);*/}});
-			fs.unlink(png, (err) => {if (err) {/*console.error(err);*/}});
-			// 
-		}
-		catch {
-
-		}
-
-		fs.rename(old_path, new_path, (err) => {
-			if (err)
-				console.error(err);
-		});
-		file.filename = new_name;
-		file.path = new_path;
-
-		// console.log(user_id);
 		// console.log(file);
-		return {
-			path: public_path + new_name,
-		}
+
+
+		const extension = path.extname(file.originalname);
+		const new_name = user_id + extension;
+
+		
+		// const file_extension = path.extname(file.originalname);
+		const url_path = '/user/avatars/';
+		const server_path = 'public/uploads/'
+		
+		fs.writeFile(server_path + new_name, file.buffer, err => {if (err) {console.error(err);}});
+		return url_path + new_name;
 	}
 
 	/**

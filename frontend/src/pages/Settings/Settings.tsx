@@ -86,13 +86,15 @@ export function Settings() {
 	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
 		const target = e.target as HTMLInputElement;
 		const user_id = Number(getCookie('userId'))
-		if (user_id && target.files && target.files.length) {
+				if (user_id && target.files && target.files.length) {
 			const avatar = target.files[0];
 
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
 			const file_name = dispatch(uploadAvatar(formData));
-			console.log(`Filename: ${file_name}`);
+						console.log(`Filename: ${file_name}`);
+			const old_filename = target.files[0].name;
+			const extension = old_filename.split('.').pop()
 			let update_user: UpdateUser = {
 				id: user.profile?.id,
 				username: user.profile?.username, //FIXME!!! username from the form
