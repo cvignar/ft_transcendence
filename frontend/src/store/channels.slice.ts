@@ -143,7 +143,7 @@ const channelSlice = createSlice({
 		setError: ((state, action: PayloadAction<string>) => {
 			state.error = action.payload;
 		}),
-		getUpdateSearch: ((state, action: PayloadAction<any>) => {
+		getUpdateSearch: ((state) => {
 			return;
 		}),
 		setSearchUpdate: ((state, action: PayloadAction<any>) => {

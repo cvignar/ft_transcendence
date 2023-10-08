@@ -27,6 +27,7 @@ export enum UserEvents {
 	blockUser = 'block user',
 	unblockUser = 'unblock user',
 	getGameHistory = 'get gameHistory',
+	getFriends = 'get friends',
 }
 export interface UserState {
 	token: string | null;
@@ -41,6 +42,7 @@ export interface UserState {
 	statuses: any;
 	selectedGameHistory: any;
 	qrUri: string | undefined;
+	friends: any[];
 	//registerError?: string;
 }
 
@@ -54,7 +56,7 @@ const initialState: UserState = {
 	statuses: loadState<any>('statuses') ?? null,
 	selectedGameHistory: [],
 	qrUri: '',
-
+	friends: [],
 };
 
 export const auth = createAsyncThunk("auth/login", async () => {
@@ -172,6 +174,8 @@ export const userSlice = createSlice({
 	initialState,
 	reducers: {
 		logout: (state) => {
+			setCookie('accessToken', '');
+			setCookie('userId', '');
 			state.email = "";
 			state.token = null;
 			state.username = "";
@@ -218,6 +222,13 @@ export const userSlice = createSlice({
 		}),
 		setGameHistory: ((state, action: PayloadAction<any>) => {
 			state.selectedGameHistory = action.payload;
+		}),
+		getFriends: ((state, action: PayloadAction<number>) => {
+			return;
+		}),
+		setFriends: ((state, action: PayloadAction<any[]>) => {
+			state.friends = action.payload;
+			console.log(action.payload);
 		})
 	},
 	extraReducers: (builder) => {

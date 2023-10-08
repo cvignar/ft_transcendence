@@ -21,17 +21,18 @@ import MemberPreview from './pages/MemberPreview/MemberPreview';
 import { CreateChannelFrom } from './pages/CreateChannelForm/CreateChannelForm';
 import { SearchPage } from './pages/Search/SearchPage';
 import ChannelSettings from './pages/ChannelSettings/ChannelSettings';
+import { SelfStats } from './pages/Settings/SelfStats/SeldStats';
 
 const router = createBrowserRouter([
 	{
 		path: '/Auth',
-		element: <AuthForm></AuthForm>,
+		element: <AuthForm/>,
 	},
 	{
 		path: '/Auth/2FA',
-		element: <Auth2FaForm></Auth2FaForm>,
+		element: <Auth2FaForm/>,
 	},
-	{ // FIXME!!!! FAKE AUTH
+	{
 		path: '/',
 		element: <RequireAuth><Layout/></RequireAuth>,
 		children: [
@@ -41,35 +42,45 @@ const router = createBrowserRouter([
 				children: [
 					{
 						path: '/Chat/channel/:channelId',
-						element: <ChatWindow/>
+						element: <RequireAuth><ChatWindow/></RequireAuth>
 					},
 					{
 						path: '/Chat/channel/:channelId/member/:memberId',
-						element: <MemberPreview/>
+						element: <RequireAuth><MemberPreview/></RequireAuth>
 					},
 					{
 						path: '/Chat/createChannel',
-						element: <CreateChannelFrom/>
+						element:  <RequireAuth><CreateChannelFrom/></RequireAuth>
 					}
 				]
 			},
 			{
 				path: '/Search',
-				element: <SearchPage/>,
+				element: <RequireAuth><SearchPage/></RequireAuth>,
 				children: [
 					{
 						path: '/Search/user/:userId',
-						element: <MemberPreview/>
+						element: <RequireAuth><MemberPreview/></RequireAuth>
 					},
 					{
 						path: '/Search/channel/:channelId',
-						element: <ChannelSettings/>
+						element: <RequireAuth><ChannelSettings/></RequireAuth>
 					}
 				]
 			},
 			{
 				path: '/Settings',
-				element: <RequireAuth><Settings/></RequireAuth>
+				element: <RequireAuth><Settings/></RequireAuth>,
+				children: [
+					{
+						path: '/Settings/Stats',
+						element: <RequireAuth><SelfStats/></RequireAuth>
+					},
+					{
+						path: '/Settings/friend/:userId',
+						element: <RequireAuth><MemberPreview/></RequireAuth>
+					}
+				]
 			},
 			{
 				path: '/InvitePartner',

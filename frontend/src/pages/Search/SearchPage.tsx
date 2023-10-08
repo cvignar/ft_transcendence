@@ -25,46 +25,6 @@ export function SearchPage() {
 
 	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 	
-	// const [isProtected, setIsProtected] = useState<boolean>(false);
-
-	// let subtitle;
-	// const [modalIsOpen, setIsOpen] = useState(false);
-
-	// const openModal = () => {
-	// 	setIsOpen(true);
-	// };
-
-	// const afterOpenModal = () => {
-	// 	// references are now sync'd and can be accessed.
-	// 	subtitle.style.color = '#f00';
-	// };
-
-	// const closeModal = () => {
-	// 	setIsOpen(false);
-	// };
-
-	// const onSubmit = (event: FormEvent) => {};
-
-	// useEffect(() => {
-	// 	const timerId = setTimeout(() => {
-	// 		const token = getCookie('accessToken');
-	// 		if (token) {
-				// dispatch(channelActions.startConnecting());
-				//console.log('dispatch');
-				//dispatch(channelActions.getChannels(email));
-	// 		}
-	// 	}, 10);
-	// 	return () => clearTimeout(timerId);
-	// }, [dispatch]);
-
-	// useEffect(() => {
-	// 	const timerId = setTimeout(() => {
-	// 		// if (channelState.isEstablishingConnection) {
-	// 			// dispatch(channelActions.getChannels());
-	// 		// }
-	// 	}, 10);
-	// 	return () => clearTimeout(timerId);
-	// }, [channelState.isConnected, channelState.state, dispatch]);
 
 	return (
 		<>

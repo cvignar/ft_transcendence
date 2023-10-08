@@ -16,6 +16,9 @@ import { getUserProfile } from '../../../store/user.slice';
 
 export function SearchList({ setChannel, isActive, setActive }: SearchListProps) {
 	const dispatch = useDispatch<AppDispatch>();
+	const search = useSelector((s: RootState) => s.channel.search);
+	const [filteredSearch, setFilteredSearch] = useState<any[]>([]);
+	let sortedSearch;
 	const navigate = useNavigate();
 	const compareNames = (a: any, b: any) => {
 		if ( a.name.toLowerCase() < b.name.toLowerCase() ){
@@ -26,14 +29,18 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 		}
 		return 0;
 	};
-	let search = Array.from(useSelector((s: RootState) => s.channel.search), x => x).sort(compareNames);
-	const [filteredSearch, setFilteredSearch] = useState<any[]>([...search]);
+
 	useEffect(() => {
-		const timerId = setTimeout(() => {
-			dispatch(channelActions.getUpdateSearch());
-		}, 0);
-		return () => clearTimeout(timerId);
+		console.log('get search');
+		dispatch(channelActions.getUpdateSearch());
 	}, []);
+
+	useEffect(() => {
+		sortedSearch = Array.from(search, x => x).sort(compareNames);
+		setFilteredSearch([...sortedSearch]);
+		console.log('sort search', search);
+	}, [search]);
+	
 
 	useEffect(() => {
 		if (search?.length > 0) {
@@ -55,7 +62,7 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 		<div className={styles['list']} >
 			<div className={styles['control-row']}>
 				<div className={styles['search']}>
-					<Search className={styles['search']} placeholder='Search' onChange={onChange}/>
+					<Search className={styles['search']} placeholder='Search' onChange={onChange} onFocus={() => (dispatch(channelActions.getUpdateSearch()))}/>
 				</div>
 			</div>
 			{filteredSearch?.map((c: any) => (

@@ -226,4 +226,13 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const gameHistory = await this.gameService.getGameHistory(userId);
 		client.emit('get gameHistory', gameHistory);
 	}
+
+	@SubscribeMessage('get friends')
+	async	getFriends(
+		@MessageBody() userId: number,
+		@ConnectedSocket() client: Socket
+	) {
+		const friends = await this.userService.getFriends(userId);
+		client.emit('get friends', friends);
+	}
 }
