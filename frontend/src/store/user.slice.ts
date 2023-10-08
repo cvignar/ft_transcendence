@@ -17,6 +17,8 @@ export const USERID_PERSISTENT_STATE = "userId";
 export const PROFILE_PERSISTENT_STATE = "userProfile";
 const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
 const uri2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/2fa`;
+const uriEnable2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/enable2fa`;
+const uriDisable2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/disable2fa`;
 
 export enum UserEvents {
 	updateProfile = 'update profile',
@@ -38,6 +40,7 @@ export interface UserState {
 	selectedUser: Profile | null;
 	statuses: any;
 	selectedGameHistory: any;
+	qrUri: string | undefined;
 	//registerError?: string;
 }
 
@@ -50,6 +53,8 @@ const initialState: UserState = {
 	selectedUser: loadState<Profile>('selectedUser') ?? null,
 	statuses: loadState<any>('statuses') ?? null,
 	selectedGameHistory: [],
+	qrUri: '',
+
 };
 
 export const auth = createAsyncThunk("auth/login", async () => {
@@ -73,6 +78,32 @@ export const auth2fa = createAsyncThunk("auth/2fa", async (params: {code: string
 		console.log(e);
 		if (e instanceof AxiosError) {
 			
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const enable2fa = createAsyncThunk("user/enable2fa", async () => {
+	try {
+		const { data } = await axios.get<any>(`${uriEnable2fa}`);
+		console.log(data);
+		return { data: data };
+	} catch (e) {
+		console.log(e);
+		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const disable2fa = createAsyncThunk("user/disable2fa", async () => {
+	try {
+		const { data } = await axios.get<any>(`${uriDisable2fa}`);
+		console.log(data);
+		return { data: data };
+	} catch (e) {
+		console.log(e);
+		if (e instanceof AxiosError) {
 			throw new Error(e.response?.data.message);
 		}
 	}
@@ -223,6 +254,22 @@ export const userSlice = createSlice({
 		builder.addCase(getUserProfile.rejected, (state, action) => {
 			state.profileError = action.error.message;
 			console.log(action.error);
+		});
+		builder.addCase(enable2fa.rejected, (state, action) => {
+			state.profileError = action.error.message;
+			console.log(action.error);
+		});
+		builder.addCase(enable2fa.fulfilled, (state, action) => {
+			state.qrUri = action.payload?.data;
+			console.log(action.payload);
+		});
+		builder.addCase(disable2fa.rejected, (state, action) => {
+			state.profileError = action.error.message;
+			console.log(action.error);
+		});
+		builder.addCase(disable2fa.fulfilled, (state, action) => {
+			state.qrUri = '';
+			console.log(action.payload);
 		});
 		
 	},
