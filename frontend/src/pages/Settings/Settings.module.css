@@ -64,6 +64,7 @@
 
 .submit {
 	background: var(--white-hover-color);
+	width: 50%;
 }
 
 .submit:hover {
@@ -157,6 +158,14 @@ legend {
 	align-items: center;
 	height: 30px;
 	border-bottom: 1px solid var(--white-color);
+}
+
+.auth-row {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	/* justify-content: space-between; */
+
 }
 
 p {
