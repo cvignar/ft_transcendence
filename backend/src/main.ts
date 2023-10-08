@@ -1,6 +1,8 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
+//import {Z} from 'nestjs-zod';
 import {
 	SwaggerModule,
 	DocumentBuilder,
@@ -60,7 +62,12 @@ async function bootstrap() {
 			'Origin, X-Requested-With, Content-Type, Accept',
 		);
 		next();
-	});
+	},
+	cookieParser());
+
+	//const { httpAdapter } = app.get(HttpAdapterHost);
+	//app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
+	//app.get(PrismaService);
 	await app.listen(3000);
 }
 bootstrap();

@@ -13,10 +13,6 @@ export class Oauth42Guard extends AuthGuard('intra42') {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const req = context.switchToHttp().getRequest();
-    const code: string | null = req.query['code'];
-    const id: string | null = req.query['id'];
-    // super.logIn(req);
     return super.canActivate(context);
   }
 }

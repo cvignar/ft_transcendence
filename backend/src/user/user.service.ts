@@ -3,6 +3,8 @@ import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUser } from '../../../contracts/user.schema--';
 import { Profile } from 'contracts/user.schema';
+import * as OTPAuth from 'otpauth';
+import { cryptoRandomStringAsync } from 'crypto-random-string';
 
 @Injectable()
 export class UserService {
@@ -422,5 +424,52 @@ export class UserService {
 			data: { added: { push: userId } }
 		});
 		return [user, friend];
+	}
+
+	async enable2fa (user_id: string): Promise<string | null> {
+		console.log(`start enable 2fa for user_id: ${user_id}`);
+		var randomstring = require('randomstring');
+		const tmp = randomstring.generate({
+			lenght: 32,
+			charset:['alphabetic'],
+			capitalization: 'uppercase',
+		});
+		console.log(`new secret is: ${tmp}`)
+		try {
+			const user = await this.prismaService.user.update({
+				where: { id: Number(user_id)},
+				data: {
+					twoFAsecret: tmp,
+					twoFA: true,
+				},
+			});
+			let totp = new OTPAuth.TOTP({
+				issuer: user.username,
+				label: "PingPong72",
+				algorithm: "SHA512",
+				digits: 6,
+				period: 30,
+				secret: user.twoFAsecret,
+			});
+			const uri: string = totp.toString();
+			return uri;
+		} catch (error) {
+			console.log(`create 2fa error: ${error}`);
+		}
+		return null;
+	}
+
+	async disable2fa (user_id: string): Promise<any> {
+		try {
+			const user = await this.prismaService.user.update({
+				where: { id: Number(user_id)},
+				data: {
+					twoFAsecret: null,
+					twoFA: false,
+				},
+			});
+		} catch (error) {
+			console.log(`create 2fa error: ${error}`);
+		}
 	}
 }
