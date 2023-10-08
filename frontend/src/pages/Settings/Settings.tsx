@@ -6,25 +6,29 @@ import { Profile, UpdateUser } from '../../interfaces/user.interface';
 import { GameScheme, Side } from '../../../../pong/static/common';
 import Headling from '../../components/Headling/Headling';
 import { FormEvent, useEffect, useState } from 'react';
-import { disable2fa, enable2fa, getProfile, updateProfile, uploadAvatar, userActions } from '../../store/user.slice';
+import { disable2fa, enable2fa, getProfile, getUserProfile, updateProfile, uploadAvatar, userActions } from '../../store/user.slice';
 import { socket } from '../Pong/pong';
 import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
 import GameHistoryItem from '../MemberPreview/GameHistoryItem/GameHistoryItem';
 import QRCode from 'qrcode';
 import { getCookie } from 'typescript-cookie';
+import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
+import CardNavLink from '../../components/CardNavLink/CardNavLink';
+import classNames from 'classnames';
+import { Outlet } from 'react-router';
 
 interface PreviousUserData {
 	username: string | undefined,
 	prefferedTableSide: Side | undefined,
-	pongColorScheme: GameScheme | undefined
+	pongColorScheme: GameScheme | undefined,
+	twoFA: boolean | undefined,
 }
 
 export function Settings() {
 
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
-	const [showGH, setShowGH] = useState<boolean>(false);
 	const [twoFA, setTwoFA] = useState<boolean>(user.profile ? user.profile.twoFA : false);
 	const [changeUsername, setChangeUsername] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
@@ -32,6 +36,7 @@ export function Settings() {
 		username: undefined,
 		prefferedTableSide: undefined,
 		pongColorScheme: undefined,
+		twoFA: undefined,
 	});
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -41,6 +46,7 @@ export function Settings() {
 			username: user.profile?.username,
 			prefferedTableSide: user.profile?.prefferedTableSide,
 			pongColorScheme: user.profile?.pongColorScheme,
+			twoFA: user.profile?.twoFA,
 		});
 		console.log(previousUserData);
 
@@ -103,7 +109,7 @@ export function Settings() {
 				pongColorScheme: user.profile?.pongColorScheme,
 			};
 			
-			dispatch(userActions.setProfile(update_user));
+			// dispatch(userActions.setProfile(update_user));
 			dispatch(updateProfile(update_user));
 			window.location.reload(false);
 		}
@@ -119,7 +125,8 @@ export function Settings() {
 			previousUserData.prefferedTableSide != user.profile.prefferedTableSide ||
 			previousUserData.pongColorScheme != user.profile.pongColorScheme)) {
 				socket.emit('new player', {name: user.profile?.username, id: user.profile?.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme});
-		} else if (previousUserData && previousUserData.username === user.profile?.username) {
+		} else if (previousUserData && previousUserData.username === user.profile?.username &&
+					previousUserData.twoFA === user.profile?.twoFA) {
 				setError('name exists');
 		}
 		console.log(previousUserData.username, user.profile?.username);
@@ -141,29 +148,18 @@ export function Settings() {
 	}, [user.qrUri, user.statuses]);
 
 	useEffect(() => {
-		// if (twoFA === true) {
-		// 	dispatch(enable2fa());
-		// } else {
-		// 	dispatch(disable2fa());
-		// }
-	}, user.statuses);
-
-	const showGameHistory = () => {
-		if (user.profile && user.profile.id) {
-			dispatch(userActions.getGameHistory(user.profile.id));
-			setShowGH(true);
-		}
-	};
-
-	useEffect(() => {
 		if (error !== '') {
 			setTimeout(() => (setError('')), 2000);
+		}
+		if (user.profile) {
+			dispatch(userActions.getFriends(user.profile.id));
 		}
 	}, [user.profile, error]);
 
 	return (
 		<>
 			<div className={styles['profile-card']}>
+				<div className={styles['empty']}></div>
 				<div className={styles['avatar_setting']}>
 					<img className={styles['avatar']} src={user.profile?.avatar ? user.profile.avatar : '/default_avatar.png'}/>
 					<div className={styles['middle_settings']}>
@@ -223,51 +219,30 @@ export function Settings() {
 					<div className={styles['row']}>
 						<Button className={styles['submit']}>Submit</Button><div className={styles['error']}>{error}</div>
 					</div>
-
 				</form>
 				{twoFA === true
 				? <canvas id='qrcode'/>
 				: <></>}
+
+				<> <h3>Friends</h3>
+					{user.friends && user.friends.length > 0
+						? user.friends.map((friend: any) => (
+							<CardNavLink
+								to={`/Settings/friend/${friend.id}`}
+								className={classNames(styles['preview-button'])}
+								key={friend.id}
+								onClick={() => {
+									// setActive(friend.id);
+									dispatch(getUserProfile(friend.id));
+								}}>
+								<ChannelShortInfo appearence='list' props={friend}/>
+							</CardNavLink>
+						))
+						: <></>}
+				</>
 			</div>
 			<div className={styles['other']}>
-				<div className={styles['stats']}>
-					<div className={styles['row']}>
-						<h4>Rank:</h4>
-						<p>{user.profile?.rank}</p>
-					</div>
-					<div className={styles['row']}>
-						<h4>Score:</h4>
-						<p>{user.profile?.score}</p>
-					</div>
-					<div className={styles['row']}>
-						<h4>Play time:</h4>
-						<p>{msToTime(user.profile?.playTime)}</p>
-					</div>
-					<div className={styles['row']}>
-						<h4>Wins:</h4>
-						<p>{user.profile?.gamesWon}</p>
-					</div>
-					<div className={styles['row']}>
-						<h4>Defeats:</h4>
-						<p>{user.profile?.gamesLost}</p>
-					</div>
-					<div className={styles['row']}>
-						<h4>Played total:</h4>
-						<p>{user.profile?.gamesPlayed}</p>
-					</div>
-					{showGH === false
-						? <Button className={styles['btn-dark']} onClick={showGameHistory}>Show game history</Button>
-						: <> <h3>Game History</h3>
-							{user.selectedGameHistory && user.selectedGameHistory.length > 0
-								? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
-								: <p>Empty</p>}
-						</>
-					}
-					{/* <h3>Game History</h3>
-					{user.selectedGameHistory && user.selectedGameHistory.length > 0
-						? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
-						: <p>Empty</p>} */}
-				</div>
+				<Outlet/>
 			</div>
 		</>
 	);

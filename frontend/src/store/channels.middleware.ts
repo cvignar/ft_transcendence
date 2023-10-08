@@ -67,6 +67,9 @@ const channelsMiddleware: Middleware = store => {
 			socket.on(UserEvents.getGameHistory, (gameHistory: any) => {
 				store.dispatch(userActions.setGameHistory(gameHistory));
 			});
+			socket.on(UserEvents.getFriends, (friends: any[]) => {
+				store.dispatch(userActions.setFriends(friends));
+			})
 		}
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
 			console.log(action.payload);
@@ -128,6 +131,9 @@ const channelsMiddleware: Middleware = store => {
 		}
 		if (userActions.getGameHistory.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.getGameHistory, action.payload);
+		}
+		if (userActions.getFriends.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.getFriends, action.payload);
 		}
 		next(action);
 	};

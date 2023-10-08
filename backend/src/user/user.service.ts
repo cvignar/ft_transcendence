@@ -482,4 +482,16 @@ export class UserService {
 			console.log(`create 2fa error: ${error}`);
 		}
 	}
+
+	async getFriends(userId: number) {
+		const friends = this.prismaService.user.findMany({
+			where: { added: { has: userId } },
+			select: {
+				id: true,
+				username: true,
+				avatar: true,
+			}
+		});
+		return friends;
+	}
 }

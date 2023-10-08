@@ -85,7 +85,7 @@ export function Layout() {
 			</NavLink>
 
 
-			<NavLink to='/Settings' className={({isActive}) => classNames(styles['link'], {
+			<NavLink to='/Settings/Stats' className={({isActive}) => classNames(styles['link'], {
 				[styles['active']]: isActive
 			})}>
 				<img src='/settings-fill.svg' alt='settings' className={styles['svg']}/>

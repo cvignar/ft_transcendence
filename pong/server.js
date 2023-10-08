@@ -31,17 +31,15 @@ export function gebugPprinting(param1, param2) {
     }
 }
 export function deletePongAndNotifyPlayers(socketId) {
-    var _a, _b, _c, _d;
+    var _a, _b;
     const playersDeletedPong = games.deletePong(socketId);
     if (playersDeletedPong) {
         if (playersDeletedPong.owner) {
             (_a = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("pong deleted");
-            (_b = io.sockets.sockets.get(playersDeletedPong.owner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("partner game off");
             gebugPprinting(playersDeletedPong.owner.name, "pong deleted");
         }
         if (playersDeletedPong.partner) {
-            (_c = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _c === void 0 ? void 0 : _c.emit("pong deleted");
-            (_d = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _d === void 0 ? void 0 : _d.emit("partner game off");
+            (_b = io.sockets.sockets.get(playersDeletedPong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("pong deleted");
         }
     }
 }

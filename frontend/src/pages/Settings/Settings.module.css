@@ -17,6 +17,9 @@
 	height: 70px;
 }
 
+.empty {
+	margin-top: 30px;
+}
 
 .avatar {
 	object-position: top center;
@@ -54,12 +57,12 @@
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	margin-top: 30px;
 	gap: 10px;
 	width: 50%;
 	/*border: 1px solid red;*/
 	height: 100%;
 	font-size: 14px;
+	overflow: scroll;
 }
 
 .submit {
@@ -182,6 +185,12 @@ p {
 	border: none;
 	background: var(--white-hover-color);
 }
+
+.preview-button {
+	height: 55px;
+	width: 100%;
+}
+
 /*input[type="radio"] {
 	-webkit-appearance: none;
 	appearance: none;
