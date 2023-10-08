@@ -4,7 +4,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUser } from '../../../contracts/user.schema--';
 import { Profile } from 'contracts/user.schema';
 import * as OTPAuth from 'otpauth';
-import { cryptoRandomStringAsync } from 'crypto-random-string';
 
 @Injectable()
 export class UserService {
