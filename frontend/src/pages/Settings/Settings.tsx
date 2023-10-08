@@ -2,19 +2,21 @@ import styles from './Settings.module.css';
 import layoutStyles from '../Layout/Layout.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { UpdateUser } from '../../interfaces/user.interface';
+import { Profile, UpdateUser } from '../../interfaces/user.interface';
 import { GameScheme, Side } from '../../../../pong/static/common';
 import Headling from '../../components/Headling/Headling';
 import { FormEvent, useEffect, useState } from 'react';
-import { disable2fa, enable2fa, getProfile, updateProfile, userActions } from '../../store/user.slice';
+import { disable2fa, enable2fa, getProfile, updateProfile, uploadAvatar, userActions } from '../../store/user.slice';
 import { socket } from '../Pong/pong';
 import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
 import GameHistoryItem from '../MemberPreview/GameHistoryItem/GameHistoryItem';
 import QRCode from 'qrcode';
+import { getCookie } from 'typescript-cookie';
 
 
 export function Settings() {
+
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
 	const [showGH, setShowGH] = useState<boolean>(false);
@@ -48,6 +50,30 @@ export function Settings() {
 			setShowGH(true);
 		}
 	};
+	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		const user_id = Number(getCookie('userId'))
+		if (user_id && target.files && target.files.length) {
+			const avatar = target.files[0];
+
+			const formData = new FormData();
+			formData.append('avatar', avatar, );
+			const file_name = dispatch(uploadAvatar(formData));
+			console.log(`Filename: ${file_name}`);
+			let update_user: UpdateUser = {
+				id: user.profile?.id,
+				username: user.profile?.username, //FIXME!!! username from the form
+				avatar: `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + '.png', //FIXME!!! avatar from the form
+				prefferedTableSide: user.profile?.prefferedTableSide,
+				pongColorScheme: user.profile?.pongColorScheme,
+			};
+			
+			dispatch(userActions.setProfile(update_user));
+			dispatch(updateProfile(update_user));
+			window.location.reload(false);
+		}
+		
+	}
 
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
@@ -70,8 +96,14 @@ export function Settings() {
 	return (
 		<>
 			<div className={styles['profile-card']}>
-				<form className={styles['profile-form']} onSubmit={onSubmit}>
+				<div className={styles['avatar_setting']}>
 					<img className={styles['avatar']} src={user.profile?.avatar ? user.profile.avatar : '/default_avatar.png'}/>
+					<div className={styles['middle_settings']}>
+						<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
+						<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={styles['svg']}/></label>
+					</div>
+				</div>
+				<form className={styles['profile-form']} onSubmit={onSubmit}>
 					<Headling>{user.profile?.username}</Headling>
 					<div>{user.profile?.email}</div>
 					<fieldset>

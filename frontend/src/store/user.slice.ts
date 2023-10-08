@@ -111,7 +111,7 @@ export const disable2fa = createAsyncThunk("user/disable2fa", async () => {
 
 export const getProfile = createAsyncThunk("/getProfile", async (id: number | null) => {
 	try {
-		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`, {
+		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${getCookie('userId')}`, {
 			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
 		});
 		console.log(data);
@@ -141,6 +141,24 @@ export const updateProfile = createAsyncThunk("/updateProfile", async (params: U
 	try {
 		console.log("id:", params.id);
 		const { data } = await axios.post<UpdateUser>(`${BACK_PREFIX}/user/updateProfile/${params.id}`, params);
+		return data;
+	} catch (e) {
+		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const uploadAvatar = createAsyncThunk("/uploadAvatar", async (img_data: FormData) => {
+	try {
+		// console.log("id:", getCookie('userId'));
+		const { data } = await axios.post<any>(`${BACK_PREFIX}/user/uploadAvatar/${getCookie('userId')}`, img_data, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		});
+
+		// console.log(`DATA: ${data.path}`)
 		return data;
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -270,6 +288,16 @@ export const userSlice = createSlice({
 		builder.addCase(disable2fa.fulfilled, (state, action) => {
 			state.qrUri = '';
 			console.log(action.payload);
+		});
+		builder.addCase(uploadAvatar.fulfilled, (state, action) => {
+			console.log(`RETURN DATA: ${action.payload}`);
+			if (!action.payload) {
+				return;
+			}
+		});
+		builder.addCase(uploadAvatar.rejected, (state, action) => {
+			state.profileError = action.error.message;
+			console.log(action.error);
 		});
 		
 	},
