@@ -22,6 +22,8 @@ import { Oauth42Guard } from './oauth42.guard';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { JwtAuthGuard } from './jwt.guard';
+import * as OTPAuth from "otpauth";
 
 @WebSocketGateway()
 export class AuthGateway {
@@ -67,27 +69,80 @@ export class AuthController {
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect(`http://${process.env.DOMAIN}/Auth`);
+			res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONT_PORT}/Auth`);
 			throw new UnauthorizedException();
 		}
+		if (!user.twoFA) {
 		const payload = { sub: user.id, username: user.username };
 		const token = await this.jwtService.signAsync(payload);
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.DOMAIN}/Auth`);
+		res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth`);
+		}
+		else {
+		res.cookie('userId', user.id);
+		res.redirect(`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}/Auth/2FA`);
+		}
 	}
+
+  @Post('2fa')
+  async login2fa (@Req() req:any, @Res({passthrough: true}) res: Response, @Body() body: any)
+  {
+	// console.log('user_id: ', req.cookies.userId)
+	const code2fa = body.code;
+	// console.log('2fa incoming: ', code2fa);
+	let user_id: number | null = null;
+	if (req.cookies && req.cookies.userId) {
+		// if (Number.isNaN(req.cookies.userId))
+		// 	return ;
+		user_id = Number(req.cookies.userId);
+	}
+	else {
+		console.log('somethings went wrong with 2fa')
+		return ;
+	}
+	const user: User = await this.userService.getUserById(user_id);
+	let access_token: string | null = null;
+	if (user && user.username && user.twoFAsecret) {
+		let totp = new OTPAuth.TOTP({
+			issuer: user.username,
+			label: "PingPong72",
+			algorithm: "SHA512",
+			digits: 6,
+			period: 30,
+			secret: user.twoFAsecret,
+		});
+		let valid_token = totp.generate();
+		console.log(totp.toString())
+		console.log('test_token totp: ', valid_token);
+		if (valid_token === code2fa) {
+			const payload = { sub: user.id, username: user.username };
+			access_token = await this.jwtService.signAsync(payload);
+			await this.userService.updateJWTAccess(user.id, access_token);
+
+			res.cookie('accessToken', access_token);
+			console.log('return access_token: ', access_token);
+			return {
+				access_token: access_token,
+			};
+		}
+		else {
+			console.log('2fa is wrong')
+		}
+	}
+	
+  }
 
 	@Get('intra42/return')
 	@UseGuards(Oauth42Guard)
 	@Redirect('/')
 	oauth42Callback(@Req() req: any) {
 		console.log('RETURN VALUE: ', req.cookie);
-		// req.cookieParser()
 		return; // await this.authService.validateIntraUser();
 	}
 
-	@UseGuards(AuthGuard)
+	@UseGuards(JwtAuthGuard)
 	@Get('profile')
 	getProfile(@Request() req) {
 		return req.user;

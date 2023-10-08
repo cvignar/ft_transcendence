@@ -10,10 +10,12 @@ import { getProfile, updateProfile, userActions } from '../../store/user.slice';
 import { socket } from '../Pong/pong';
 import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
+import GameHistoryItem from '../MemberPreview/GameHistoryItem/GameHistoryItem';
 
 export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
+	const [showGH, setShowGH] = useState<boolean>(false);
 
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -32,9 +34,22 @@ export function Settings() {
 		dispatch(updateProfile(updateData));
 	};
 
+	const showGameHistory = () => {
+		if (user.profile && user.profile.id) {
+			dispatch(userActions.getGameHistory(user.profile.id));
+			setShowGH(true);
+		}
+	};
+
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
 	}, [dispatch, user.userId]);
+
+	useEffect(() => {
+		if (user.profile) {
+			dispatch(userActions.getGameHistory(user.profile.id));
+		}
+	}, [dispatch, user.profile]);
 
 	return (
 		<>
@@ -83,6 +98,8 @@ export function Settings() {
 					</fieldset>
 					<Button className={styles['submit']}>Submit</Button>
 				</form>
+			</div>
+			<div className={styles['other']}>
 				<div className={styles['stats']}>
 					<div className={styles['row']}>
 						<h4>Rank:</h4>
@@ -108,12 +125,12 @@ export function Settings() {
 						<h4>Played total:</h4>
 						<p>{user.profile?.gamesPlayed}</p>
 					</div>
+					<h3>Game History</h3>
+					{user.selectedGameHistory && user.selectedGameHistory.length > 0
+						? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
+						: <p>Empty</p>}
 				</div>
-				{/*<div>{user.profile?.}</div>
-				<div>{user.profile?.}</div>
-				<div>{user.profile?.}</div>*/}
 			</div>
-			<div className={styles['other']}></div>
 		</>
 	);
 }

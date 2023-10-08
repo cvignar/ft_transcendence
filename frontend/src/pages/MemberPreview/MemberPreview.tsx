@@ -84,9 +84,6 @@ function MemberPreview() {
 			dispatch(channelActions.setSelectedChannel(null));
 			dispatch(channelActions.getDirectChannel({targetId: selectedUser.id, selfEmail: profile?.email}));
 			setGoToDM(true);
-			// const timerId = setTimeout(() => {
-			// }, 500);
-			// return () => clearTimeout(timerId);
 		}
 	};
 

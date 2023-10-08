@@ -15,10 +15,10 @@ import { JwtStrategy } from './jwt.strategy';
 			secret: process.env.JWT_SECRET,
 			signOptions: { expiresIn: '1d' },
 		}),
-		PassportModule,
+		// PassportModule,
 	],
 	controllers: [AuthController],
-	providers: [AuthService, AuthGateway, Oauth42Strategy, JwtStrategy],
+	providers: [AuthService, AuthGateway, Oauth42Strategy, JwtStrategy, JwtStrategy],
 	exports: [AuthService],
 })
 export class AuthModule {}

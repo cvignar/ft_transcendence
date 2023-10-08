@@ -74,8 +74,11 @@ legend {
 .other {
 	background: var(--white-hover-color);
 	display: flex;
+	flex-direction: column;
 	width: 50%;
 	height: 100%;
+	font-size: 14px;
+	overflow: scroll;
 	/*border: 1px solid red;*/
 }
 
@@ -85,6 +88,11 @@ legend {
 
 .label-head {
 	font-weight: bold;
+}
+
+.btn-dark:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
 }
 
 .done-button {
@@ -106,6 +114,7 @@ legend {
 	display: flex;
 	flex-direction: column;
 	width: 80%;
+	margin-left: 10px;
 	/*gap: 10px;*/
 }
 
@@ -115,7 +124,7 @@ legend {
 	justify-content: space-between;
 	align-items: center;
 	height: 30px;
-	border-bottom: 1px solid var(--white-hover-color);
+	border-bottom: 1px solid var(--white-color);
 }
 
 p {
