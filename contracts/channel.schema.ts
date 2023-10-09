@@ -35,8 +35,11 @@ export const ChannelSchema = zod.object({
 	messages: zod.array(MessageSchema),
 });
 
+export const whiteSpaceResExp = new RegExp('^[a-zA-Z0-9-_]{1,50}$');
+
 const CreateChannelSchema = zod.object({
 	name: zod.string(),
+		.regex(whiteSpaceResExp, { message: 'Channel name must be not empty' }),
 	type: zod.nativeEnum(typeEnum),
 	password: zod.password().optional(),
 	email: zod.string().email(),
@@ -107,6 +110,7 @@ const SearchPreviewSchema = zod.object({
 	name: zod.string(),
 	picture: zod.string(),
 	tag: zod.string(),
+	type: zod.nativeEnum(typeEnum),
 });
 
 export namespace SearchPreview {

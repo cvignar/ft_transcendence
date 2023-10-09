@@ -31,7 +31,7 @@ import * as path from 'path'
 // @UseGuards(JwtAuthGuard)
 export class UserController {
 	constructor(private readonly userService: UserService) {}
-	@UsePipes(ZodValidationPipe)
+	// @UsePipes(ZodValidationPipe)
 	//@ApiTags('user')
 	@Post('create')
 	//@ApiOperation({ summary: 'Create user' })

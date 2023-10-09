@@ -44,7 +44,7 @@ export interface ChannelsState {
 	isEstablishingConnection: boolean;
 	isConnected: boolean;
 	state: number;
-	error?: string;
+	error?: any;
 }
  
 const initialState: ChannelsState = {
@@ -59,7 +59,8 @@ const initialState: ChannelsState = {
 		lastMessage: '',
 		unreadCount: 0,
 		ownerEmail: '',
-		ownerId: -1
+		ownerId: -1,
+		tag: ''
 	},
 	search: [],
 	isEstablishingConnection: false,
@@ -85,7 +86,8 @@ const channelSlice = createSlice({
 				lastMessage: '',
 				unreadCount: 0,
 				ownerEmail: '',
-				ownerId: -1
+				ownerId: -1,
+				tag: ''
 			};
 		},
 		startConnecting: (state => {

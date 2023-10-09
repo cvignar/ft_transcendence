@@ -9,5 +9,6 @@ export interface ChannelPreview {
 	lastMessage: string,
 	unreadCount: number,
 	ownerEmail: string,
-	ownerId: number
+	ownerId: number,
+	tag: string,
 }

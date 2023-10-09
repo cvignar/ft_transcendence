@@ -888,6 +888,7 @@ export class ChannelService {
 						name: channel.name,
 						picture: channel.picture,
 						tag: 'channel',
+						type: channel.type,
 					};
 					searchPreviews.push(preview);
 				}
@@ -930,6 +931,7 @@ export class ChannelService {
 						name: channel.name,
 						picture: channel.picture,
 						tag: 'public channel',
+						type: typeEnum.PUBLIC,
 					};
 					searchPreviews.push(one);
 				}

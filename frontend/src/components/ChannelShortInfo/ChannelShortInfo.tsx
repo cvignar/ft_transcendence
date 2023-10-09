@@ -5,12 +5,26 @@ import styles from './ChannelShortInfo.module.css';
 import { ChannelShortInfoProps } from './ChannelShortInfoProps';
 export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortInfoProps) {
 	const [modlaIsOpen, setIsOpen] = useState<boolean>(false);
-
+	const chooseDefaultPicture = () => {
+		if (props && props.type) {
+			if (props.type === 'public') {
+				return '/default_channel_public.png';
+			} else if (props.type === 'private') {
+				return '/default_channel_private.png';
+			} else if (props.type === 'protected') {
+				return '/default_channel_protected.png';
+			} else {
+				return '/default_avatar.png';
+			}
+		} else if (props) {
+			return '/default_avatar.png';
+		}
+	}
 	return (
 		<div className={styles['info']}>
 			<img
 				className={styles['avatar']}
-				src={props?.picture ? props.picture : (props.avatar ? props.avatar : '/default_channel.png')}
+				src={props?.picture ? props.picture : (props.avatar ? props.avatar : chooseDefaultPicture())}
 				onClick={appearence !== 'list'
 					? () => setIsOpen(true)
 					: () => {}}/>

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
@@ -11,6 +11,7 @@ import { userActions } from '../../store/user.slice';
 import { Pong } from '../Pong/pong';
 import styles from './CreateChannelForm.module.css';
 import { CreateChannel } from '../../interfaces/createChannel.interface';
+import { getCookie } from 'typescript-cookie';
 
 export function CreateChannelFrom() {
 	const dispatch = useDispatch<AppDispatch>();
@@ -36,11 +37,11 @@ export function CreateChannelFrom() {
 		const newChannel: CreateChannel = {
 			name: e.currentTarget.name.value,
 			type: e.currentTarget.type.value,
-			password: e.currentTarget.password,
-			email: user.email,
+			password: e.currentTarget.password ? e.currentTarget.password : '',
+			email: user.profile?.email,
 			members: [{
-				id: user.userId,
-				name: user.username
+				id: user.profile?.id,
+				name: user.profile?.username
 			}]
 		};
 		dispatch(channelActions.createChannel(newChannel));
@@ -72,6 +73,11 @@ export function CreateChannelFrom() {
 		}
 	}
 
+	useEffect(() => {
+		if (channelState.error) {
+			console.log(channelState.error);
+		}
+	}, [channelState.error])
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
@@ -83,7 +89,7 @@ export function CreateChannelFrom() {
 				</div>
 			</div>
 			<Headling>Create a new channel</Headling>
-			{channelState.error ? <div>Error!</div> : <></>}
+			{channelState.error ? <div>{channelState.error[0]}</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>
 				<label htmlFor='type-radio' className={styles['radio-set']}>
