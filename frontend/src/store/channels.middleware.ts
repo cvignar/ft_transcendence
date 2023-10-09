@@ -11,6 +11,8 @@ import { Profile } from '../interfaces/user.interface';
 const channelsMiddleware: Middleware = store => {
 	let socket: Socket;
 	return next => (action) => {
+		console.log(action);
+
 		let isConnectionEstablished = (socket && socket.connected) ? true : false;
 		if (channelActions.startConnecting.match(action) && !isConnectionEstablished) {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
@@ -51,8 +53,16 @@ const channelsMiddleware: Middleware = store => {
 				//	store.dispatch(channelActions.getChannels({ channels }));
 				//});
 			// });
-			socket.on(ChannelsEvent.getError, (error: string) => {
-				store.dispatch(channelActions.setError(error));
+			socket.on(ChannelsEvent.getError, (error: any) => {
+				const err: any[] = [];
+				if (error.errors) {
+					for (const e of error.errors) {
+						err.push(e.message);
+					}
+					store.dispatch(channelActions.setError(err));
+				} else {
+					store.dispatch(channelActions.setError(error));
+				}
 			});
 			socket.on(ChannelsEvent.getSelectedChannel, (channel: any) => {
 				store.dispatch(channelActions.setSelectedChannel(channel));
@@ -72,7 +82,7 @@ const channelsMiddleware: Middleware = store => {
 			})
 		}
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
-			console.log(action.payload);
+			console.log('create channel', action.payload);
 			socket.emit(ChannelsEvent.createChannel, action.payload);
 		}
 		if (channelActions.getChannels.match(action) && isConnectionEstablished) {

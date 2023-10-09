@@ -95,6 +95,11 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
+		console.log('create channel event', channelData.name);
+		if (!channelData.name || channelData.name.length < 1 || channelData.name === undefined) {
+			client.emit('exception', 'Channel name must not be empty');
+			return ;
+		}
 		const channelId = await this.channelService.createChannel(channelData);
 		if (channelId == undefined) {
 			client.emit('exception', 'failed to create channel, try again');
