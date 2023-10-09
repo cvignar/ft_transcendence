@@ -110,7 +110,6 @@ export function Settings() {
 				pongColorScheme: user.profile?.pongColorScheme,
 			};
 			
-			// dispatch(userActions.setProfile(update_user));
 			dispatch(updateProfile(update_user));
 			window.location.reload(false);
 		}

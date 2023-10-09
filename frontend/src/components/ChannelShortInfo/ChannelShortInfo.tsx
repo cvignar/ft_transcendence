@@ -10,7 +10,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		<div className={styles['info']}>
 			<img
 				className={styles['avatar']}
-				src={props?.picture ? props.picture : (props.avatar ? props.avatar : '/default_avatar.png')}
+				src={props?.picture ? props.picture : (props.avatar ? props.avatar : '/default_channel.png')}
 				onClick={appearence !== 'list'
 					? () => setIsOpen(true)
 					: () => {}}/>
