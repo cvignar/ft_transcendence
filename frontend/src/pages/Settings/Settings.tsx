@@ -30,6 +30,7 @@ export function Settings() {
 	const user = useSelector((s: RootState) => s.user);
 	const dispatch = useDispatch<AppDispatch>();
 	const [twoFA, setTwoFA] = useState<boolean>(user.profile ? user.profile.twoFA : false);
+	const [showGH, setShowGH] = useState<boolean>(false);
 	const [changeUsername, setChangeUsername] = useState<boolean>(false);
 	const [error, setError] = useState<string>('');
 	const [previousUserData, setPreviousUserData] = useState<PreviousUserData>({
@@ -115,6 +116,13 @@ export function Settings() {
 		}
 	}
 
+	const showGameHistory = () => {
+		if (user.profile && user.profile.id) {
+			dispatch(userActions.getFriends(user.profile.id));
+			setShowGH(true);
+		}
+	};
+
 	useEffect(() => {
 		dispatch(getProfile(user.userId));
 	}, [dispatch, twoFA]);
@@ -132,15 +140,15 @@ export function Settings() {
 		console.log(previousUserData.username, user.profile?.username);
 	}, [user.profile]);
 
-	useEffect(() => {
-		if (user.profile) {
-			dispatch(userActions.getGameHistory(user.profile.id));
-		}
-	}, [dispatch]);
+	// useEffect(() => {
+	// 	if (user.profile) {
+	// 		dispatch(userActions.getGameHistory(user.profile.id));
+	// 	}
+	// }, [dispatch]);
 
 	useEffect(() => {
 		if (user.qrUri) {
-			QRCode.toCanvas(document.getElementById('qrcode'), user.qrUri, function (error) {
+			QRCode.toCanvas(document.getElementById('qrcode'), user.qrUri, function (error: any) {
 				if (error) console.error(error)
 				console.log('success!');
 			});
@@ -151,9 +159,9 @@ export function Settings() {
 		if (error !== '') {
 			setTimeout(() => (setError('')), 2000);
 		}
-		if (user.profile) {
-			dispatch(userActions.getFriends(user.profile.id));
-		}
+		// if (user.profile) {
+		// 	dispatch(userActions.getFriends(user.profile.id));
+		// }
 	}, [user.profile, error]);
 
 	return (
@@ -224,7 +232,7 @@ export function Settings() {
 				? <canvas id='qrcode'/>
 				: <></>}
 
-				<> <h3>Friends</h3>
+				{/* <> <h3>Friends</h3>
 					{user.friends && user.friends.length > 0
 						? user.friends.map((friend: any) => (
 							<CardNavLink
@@ -239,7 +247,27 @@ export function Settings() {
 							</CardNavLink>
 						))
 						: <></>}
-				</>
+				</> */}
+				{showGH === false
+					? <Button className={classNames(styles['submit'], styles['btn-dark'])} onClick={showGameHistory}>Show friends</Button>
+					: <> <h3>Friends</h3>
+					{user.friends && user.friends.length > 0
+						? user.friends.map((friend: any) => (
+							<CardNavLink
+								to={`/Settings/friend/${friend.id}`}
+								className={classNames(styles['preview-button'])}
+								key={friend.id}
+								onClick={() => {
+									// setActive(friend.id);
+									dispatch(getUserProfile(friend.id));
+								}}>
+								<ChannelShortInfo appearence='list' props={friend}/>
+							</CardNavLink>
+						))
+						: <></>}
+					</>
+				}
+
 			</div>
 			<div className={styles['other']}>
 				<Outlet/>
