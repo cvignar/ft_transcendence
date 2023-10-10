@@ -318,6 +318,29 @@ export class UserService {
 		}
 	}
 
+	async getUsersExclude(id: number): Promise<
+		{ id: number; username: string; avatar: string }[]
+	> {
+		try {
+			const users = await this.prismaService.user.findMany({
+				where: {
+					NOT: [
+						{ id: id }
+					]
+				},
+				select: {
+					id: true,
+					username: true,
+					avatar: true,
+				},
+			});
+			return users;
+		} catch (e) {
+			console.log('getUsers error:', e);
+			throw new ForbiddenException('getUsers error: ' + e);
+		}
+	}
+
 	async updatePlayTime(userId: number, duration: number) {
 		const user = await this.prismaService.user.update({
 			where: { id: userId },

@@ -84,7 +84,7 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 					onClick={() => {
 						setChannel(c);
 						setActive(c.key);
-						dispatch(channelActions.setSelectedChannel({ channel: c }));
+						dispatch(channelActions.getSelectedChannel(c.id));
 						dispatch(channelActions.getMessages(c.id));
 					}}>
 					<SearchPreview

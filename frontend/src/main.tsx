@@ -51,6 +51,14 @@ const router = createBrowserRouter([
 					{
 						path: '/Chat/createChannel',
 						element:  <RequireAuth><CreateChannelFrom/></RequireAuth>
+					},
+					{
+						path: '/Chat/channel/:channelId/settings',
+						element: <RequireAuth><ChannelSettings/></RequireAuth>
+					},
+					{
+						path: '/Chat/channel/:channelId/adminSettings',
+						element: <RequireAuth><ChannelSettings/></RequireAuth>
 					}
 				]
 			},

@@ -198,7 +198,8 @@ export class ChannelService {
 				where: { id: channelData.id },
 				select: { password: true },
 			});
-			if (channel.password === channelData.newPassword) {
+			console.log('passwds: ', channel.password, channelData.password);
+			if (channel.password === channelData.password) {
 				const updatedChannel = await this.prismaService.channel.update({
 					where: { id: channelData.id },
 					data: {
@@ -373,11 +374,13 @@ export class ChannelService {
 							name: true,
 							password: true,
 							updatedAt: true,
+							picture: true,
 							owners: {
 								select: {
 									id: true,
 									email: true,
 									username: true,
+									avatar: true
 								},
 							},
 							messages: {
@@ -453,19 +456,24 @@ export class ChannelService {
 			if (channelsList.owner) {
 				for (let i = 0; i < channelsList.owner.length; i++) {
 					let name = '';
-					//console.log(channelsList.owner[i]);
-					if (channelsList.owner[i].owners.length > 1) {
-						name =
-							channelsList.owner[i].owners[0].email === email
-								? channelsList.owner[i].owners[0].username
-								: channelsList.owner[i].owners[1].username;
-					}
+					let avatar = '';
+					console.log(channelsList.owner[i]);
 					let ownerId = -1;
 					if (channelsList.owner[i].owners.length > 1) {
 						ownerId =
 							channelsList.owner[i].owners[0].email === email
 								? channelsList.owner[i].owners[0].id
 								: channelsList.owner[i].owners[1].id;
+					}
+					console.log(`channel type: ${channelsList.owner[i].type}, channel name: ${channelsList.member[i].name}`);
+					if (channelsList.owner[i].type === typeEnum.DIRECT) {
+						if (channelsList.owner[i].owners[0].email == email) {
+							name = channelsList.owner[i].owners[1].username;
+							avatar = channelsList.owner[i].owners[1].avatar;
+						} else {
+							name = channelsList.owner[i].owners[0].username;
+							avatar = channelsList.owner[i].owners[0].avatar;
+						}
 					}
 					const messageCount = channelsList.owner[i].messages
 						? channelsList.owner[i].messages.length
@@ -481,20 +489,32 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.owner[i].owners[0].email,
 						ownerId: ownerId,
+						picture: avatar ? avatar : channelsList.owner[i].picture,
 					};
 					previews.push(channelPreview);
 				}
 			}
 			if (channelsList.admin) {
 				for (let i = 0; i < channelsList.admin.length; i++) {
+					let name = '';
+					let avatar = '';
+					console.log(`channel type: ${channelsList.admin[i].type}, channel name: ${channelsList.member[i].name}`);
+					if (channelsList.admin[i].type === typeEnum.DIRECT) {
+						if (channelsList.admin[i].owners[0].email == email) {
+							name = channelsList.admin[i].owners[1].username;
+							avatar = channelsList.admin[i].owners[1].avatar;
+						} else {
+							name = channelsList.admin[i].owners[0].username;
+							avatar = channelsList.admin[i].owners[0].avatar;
+						}
+					}
 					const messageCount = channelsList.admin[i].messages
 						? channelsList.admin[i].messages.length
 						: 0;
-					//console.log(channelsList.admin[i]);
 					const channelPreview: ChannelPreview.Response = {
 						id: channelsList.admin[i].id,
 						type: channelsList.admin[i].type,
-						name: channelsList.admin[i].name,
+						name: name ? name : channelsList.admin[i].name,
 						updatedAt: channelsList.admin[i].updatedAt,
 						lastMessage:
 							messageCount > 0
@@ -502,19 +522,32 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.admin[i].owners[0].email,
 						ownerId: channelsList.admin[i].owners[0].id,
+						picture: avatar ? avatar : channelsList.admin[i].picture,
 					};
 					previews.push(channelPreview);
 				}
 			}
 			if (channelsList.member) {
 				for (let i = 0; i < channelsList.member.length; i++) {
+					let name = '';
+					let avatar = '';
+					console.log(`channel type: ${channelsList.member[i].type}, channel name: ${channelsList.member[i].name}`);
+					if (channelsList.member[i].type === typeEnum.DIRECT) {
+						if (channelsList.member[i].owners[0].email == email) {
+							name = channelsList.member[i].owners[1].username;
+							avatar = channelsList.member[i].owners[1].avatar;
+						} else {
+							name = channelsList.member[i].owners[0].username;
+							avatar = channelsList.member[i].owners[0].avatar;
+						}
+					}
 					const messageCount = channelsList.member[i].messages
 						? channelsList.member[i].messages.length
 						: 0;
 					const channelPreview: ChannelPreview.Response = {
 						id: channelsList.member[i].id,
 						type: channelsList.member[i].type,
-						name: channelsList.member[i].name,
+						name: name ? name : channelsList.member[i].name,
 						updatedAt: channelsList.member[i].updatedAt,
 						lastMessage:
 							messageCount > 0
@@ -522,6 +555,7 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.member[i].owners[0].email,
 						ownerId: channelsList.member[i].owners[0].id,
+						picture: avatar ? avatar : channelsList.member[i].picture,
 					};
 					previews.push(channelPreview);
 				}
@@ -574,12 +608,18 @@ export class ChannelService {
 			messageCount = channel.messages.length;
 		}
 		let name = '';
+		let avatar = '';
 		if (channel.owners.length > 1) {
 			name =
 				channel.owners[0].email === email
 					? channel.owners[1].username
 					: channel.owners[0].username;
+			avatar =
+				channel.owners[0].email === email
+					? channel.owners[1].avatar
+					: channel.owners[0].avatar;
 		}
+		
 		let ownerId = -1;
 		if (channel.owners.length > 1) {
 			ownerId =
@@ -589,11 +629,13 @@ export class ChannelService {
 		} else {
 			ownerId = channel.owners[0].id;
 		}
+		
 		const preview: ChannelPreview.Response = {
 			id: channel.id,
 			type: channel.type,
 			name: channel.type === 'direct' ? name : channel.name,
 			updatedAt: channel.updatedAt,
+			picture: avatar ? avatar : channel.picture,
 			lastMessage:
 				channel.type === 'protected'
 					? ''
@@ -758,6 +800,7 @@ export class ChannelService {
 					const member: MemberPreview.Response = {
 						id: channel.members[i].id,
 						username: channel.members[i].username,
+						avatar: channel.members[i].avatar,
 						email: channel.members[i].email,
 						isOwner: roles.isOwner,
 						isAdmin: roles.isAdmin,
@@ -867,44 +910,50 @@ export class ChannelService {
 		}
 	}
 
+	async getChannelsForSearch() {
+		try {
+			const channels = await this.prismaService.channel.findMany({
+				where: {
+					OR: [
+						{ type: typeEnum.PUBLIC },
+						{ type: typeEnum.PROTECTED }
+					]
+				},
+			});
+			return channels;
+		} catch (e) {
+			console.log('getChannelsByType error:', e);
+			throw new WsException(e.message);
+		}
+	}
+
 	async getSearchPreviews(email: string) {
 		try {
 			const user = await this.userService.getUserByEmail(email);
-			const users = await this.userService.getUsers();
-			const publicChannels = await this.getChannelsByType(
-				typeEnum.PUBLIC,
-			);
-			const channels = await this.getPreviews(email);
+			const users = await this.userService.getUsersExclude(user.id);
+			const searchChannels = await this.getChannelsForSearch();
 
 			const searchPreviews: SearchPreview.Response[] = [];
 			let channelsLength = 0,
 				usersLength = 0;
-			if (channels) {
-				channelsLength = channels.length;
-				for (const [key, channel] of channels.entries()) {
+
+			if (searchChannels) {
+				channelsLength = searchChannels.length;
+				for (const [key, channel] of searchChannels.entries()) {
 					const preview: SearchPreview.Response = {
 						id: channel.id,
 						key: key,
 						name: channel.name,
 						picture: channel.picture,
-						tag: 'channel',
+						tag: channel.type + ' channel',
 						type: channel.type,
 					};
 					searchPreviews.push(preview);
 				}
 			}
 			if (users) {
-				const filter = users.filter((usr) => {
-					return (
-						searchPreviews.filter(
-							(preview: SearchPreview.Response) => {
-								return preview.name == usr.username;
-							},
-						).length === 0 && usr.id != user.id
-					);
-				});
-				usersLength = filter.length;
-				for (const [key, usr] of filter.entries()) {
+				usersLength = users.length;
+				for (const [key, usr] of users.entries()) {
 					const preview: SearchPreview.Response = {
 						id: usr.id,
 						key: channelsLength + key,
@@ -913,27 +962,6 @@ export class ChannelService {
 						tag: 'user',
 					};
 					searchPreviews.push(preview);
-				}
-			}
-			if (publicChannels) {
-				const filter = publicChannels.filter((channel) => {
-					return (
-						searchPreviews.filter((preview) => {
-							return preview.id == channel.id;
-						}).length === 0
-					);
-				});
-
-				for (const [key, channel] of filter.entries()) {
-					const one: SearchPreview.Response = {
-						id: channel.id,
-						key: usersLength + channelsLength + key,
-						name: channel.name,
-						picture: channel.picture,
-						tag: 'public channel',
-						type: typeEnum.PUBLIC,
-					};
-					searchPreviews.push(one);
 				}
 			}
 			return searchPreviews;

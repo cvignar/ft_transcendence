@@ -38,7 +38,7 @@ export const ChannelSchema = zod.object({
 export const whiteSpaceResExp = new RegExp('^[a-zA-Z0-9-_]{1,50}$');
 
 const CreateChannelSchema = zod.object({
-	name: zod.string(),
+	name: zod.string()
 		.regex(whiteSpaceResExp, { message: 'Channel name must be not empty' }),
 	type: zod.nativeEnum(typeEnum),
 	password: zod.password().optional(),
@@ -79,7 +79,7 @@ const UpdateChannelSchema = zod.object({
 	id: zod.number().int(),
 	type: zod.nativeEnum(typeEnum),
 	email: zod.string().email(),
-	password: zod.password(),
+	password: zod.password().nullable(),
 	memberId: zod.number().int().default(-1),
 	newPassword: zod.password(),
 });
@@ -110,7 +110,7 @@ const SearchPreviewSchema = zod.object({
 	name: zod.string(),
 	picture: zod.string(),
 	tag: zod.string(),
-	type: zod.nativeEnum(typeEnum),
+	type: zod.string(),
 });
 
 export namespace SearchPreview {

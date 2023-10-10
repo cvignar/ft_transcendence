@@ -273,7 +273,7 @@ export class ChannelGateway {
 		const channelName =
 			await this.channelService.getChannelNameById(channelId);
 		await client.join(channelName);
-		client.emit('add preview', preview);
+		// client.emit('add preview', preview);
 		client.emit('get direct channel', channelId);
 		// return channelId;
 	}
@@ -359,7 +359,7 @@ export class ChannelGateway {
 		return role;
 	}
 
-	@SubscribeMessage('read room status')
+	@SubscribeMessage('read channel status')
 	async handleFetchStatus(
 		@MessageBody() data: any,
 		@ConnectedSocket() client: Socket,

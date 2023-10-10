@@ -7,11 +7,11 @@
 	border: none;
 	color: var(--text-color);
 	border-radius: 29px;
+	height: fit-content;
 }
 
 .small {
 	font-size: 12px;
-	padding: 5px 12.5px;
 }
 
 .big {
@@ -21,10 +21,10 @@
 	box-shadow: 0px 10px 40px 0px rgba(122, 129, 190, 0.16);
 }
 
-.accent {
+/* .accent {
 	background: var(--white-color);
-}
+} */
 
-.accent:hover {
+/* .accent:hover {
 	background: var(--white-hover-color);
-}
+} */
