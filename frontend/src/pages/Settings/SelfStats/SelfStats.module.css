@@ -15,6 +15,11 @@
 	border-bottom: 1px solid var(--white-color);
 }
 
+.btn-dark {
+	background: var(--white-color);
+	/* color: var(--text÷); */
+}
+
 .btn-dark:hover {
 	background: var(--text-secondary-color);
 	color: var(--white-hover-color);

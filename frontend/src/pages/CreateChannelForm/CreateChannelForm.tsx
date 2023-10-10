@@ -81,6 +81,7 @@ export function CreateChannelFrom() {
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
+			<Headling>Create a new channel</Headling>
 			<div className={styles['avatar_setting']}>
 				<img className={styles['avatar']} src={picture}/>
 				<div className={styles['middle_settings']}>
@@ -88,7 +89,6 @@ export function CreateChannelFrom() {
 					<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={styles['svg']}/></label>
 				</div>
 			</div>
-			<Headling>Create a new channel</Headling>
 			{channelState.error ? <div>{channelState.error[0]}</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>

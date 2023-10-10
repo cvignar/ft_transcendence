@@ -36,15 +36,9 @@ function ChatWindow() {
 	const [message, setMessage] = useState<string>('');
 	const email = useSelector((s: RootState) => s.user.email);
 	const [value, setValue] = useState<string>('');
-	const messages: Message[] = useSelector((s: RootState) => s.channel.messages);
-	const selectedChannel = useSelector((s: RootState) => s.channel.selectedChannel);
-
-	useEffect(() => {
-		if (selectedChannel.id == -1 && channelId) {
-			console.log('!');
-			dispatch(channelActions.getChannel(parseInt(channelId)));
-		}
-	}, [dispatch, channelId, selectedChannel.id]);
+	// const messages: Message[] = useSelector((s: RootState) => s.channel.messages);
+	// const {selectedChannel} = useSelector((s: RootState) => s.channel);
+	const channel = useSelector((s: RootState) => s.channel);
 
 	const sendMessage = (event: React.KeyboardEvent) => {
 		if (event.key == 'Enter' && /\S/.test(message)) {
@@ -52,8 +46,9 @@ function ChatWindow() {
 			const newMessage: CreateMessage = {
 				message: message,
 				email: email,
-				channelId: selectedChannel?.id
+				channelId: channel.selectedChannel?.id
 			};
+			console.log(newMessage);
 			dispatch(channelActions.sendMessage(newMessage));
 		}
 	};
@@ -64,26 +59,23 @@ function ChatWindow() {
 		console.log(`'${event.target.value}'`);
 	};
 
-	useEffect(() => {
-		console.log('getMessages: ', selectedChannel.id);
-		dispatch(channelActions.getMessages(selectedChannel?.id));
-	}, []);
+	// useEffect(() => {
+	// 	if (channel.selectedChannel.id) {
+	// 		console.log('getMessages: ', channel.selectedChannel.id);
+	// 		console.log(channel.selectedChannel.id);
+	// 		dispatch(channelActions.getMessages(channel.selectedChannel?.id));
+	// 	}
+	// }, [channel]);
 
 	return (
 		<div className={styles['window']}>
 			<div className={styles['head']}>
-				<ChannelShortInfo appearence='chat' props={selectedChannel}/>
-				<button className={styles['see-members']}>
-					<img className={styles['svg']} src='/members.svg' alt='members'/>
-				</button>
-				{/*<ModalContainer modalIsOpen={modalIsOpen} setIsOpen={setIsOpen}>
-					<MembersList onClick={closeModal}/>
-				</ModalContainer>*/}
+				<ChannelShortInfo appearence='chat' props={channel.selectedChannel}/>
 			</div>
 			<hr/>
 			<div className={styles['chat-area']}>
 				<div className={styles['rotate']}>
-					{messages?.map(message => (
+					{channel.messages?.map(message => (
 						<MessageHolder
 							key={message.id}
 							appearence={message.owner.email == email
@@ -93,7 +85,7 @@ function ChatWindow() {
 					))}
 				</div>
 			</div>
-			{selectedChannel?.id === -1
+			{channel.selectedChannel?.id === -1
 				? <div></div>
 				: <textarea
 					name='messageInput'

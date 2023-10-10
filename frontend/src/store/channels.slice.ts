@@ -33,6 +33,9 @@ export enum ChannelsEvent {
 	getSelectedChannel = 'get selected channel',
 	updateStatus = 'update-status',
 	getDirectChannel = 'get direct channel',
+	readChannelStatus = 'read channel status',
+	joinChannel = 'join channel',
+	leaveChannel = 'leave channel',
 }
 
 export interface ChannelsState {
@@ -45,6 +48,7 @@ export interface ChannelsState {
 	isConnected: boolean;
 	state: number;
 	error?: any;
+	members: any[];
 }
  
 const initialState: ChannelsState = {
@@ -65,7 +69,8 @@ const initialState: ChannelsState = {
 	search: [],
 	isEstablishingConnection: false,
 	isConnected: false,
-	state: 0
+	state: 0,
+	members: [],
 };
  
 const channelSlice = createSlice({
@@ -159,7 +164,19 @@ const channelSlice = createSlice({
 		}),
 		getDirectChannel: ((state, action: PayloadAction<{targetId: number, selfEmail: string}>) => {
 			return;
-		})
+		}),
+		readChannelStatus: ((state, action: PayloadAction<{channelId: number, email: string}>) => {
+			return;
+		}),
+		setMembers: ((state, action: PayloadAction<any[]>) => {
+			state.members = action.payload;
+		}),
+		joinChannel: ((state, action: PayloadAction<any>) => {
+			return;
+		}),
+		leaveChannel: ((state, action: PayloadAction<any>) => {
+			return;
+		}),
 	}
 });
  

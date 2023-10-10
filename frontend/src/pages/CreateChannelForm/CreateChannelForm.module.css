@@ -69,6 +69,6 @@
 }
 
 .button:hover {
-	color: var(--primary-color);
-	background: var(--white-color);
+	color: var(--white-hover-color);
+	background: var(--text-secondary-color);
 }

@@ -12,7 +12,7 @@ import styles from './Button.module.css';
 
 function Button({ children, className, appearence = 'small', ...props }: ButtonProps) {
 	return (
-		<button className={classNames(styles['button'], styles['accent'], className, {
+		<button className={classNames(className, styles['button'], styles['accent'], {
 			[styles['small']]: appearence === 'small',
 			[styles['big']]: appearence === 'big'
 		})} {...props}> {children}</button >

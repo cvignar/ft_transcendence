@@ -74,6 +74,7 @@ export namespace User {
 const MemberPreviewSchema = zod.object({
   id: zod.number().int(),
   username: zod.string(),
+  avatar: zod.string(),
   email: zod.string().email(),
   status: zod.nativeEnum(Status).default(Status.offline),
   isOwner: zod.boolean().default(false),

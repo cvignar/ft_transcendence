@@ -34,7 +34,6 @@ up:
 stop:
 	@echo "=Stopping containers's stack=========="
 	docker-compose -f docker-compose.yml stop
-	docker stop pong
 	@echo "======================================"
 	docker ps -a
 

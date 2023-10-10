@@ -248,7 +248,7 @@ export function Settings() {
 						: <></>}
 				</> */}
 				{showGH === false
-					? <Button className={classNames(styles['submit'], styles['btn-dark'])} onClick={showGameHistory}>Show friends</Button>
+					? <Button className={classNames(styles['submit'])} onClick={showGameHistory}>Show friends</Button>
 					: <> <h3>Friends</h3>
 					{user.friends && user.friends.length > 0
 						? user.friends.map((friend: any) => (
