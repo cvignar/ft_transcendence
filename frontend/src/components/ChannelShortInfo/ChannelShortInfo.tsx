@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ChannelPreview } from '../../interfaces/channel.interface';
 import ModalContainer from '../ModalContainer/ModalContainer';
 import settingStyles from '../../pages/Settings/Settings.module.css';
@@ -32,9 +32,33 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		}
 	}
 
-	const makeAdmin = () => {
+	const IAmAdmin = () => {
+		if (channelState.members) {
+			for (const member of channelState.members) {
+				if (user.profile && user.profile.id === member.id && member.isAdmin === true) {
+					console.log(user.profile.id, member.id, member.isOwner);
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 
+
+	const makeAdmin = () => {
+		if (props && props.id && channelState.selectedChannel)
+		dispatch(channelActions.makeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
 	}
+
+	const removeAdmin = () => {
+		if (props && props.id && channelState.selectedChannel)
+		dispatch(channelActions.removeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
+	}
+
+	const kickMember = () => {
+
+	};
+
 	return (
 		<div className={classNames(styles['card'],
 			appearence !== 'list' ? styles['card-no-list'] : '')}>
@@ -49,7 +73,6 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 						: styles['avatar']}
 						src={props?.picture ? props.picture : (props.avatar ? props.avatar : chooseDefaultPicture())}
 						onClick={() => {
-							console.log(props);
 							if (props.type && props.type == 'direct') {
 								dispatch(getUserProfile(props.ownerId));
 								navigate(`/Chat/channel/${props.id}/member/:${props.ownerId}`);
@@ -57,7 +80,6 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								dispatch(channelActions.getSelectedChannel(props.id));
 								dispatch(channelActions.readChannelStatus({channelId: props.id, email: user.profile.email}));
 								navigate(`/Chat/channel/${props.id}/settings`);
-								console.log(props);
 							} else if (props.username) {
 								if (user.profile && props.id != user.profile.id) {
 									dispatch(getUserProfile(props.id));
@@ -67,10 +89,10 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								}
 							}
 							}}/>
-					{appearence === 'member' 
+					{appearence === 'member' && IAmAdmin() === true
 					? <div className={styles['member-btns']}>
-						{props.isAdmit
-							? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Remove admin</Button>
+						{props.isAdmin
+							? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
 							: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={makeAdmin}>Make admin</Button>
 						}
 						{props.isBlocked
@@ -79,6 +101,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 						{props.isMuted
 						? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
 						: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
+						<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
 					</div>
 					: <></>}
 

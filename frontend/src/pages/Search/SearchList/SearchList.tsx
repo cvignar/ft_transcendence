@@ -82,7 +82,7 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 					className={classNames(styles['preview-button'])}
 					key={c.key}
 					onClick={() => {
-						setChannel(c);
+						// channelActions.setSelectedChannel(c);
 						setActive(c.key);
 						dispatch(channelActions.getSelectedChannel(c.id));
 						dispatch(channelActions.getMessages(c.id));

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { UserService } from '../user/user.service';
 //import { WsException } from '@nestjs/websockets';
@@ -121,6 +121,9 @@ export class ChannelService {
 			const ids: number[] = [];
 			const user = await this.userService.getUserByEmail(userEmail);
 			const targetUser = await this.userService.getUserById(targetId);
+			if (user.id == targetUser.id) {
+				throw new WsException('Cannot create a direct chat with yourself');
+			}
 
 			ids.push(user.id, data.id);
 			let channels = await this.prismaService.channel.findMany({
@@ -661,6 +664,35 @@ export class ChannelService {
 		}
 	}
 
+	async makeAdmin(channelData: { userId: number, channelId: number }) {
+		const channel = await this.getChannelById(channelData.channelId);
+		if (channel) {
+			const updatedChannel = await this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: {
+					admins: { connect: { id: channelData.userId } }
+				},
+			});
+			return updatedChannel;
+		}
+		return undefined;
+	}
+
+	async removeAdmin(channelData: { userId: number, channelId: number }) {
+		const channel = await this.getChannelById(channelData.channelId);
+		console.log(channelData);
+		if (channel) {
+			const updatedChannel = await this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: {
+					admins: { disconnect: { id: channelData.userId } }
+				},
+			});
+			return updatedChannel;
+		}
+		return undefined;
+	}
+
 	async getRole(
 		userId: number,
 		channelId: number,
@@ -725,7 +757,6 @@ export class ChannelService {
 				isBlocked: isBlocked,
 				isMuted: isMuted,
 			};
-			console.log(roles);
 			return roles;
 		} catch (e) {
 			console.log('get role error: ', e.message);
@@ -813,7 +844,7 @@ export class ChannelService {
 		}
 	}
 
-	async getMembers(userId: number, channelId: number) {
+	async getMembers(userId: number | null, channelId: number) {
 		try {
 			const channel = await this.prismaService.channel.findUnique({
 				where: { id: channelId },
@@ -837,7 +868,7 @@ export class ChannelService {
 						isBlocked: roles.isBlocked,
 						isMuted: roles.isMuted,
 						isFriend:
-							userId != channel.members[i].id
+							userId && userId != channel.members[i].id
 								? await this.userService.isFriend(
 										userId,
 										channel.members[i].id,

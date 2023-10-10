@@ -37,7 +37,7 @@ export class Result {
             this.player1 = (_a = pong.getLeftPlayer()) === null || _a === void 0 ? void 0 : _a.id;
             this.player2 = (_b = pong.getRightPlayer()) === null || _b === void 0 ? void 0 : _b.id;
             if (this.player1 && this.player2) {
-                if (this.player1 > 0 && this.player2 > 0) {
+                if (this.player1 > 0 || this.player2 > 0) {
                     this.score1 = pong.leftScore;
                     this.score2 = pong.rightScore;
                     this.startTime = pong.gameStartTime;

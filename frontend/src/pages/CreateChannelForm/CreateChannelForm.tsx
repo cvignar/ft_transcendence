@@ -37,7 +37,7 @@ export function CreateChannelFrom() {
 		const newChannel: CreateChannel = {
 			name: e.currentTarget.name.value,
 			type: e.currentTarget.type.value,
-			password: e.currentTarget.password ? e.currentTarget.password : '',
+			password: e.currentTarget.password ? e.currentTarget.password : null,
 			email: user.profile?.email,
 			members: [{
 				id: user.profile?.id,

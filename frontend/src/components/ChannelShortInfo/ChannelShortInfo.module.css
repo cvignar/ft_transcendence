@@ -20,6 +20,7 @@
 
 .btn-smaller {
 	padding: 0px 13px;
+	white-space: nowrap;
 	/* height: fit-content; */
 }
 

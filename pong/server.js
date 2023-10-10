@@ -261,7 +261,8 @@ setInterval(function () {
                         transportOptions: {
                             polling: {
                                 extraHeaders: {
-                                    Token: access_token.jwtAccess
+                                    token: access_token.jwtAccess,
+                                    iampong: process.env.PONG_SECRET
                                 }
                             }
                         }

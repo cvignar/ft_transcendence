@@ -41,7 +41,7 @@ const CreateChannelSchema = zod.object({
 	name: zod.string(),
 		// .regex(whiteSpaceResExp, { message: 'Channel name must be not empty' }),
 	type: zod.nativeEnum(typeEnum),
-	password: zod.password().optional(),
+	password: zod.password().optional().nullable(),
 	email: zod.string().email(),
 	members: zod.array(zod.object({
 		id: zod.number().int(),
@@ -81,7 +81,7 @@ const UpdateChannelSchema = zod.object({
 	email: zod.string().email(),
 	password: zod.password().nullable(),
 	memberId: zod.number().int().default(-1),
-	newPassword: zod.password(),
+	newPassword: zod.password().nullable(),
 });
 
 export namespace UpdateChannel {

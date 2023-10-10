@@ -12,7 +12,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import GameHistoryItem from './GameHistoryItem/GameHistoryItem';
 
-
 function MemberPreview() {
 	const { profile, selectedUser, selectedGameHistory } = useSelector((s: RootState) => s.user);
 	const { selectedChannel, channels } = useSelector((s: RootState) => s.channel);
@@ -21,6 +20,7 @@ function MemberPreview() {
 	const navigate = useNavigate();
 	const [goToDM, setGoToDM] = useState<boolean>(false);
 	const [showGH, setShowGH] = useState<boolean>(false);
+	const [watch, setWatch] = useState<boolean>(false);
 
 	const findStatus = (statuses: any) => {
 		for (const status of statuses) {
@@ -104,6 +104,26 @@ function MemberPreview() {
 		setShowGH(false);
 	}, [selectedUser]);
 
+	useEffect(() => {
+		if (isBlocked() === true) {
+			stopWatch();
+		}
+	}, [profile]);
+
+	const watchGame = () => {
+		setWatch(true);
+		if (selectedUser) {
+			socket.emit('whatch game', selectedUser.id);
+		}
+	};
+	
+	const stopWatch = () => {
+		setWatch(false);
+		if (profile) {
+			socket.emit("new player", { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
+		}
+	}
+
 	return (
 		<>
 			<div className={styles['member-card']} onLoad={() => {}}>
@@ -128,6 +148,15 @@ function MemberPreview() {
 									? styles['inActive']
 									: styles['btn-dark']}
 							onClick={emitInvite}>Invite to game</Button>
+						{findStatus(statusMap) === Status.playing && isBlocked() === false ? 
+							watch === false
+								? <Button
+									className={styles['btn-dark']}
+									onClick={watchGame}>Watch game</Button>
+								: <Button
+									className={styles['btn-dark']}
+									onClick={stopWatch}>Stop watch</Button>
+							: <></>}
 					</div>
 					<div className={styles['col']}>
 						<Button className={isBlocked() === true

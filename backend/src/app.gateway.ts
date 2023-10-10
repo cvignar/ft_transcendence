@@ -73,6 +73,14 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	async handleDisconnect(client: Socket) {
 		if (client.data.id != undefined) {
+			if (client.handshake.headers.iampong && client.handshake.headers.iampong === process.env.PONG_SECRET) {
+				console.log('IAmPong verificated');
+				this.userStatusMap.forEach((value, key, map) => {
+					if (value === Status.playing) {
+						map.set(key, Status.online);
+					}
+				});
+			}
 			this.userStatusMap.set(client.data.id, Status.offline);
 			const serializedMap = [...this.userStatusMap.entries()];
 			this.server.emit('update-status', serializedMap);
@@ -191,8 +199,12 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			let serializedMap;
 			// game just started
 			if (gameData.score1 === 0 && gameData.score2 === 0) {
-				this.userStatusMap.set(gameData.player1, Status.playing);
-				this.userStatusMap.set(gameData.player2, Status.playing);
+				if (gameData.player1 > 0) {
+					this.userStatusMap.set(gameData.player1, Status.playing);
+				}
+				if (gameData.player2 > 0) {
+					this.userStatusMap.set(gameData.player2, Status.playing);
+				}
 			}
 			// game was interrupted
 			else if (gameData.score1 === Options.maxWins && gameData.score2 === Options.maxWins) {
@@ -207,9 +219,16 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			}
 			// game is finished
 			else {
-				await this.gameService.saveGame(gameData);
-				this.userStatusMap.set(gameData.player1, Status.online);
-				this.userStatusMap.set(gameData.player2, Status.online);
+				if (gameData.player1 > 0 && gameData.player2 > 0) {
+					console.log(gameData);
+					await this.gameService.saveGame(gameData);
+				}
+				if (gameData.player1 > 0) {
+					this.userStatusMap.set(gameData.player1, Status.online);
+				}
+				if (gameData.player2 > 0) {
+					this.userStatusMap.set(gameData.player2, Status.online);
+				}
 			}
 			serializedMap = [...this.userStatusMap.entries()];
 			this.server.emit('update-status', serializedMap);
