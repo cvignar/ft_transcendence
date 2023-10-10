@@ -39,7 +39,7 @@ export class Result {
 			this.player1 = pong.getLeftPlayer()?.id;
 			this.player2 = pong.getRightPlayer()?.id;
 			if (this.player1 && this.player2) {
-				if (this.player1 > 0 && this.player2 > 0) {
+				if (this.player1 > 0 || this.player2 > 0) {
 					this.score1 = pong.leftScore;
 					this.score2 = pong.rightScore;
 					this.startTime = pong.gameStartTime;

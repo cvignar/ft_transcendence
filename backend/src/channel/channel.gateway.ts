@@ -120,8 +120,10 @@ export class ChannelGateway {
 		@ConnectedSocket() client: Socket,
 	) {
 		const channelId = await this.channelService.joinChannel(channelData);
+		console.log(channelData);
 		if (channelId == undefined) {
-			client.emit('exception', 'wrong password');
+			console.log('channelId to join: ', channelId);
+			client.emit('exception', 'Cannot join channel');
 		} else {
 			const channelName = await this.channelService.getChannelNameById(
 				channelData.id,
@@ -449,7 +451,35 @@ export class ChannelGateway {
 		@MessageBody() data: { channelId: number; memberId: number },
 	) {}
 
-	//@SubscribeMessage('be admin')
+	@SubscribeMessage('make admin')
+	async	makeAdmin(
+		@MessageBody() channelData: {userId: number, channelId: number},
+		@ConnectedSocket() client: Socket,
+	) {
+		const channel = await this.channelService.makeAdmin(channelData);
+		if (channel) {
+			const members = await this.channelService.getMembers(channelData.userId, channel.id);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot make this user administrator');
+		}
+	}
+
+	@SubscribeMessage('remove admin')
+	async	removeAdmin(
+		@MessageBody() channelData: {userId: number, channelId: number},
+		@ConnectedSocket() client: Socket,
+	) {
+		const channel = await this.channelService.removeAdmin(channelData);
+		if (channel) {
+			const members = await this.channelService.getMembers(channelData.userId, channel.id);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot remove this administrator');
+		}
+	}
 	//async handleBeAdmin(
 	//  @MessageBody() channelData: UpdateChannel.Request,
 	//  @ConnectedSocket() client: Socket,

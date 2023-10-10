@@ -47,6 +47,11 @@ const channelsMiddleware: Middleware = store => {
 			socket.on(ChannelsEvent.AddPreview, (channel: ChannelPreview) => {
 				store.dispatch(channelActions.setChannel({channel: channel}));
 			});
+			socket.on(ChannelsEvent.update, () => {
+				if (store.getState().user.prodile && store.getState().channel.selectedChannel) {
+					socket.emit(ChannelsEvent.readChannelStatus, {email: store.getState().user.prodile.email, channelId: store.getState().channel.selectedChannel.id});
+				}
+			});
 			// socket.on(ChannelsEvent.update, () => {
 				// store.dispatch(channelActions.updateState());
 				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
@@ -127,6 +132,12 @@ const channelsMiddleware: Middleware = store => {
 		}
 		if (channelActions.leaveChannel.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.leaveChannel, action.payload);
+		}
+		if (channelActions.makeAdmin.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.makeAdmin, action.payload);
+		}
+		if (channelActions.removeAdmin.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.removeAdmin, action.payload);
 		}
 
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {

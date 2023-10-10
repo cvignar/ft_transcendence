@@ -36,6 +36,8 @@ export enum ChannelsEvent {
 	readChannelStatus = 'read channel status',
 	joinChannel = 'join channel',
 	leaveChannel = 'leave channel',
+	makeAdmin = 'make admin',
+	removeAdmin = 'remove admin',
 }
 
 export interface ChannelsState {
@@ -175,6 +177,12 @@ const channelSlice = createSlice({
 			return;
 		}),
 		leaveChannel: ((state, action: PayloadAction<any>) => {
+			return;
+		}),
+		makeAdmin: ((state, action: PayloadAction<{userId: number, channelId: number}>) => {
+			return;
+		}),
+		removeAdmin: ((state, action: PayloadAction<{userId: number, channelId: number}>) => {
 			return;
 		}),
 	}

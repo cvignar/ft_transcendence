@@ -12,7 +12,6 @@ export function Pong() {
 	const user = useSelector((s: RootState) => s.user);
 
 	useEffect(() => {
-		console.log(socket.id);
 		game(socket, user);
 	}, []);
 

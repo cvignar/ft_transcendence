@@ -23,12 +23,12 @@ export function SearchPage() {
 	const channelState = useSelector((s: RootState) => s.channel);
 	const [isActive, setActive] = useState<number>(-1);
 
-	const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
+	// const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
 	
 
 	return (
 		<>
-			<SearchList setChannel={setSelectedChannel} isActive={isActive} setActive={setActive}/>
+			<SearchList setChannel={channelActions.setSelectedChannel} isActive={isActive} setActive={setActive}/>
 			<div className={styles['other']}>
 				<Outlet/>
 			</div>
