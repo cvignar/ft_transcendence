@@ -58,7 +58,7 @@ export class Pong extends PongOptions {
         this.serveCounter = 0;
         this.newGame = true;
         this.atGameStart = false;
-        this.pathStartTime = 0;
+        this.pathStartTime = Date.now();
         this.pathStart = new geometry.Vec(0, 0);
         this.ballSpeed = new geometry.Vec(0, 0);
         this.ballSpeedUp = 1.0;

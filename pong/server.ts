@@ -114,16 +114,27 @@ io.on("connection", (socket) => {
 	});
 
 	socket.on('invite partner', (user_id: number) => {
-		const inviter = games.getPlayer(socket.id);
+		let inviter = games.getPlayer(socket.id);
 		if (inviter) {
-			const invited = games.getPlayerById(user_id);
-			if (invited) {
-				const invitedSocket = io.sockets.sockets.get(invited.socketId);
-				if (invitedSocket) {
-					setTimeout(function() {
-						invitedSocket?.emit('confirm partner', [ socket.id, inviter.name ]);
-					}, ControlOptions.game_startTime );
-					return;
+			const user = {
+				name: inviter.name,
+				id: inviter.id,
+				side: inviter.side,
+				scheme: inviter.scheme,
+			};
+			inviter = games.newPlayer(socket.id, user);
+			if (inviter) {
+				socket.emit("player created", inviter.scheme);
+				gebugPprinting(inviter.name, "inviting player");
+				const invited = games.getPlayerById(user_id);
+				if (invited) {
+					const invitedSocket = io.sockets.sockets.get(invited.socketId);
+					if (invitedSocket) {
+						setTimeout(function() {
+							invitedSocket?.emit('confirm partner', [ socket.id, inviter?.name ]);
+						}, ControlOptions.game_startTime );
+						return;
+					}
 				}
 			}
 		}

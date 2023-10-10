@@ -1,15 +1,17 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
-import { GameMode } from './static/common.js';
+import { GameMode, GameScheme } from './static/common.js';
 import { Options } from './static/options.js';
 export class Player {
     constructor(socketId, user) {
         this.id = 0;
         this.side = 0;
+        this.scheme = GameScheme.GENERAL;
         this.socketId = socketId;
         this.name = user.name;
         this.id = user.id;
         this.side = user.side;
+        this.scheme = user.scheme;
     }
 }
 export class Result {
@@ -109,7 +111,11 @@ export class GamesSet {
             if (this.players.has(socketId)) {
                 this.deletePlayer(socketId);
             }
-            const player = new Player(socketId, user);
+            let player = this.getPlayerById(user.id);
+            if (player && player.id > 0) {
+                this.deletePlayer(player.socketId);
+            }
+            player = new Player(socketId, user);
             this.players.set(socketId, player);
             return player;
         }
