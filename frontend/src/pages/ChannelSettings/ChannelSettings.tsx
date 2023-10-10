@@ -83,6 +83,7 @@ function ChannelSettings() {
 				newPassword: '' //FIXME!!! formData newPassword
 			};
 			dispatch(channelActions.leaveChannel(joinData));
+			dispatch(channelActions.readChannelStatus({channelId: channelState.selectedChannel.id, email: user.profile.email}));
 		}
 	};
 
@@ -95,7 +96,20 @@ function ChannelSettings() {
 			}
 		}
 		return false;
-	}
+	};
+
+	const IAmOwner = () => {
+		if (channelState.members) {
+			for (const member of channelState.members) {
+				console.log('check owner', member);
+				if (user.profile && user.profile.id === member.id && member.isOwner === true) {
+					console.log(user.profile.id, member.id, member.isOwner);
+					return true;
+				}
+			}
+		}
+		return false;
+	};
 
 	return (
 		<>
@@ -112,13 +126,15 @@ function ChannelSettings() {
 				{changeUsername === true
 					? <input type='text' name='channelName' placeholder={`${channelState.selectedChannel?.name}`} className={styles['username-input']}/>
 					: <Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>}
-				{IAmMember() !== true 
-				? <Button
-					className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-					onClick={joinChannel}>Join</Button>
-				: <Button
-					className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-					onClick={leaveChannel}>Leave</Button>}
+				{IAmOwner() !== true
+				? IAmMember() !== true 
+					? <Button
+						className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+						onClick={joinChannel}>Join</Button>
+					: <Button
+						className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+						onClick={leaveChannel}>Leave</Button>
+				: <></>}
 			</div>
 			{channelState.error ? <div>{channelState.error}</div> : <></>}
 
@@ -142,7 +158,7 @@ function ChannelSettings() {
 			<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
 				{showMmbrs === false
 					? <Button className={classNames(settingStyles['button'], styles['button'])} onClick={showMembers}>Show members</Button>
-					: <div className={styles['members']}> <h4 className={'headling'}>Members</h4>
+					: <div className={styles['members']}> <h4 className={styles['headling']}>Members</h4>
 					{channelState.members && channelState.members.length > 0
 						? channelState.members.map((member: any) => (
 							<ChannelShortInfo key={member.id} appearence='member' props={member}/>
