@@ -683,6 +683,10 @@ export class ChannelService {
 					muted: true,
 				},
 			});
+			let isOwner = false;
+			let isAdmin = false;
+			let isInvited = false;
+			let isBlocked = false;
 			let isMuted = false;
 			for (let i = 0; i < channel.muted.length; i++) {
 				if (userId === channel.muted[i].userId) {
@@ -690,13 +694,38 @@ export class ChannelService {
 					break;
 				}
 			}
+			for (let i = 0; i < channel.owners.length; i++) {
+				if (userId === channel.owners[i].id) {
+					isOwner = true;
+					break;
+				}
+			}
+			for (let i = 0; i < channel.admins.length; i++) {
+				if (userId === channel.admins[i].id) {
+					isAdmin = true;
+					break;
+				}
+			}
+			for (let i = 0; i < channel.inviteds.length; i++) {
+				if (userId === channel.inviteds[i].id) {
+					isInvited = true;
+					break;
+				}
+			}
+			for (let i = 0; i < channel.blocked.length; i++) {
+				if (userId === channel.blocked[i].id) {
+					isBlocked = true;
+					break;
+				}
+			}
 			const roles = {
-				isOwner: channel.owners.includes(user),
-				isAdmin: channel.admins.includes(user),
-				isInvited: channel.inviteds.includes(user),
-				isBlocked: channel.blocked.includes(user),
+				isOwner: isOwner,
+				isAdmin: isAdmin,
+				isInvited: isInvited,
+				isBlocked: isBlocked,
 				isMuted: isMuted,
 			};
+			console.log(roles);
 			return roles;
 		} catch (e) {
 			console.log('get role error: ', e.message);

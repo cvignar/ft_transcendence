@@ -33,7 +33,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 	}
 
 	const makeAdmin = () => {
-		
+
 	}
 	return (
 		<div className={classNames(styles['card'],
@@ -53,8 +53,9 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 							if (props.type && props.type == 'direct') {
 								dispatch(getUserProfile(props.ownerId));
 								navigate(`/Chat/channel/${props.id}/member/:${props.ownerId}`);
-							} else if (props.type && props.type != 'direct') {
+							} else if (props.type && props.type != 'direct' && user.profile) {
 								dispatch(channelActions.getSelectedChannel(props.id));
+								dispatch(channelActions.readChannelStatus({channelId: props.id, email: user.profile.email}));
 								navigate(`/Chat/channel/${props.id}/settings`);
 								console.log(props);
 							} else if (props.username) {
