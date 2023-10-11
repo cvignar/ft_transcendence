@@ -1,3 +1,4 @@
+PROJECT_PATH = /Users/uru/GoogleDrive/21_Projects/ft_transcendence/project
 NET = ft_transcendence
 
 all: mkdir up
@@ -16,8 +17,8 @@ psls:
 
 mkdir:
 	@echo "=Make dirictory data=================="
-	# mkdir -p /ft_data/db
-	# mkdir -p /ft_data/upload
+	mkdir -p ${PROJECT_PATH}/ft_data/db
+	mkdir -p ${PROJECT_PATH}/ft_data/upload
 
 up:
 	@echo "======================================"
@@ -55,11 +56,11 @@ vol:
 
 vold:
 	@echo "=Removing directory data=============="
-	rm -fr /ft_data
+	rm -fr ${PROJECT_PATH}/ft_data
 
 rst:
 	@echo "=Restarting docker===================="
-	sudo systemctl restart docker
+	# sudo systemctl restart docker
 
 logs:
 	docker-compose -f docker-compose.yml logs -f
@@ -68,7 +69,7 @@ netshoot:
 	@echo "=Netshoot by Nicolaka================="
 	docker run --rm -it --network $(NET) nicolaka/netshoot
 
-clean: rm vol rst psls
+clean: rm vol net rst psls
 
 fclean: clean rmi psls
 
