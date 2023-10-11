@@ -58,7 +58,7 @@ services:
     env_file: .env
     restart: always
     ports:
-      - "11080:5432"
+      - "${DB_OUT_PORT}:${DB_PORT}"
     volumes:
       - db_vol:/var/lib/postgresql/data/${DB_NAME}
     networks:
@@ -74,7 +74,7 @@ services:
     depends_on:
       - db
     ports:
-      - "3000:3000"
+      - "${BACK_PORT}:${BACK_PORT}"
     volumes:
       - frontend:/frontend
       - backend:/backend
@@ -94,7 +94,7 @@ services:
     depends_on:
       - pong
     ports:
-      - "80:5173"
+      - "${HOST_PORT}:${FRONT_PORT}"
     volumes:
       - frontend:/frontend
       - backend:/backend
@@ -113,7 +113,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "12080:12080"
+      - "${PONG_PORT}:${PONG_PORT}"
     volumes:
       - pong:/pong
     networks:
