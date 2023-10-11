@@ -2,8 +2,8 @@ version: "3.9"
 
 networks:
 
-  ft_trancendence:
-    name: ft_trancendence
+  ft_transcendence:
+    name: ft_transcendence
     driver: bridge
 
 volumes:
@@ -56,24 +56,20 @@ services:
     image: postgres:14
     container_name: db
     env_file: .env
-    environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - PGDATA=/var/lib/postgresql/data/${DB_NAME}
-      - POSTGRES_HOST_AUTH_METHOD=${DB_AUTH}
     restart: always
     ports:
       - "11080:5432"
     volumes:
       - db_vol:/var/lib/postgresql/data/${DB_NAME}
     networks:
-      - ft_trancendence
+      - ft_transcendence
 
   backend:
     build:
       context: ./backend
     image: backend:img
     container_name: backend
+    env_file: .env
     restart: always
     depends_on:
       - db
@@ -86,13 +82,14 @@ services:
       - pong:/pong
       - upload:/upload
     networks:
-      - ft_trancendence
+      - ft_transcendence
 
   frontend:
     build:
       context: ./frontend
     image: frontend:img
     container_name: frontend
+    env_file: .env
     restart: always
     depends_on:
       - pong
@@ -104,13 +101,14 @@ services:
       - contracts:/contracts
       - pong:/pong
     networks:
-      - ft_trancendence
+      - ft_transcendence
 
   pong:
     build:
       context: ./pong
     image: pong:img
     container_name: pong
+    env_file: .env
     restart: always
     depends_on:
       - backend
@@ -119,4 +117,4 @@ services:
     volumes:
       - pong:/pong
     networks:
-      - ft_trancendence
+      - ft_transcendence

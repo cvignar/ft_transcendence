@@ -69,7 +69,7 @@ export class AuthController {
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect(`http://${process.env.FRONTEND_HOST}:${process.env.FRONT_PORT}/Auth`);
+			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
 			throw new UnauthorizedException();
 		}
 		if (!user.twoFA) {
@@ -78,11 +78,11 @@ export class AuthController {
 		this.userService.updateJWTAccess(user.id, token);
 		res.cookie('accessToken', token);
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.PONG_HOST}/Auth`);
+		res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
 		}
 		else {
 		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.PONG_HOST}/Auth/2FA`);
+		res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
 		}
 	}
 
