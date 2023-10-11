@@ -16,8 +16,8 @@ psls:
 
 mkdir:
 	@echo "=Make dirictory data=================="
-	mkdir -p /ft_data/db
-	mkdir -p /ft_data/upload
+	# mkdir -p /ft_data/db
+	# mkdir -p /ft_data/upload
 
 up:
 	@echo "======================================"
