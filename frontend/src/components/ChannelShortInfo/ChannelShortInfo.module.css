@@ -64,7 +64,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	height: 34px;
-
 }
 
 .avatar {
@@ -94,4 +93,18 @@
 	display: flex;
 	flex-direction: column;
 	margin-left: 10px;
+}
+
+.header-message-member {
+	margin-left: 0px;
+}
+
+.role {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: normal;
 }

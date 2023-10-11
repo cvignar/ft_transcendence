@@ -325,51 +325,6 @@ export class ChannelService {
 			const channelsList = await this.prismaService.user.findUnique({
 				where: { email: email },
 				select: {
-					//owner: {
-					//	where: { type: 'direct' },
-					//	select: {
-					//		id: true,
-					//		type: true,
-					//		name: true,
-					//		password: true,
-					//		updatedAt: true,
-					//		owners: {
-					//			select: {
-					//				id: true,
-					//				email: true,
-					//				username: true,
-					//			},
-					//		},
-					//		messages: {
-					//			where: { unsent: false },
-					//			orderBy: { createdAt: 'desc' },
-					//			select: { msg: true },
-					//			take: 1,
-					//		},
-					//	},
-					//},
-					//admin: {
-					//	select: {
-					//		id: true,
-					//		type: true,
-					//		name: true,
-					//		password: true,
-					//		updatedAt: true,
-					//		owners: {
-					//			select: {
-					//				id: true,
-					//				email: true,
-					//				username: true,
-					//			},
-					//		},
-					//		messages: {
-					//			where: { unsent: false },
-					//			orderBy: { createdAt: 'desc' },
-					//			select: { msg: true },
-					//			take: 1,
-					//		},
-					//	},
-					//},
 					member: {
 						select: {
 							id: true,
@@ -393,29 +348,8 @@ export class ChannelService {
 								take: 1,
 							},
 						},
+						orderBy: { updatedAt: 'desc' }
 					},
-					//invited: {
-					//	select: {
-					//		id: true,
-					//		type: true,
-					//		name: true,
-					//		password: true,
-					//		updatedAt: true,
-					//		owners: {
-					//			select: {
-					//				id: true,
-					//				email: true,
-					//				username: true,
-					//			},
-					//		},
-					//		messages: {
-					//			where: { unsent: false },
-					//			orderBy: { createdAt: 'desc' },
-					//			select: { msg: true },
-					//			take: 1,
-					//		},
-					//	},
-					//},
 				},
 			});
 			return channelsList;
@@ -848,7 +782,9 @@ export class ChannelService {
 		try {
 			const channel = await this.prismaService.channel.findUnique({
 				where: { id: channelId },
-				select: { members: true },
+				select: { members: {
+					orderBy: { username: 'asc' }
+				} },
 			});
 			const members: MemberPreview.Response[] = [];
 			if (channel && channel.members) {

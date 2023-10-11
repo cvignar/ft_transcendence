@@ -38,6 +38,7 @@ export enum ChannelsEvent {
 	leaveChannel = 'leave channel',
 	makeAdmin = 'make admin',
 	removeAdmin = 'remove admin',
+	channelCreated = 'channel created',
 }
 
 export interface ChannelsState {
@@ -120,7 +121,7 @@ const channelSlice = createSlice({
 			channel: ChannelPreview
 		}>) => {
 			//if ()
-			state.channels.push(action.payload.channel);
+			state.channels.unshift(action.payload.channel);
 		}),
 		getChannels: ((state, action: PayloadAction<string | undefined>) => {
 			return;

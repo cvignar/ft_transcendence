@@ -11,6 +11,7 @@ import CardNavLink from '../../components/CardNavLink/CardNavLink';
 import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
 import { channelActions } from '../../store/channels.slice';
+import { typeEnum } from '../../../../contracts/enums';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
@@ -156,13 +157,19 @@ function ChannelSettings() {
 							Type of your channel
 						</label>
 						<div id='type-radio' className={settingStyles['radio-set']}>
-							<input type="radio" id="public" name="type" value="public" defaultChecked />
+							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC
+							? <input type="radio" id="public" name="type" value="public" defaultChecked />
+							: <input type="radio" id="public" name="type" value="public" />}
 							<label htmlFor="public">public</label>
 
-							<input type="radio" id="private" name="type" value="private" />
+							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE
+								? <input type="radio" id="private" name="type" value="private" defaultChecked />
+								: <input type="radio" id="private" name="type" value="private" />}
 							<label htmlFor="private">private</label>
 
-							<input type="radio" id="protected" name="type" value="protected" />
+							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED
+								? <input type="radio" id="protected" name="type" value="protected" defaultChecked />
+								: <input type="radio" id="protected" name="type" value="protected" />}
 							<label htmlFor="protected">protected</label>
 						</div>
 					</fieldset>
