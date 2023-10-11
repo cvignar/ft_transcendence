@@ -36,7 +36,6 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		if (channelState.members) {
 			for (const member of channelState.members) {
 				if (user.profile && user.profile.id === member.id && member.isAdmin === true) {
-					console.log(user.profile.id, member.id, member.isOwner);
 					return true;
 				}
 			}
@@ -44,6 +43,37 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		return false;
 	};
 
+	const itIsOwner = () => {
+		if (channelState.members) {
+			for (const member of channelState.members) {
+				if (props && props.id === member.id && member.isOwner === true) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
+	const getRole = () => {
+		if (appearence !== 'member') {
+			return '';
+		}
+		if (user.profile && user.profile.id === props.id) {
+			return '';
+		}
+		if (props.isOwner === true) {
+			return 'owner';
+		} else if (props.isAdmin === true) {
+			return 'admin';
+		} else if (props.isBlocked === true) {
+			return 'blocked';
+		} else if (props.isMuted === true) {
+			return 'muted';
+		} else {
+			return 'member';
+		}
+
+	}
 
 	const makeAdmin = () => {
 		if (props && props.id && channelState.selectedChannel)
@@ -63,7 +93,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		<div className={classNames(styles['card'],
 			appearence !== 'list' ? styles['card-no-list'] : '')}>
 			<div className={classNames(styles['info'],
-				appearence !== 'list' ? styles['info-no-list'] : '')}>
+				appearence === 'member' ? styles['info-no-list'] : '')}>
 				<div className={appearence === 'member'
 				? styles['member-row']
 				: styles['normal']}>
@@ -89,7 +119,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								}
 							}
 							}}/>
-					{appearence === 'member' && IAmAdmin() === true
+					{appearence === 'member' && IAmAdmin() === true && itIsOwner() === false
 					? <div className={styles['member-btns']}>
 						{props.isAdmin
 							? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
@@ -103,10 +133,11 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 						: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
 						<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
 					</div>
-					: <></>}
+					: <div className={styles['role']}>{getRole()}</div>}
 
 				</div>
-				<div className={styles['header-message']}>
+				<div className={classNames(styles['header-message'], appearence === 'member'
+					? styles['header-message-member'] : '')}>
 					<div className={appearence === 'member'
 							? styles['header-member']
 							: styles['header']}>{props?.name ? props.name : (props.username ? props.username : '')}</div>

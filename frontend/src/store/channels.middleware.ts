@@ -52,6 +52,9 @@ const channelsMiddleware: Middleware = store => {
 					socket.emit(ChannelsEvent.readChannelStatus, {email: store.getState().user.prodile.email, channelId: store.getState().channel.selectedChannel.id});
 				}
 			});
+			socket.on(ChannelsEvent.channelCreated, (channel: ChannelPreview) => {
+				store.dispatch(channelActions.setSelectedChannel(channel));
+			});
 			// socket.on(ChannelsEvent.update, () => {
 				// store.dispatch(channelActions.updateState());
 				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {

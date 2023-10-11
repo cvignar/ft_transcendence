@@ -14,6 +14,7 @@ import { CreateChannel } from '../../interfaces/createChannel.interface';
 import { getCookie } from 'typescript-cookie';
 
 export function CreateChannelFrom() {
+	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
 	const user = useSelector((s: RootState) => s.user);
 	const channelState = useSelector((s: RootState) => s.channel);
@@ -45,6 +46,11 @@ export function CreateChannelFrom() {
 			}]
 		};
 		dispatch(channelActions.createChannel(newChannel));
+		setTimeout(() => {
+			if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
+				navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
+			}
+		}, 500);
 		//console.log(newChannel);
 	};
 
@@ -89,7 +95,7 @@ export function CreateChannelFrom() {
 					<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={styles['svg']}/></label>
 				</div>
 			</div>
-			{channelState.error ? <div>{channelState.error[0]}</div> : <></>}
+			{channelState.error ? <div>{channelState.error}</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>
 				<label htmlFor='type-radio' className={styles['radio-set']}>

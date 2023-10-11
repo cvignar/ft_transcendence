@@ -110,6 +110,7 @@ export class ChannelGateway {
 			);
 			client.join(preview.name);
 			client.emit('add preview', preview);
+			client.emit('channel created', preview);
 			this.server.in('all').emit('update channel request');
 		}
 	}
