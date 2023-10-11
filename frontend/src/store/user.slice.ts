@@ -15,10 +15,11 @@ export const EMAIL_PERSISTENT_STATE = "userEmail";
 export const USERNAME_PERSISTENT_STATE = "userName";
 export const USERID_PERSISTENT_STATE = "userId";
 export const PROFILE_PERSISTENT_STATE = "userProfile";
-const uri = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/intra42`;
-const uri2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/auth/2fa`;
-const uriEnable2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/enable2fa`;
-const uriDisable2fa = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/disable2fa`;
+const back_prefix = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}`;
+const uri = `${back_prefix}/auth/intra42`;
+const uri2fa = `${back_prefix}/auth/2fa`;
+const uriEnable2fa = `${back_prefix}/user/enable2fa`;
+const uriDisable2fa = `${back_prefix}/user/disable2fa`;
 
 export enum UserEvents {
 	updateProfile = 'update profile',
