@@ -32,6 +32,7 @@ export class Result {
 	private endTime: number = 0;
 	private duration: number = 0;
 	private isActual = false;
+	constructor() {}
 	setIsActual(isActual: boolean) {
 		this.isActual = isActual;
 	}
@@ -54,6 +55,16 @@ export class Result {
 				}
 			}
 		}
+	}
+	makeRestoredKey(userId: number) {
+		this.player1 = userId;
+		this.player2 = -1;
+		this.score1 = 0;
+		this.score2 = 0;
+		this.startTime = 0;
+		this.endTime = 0;
+		this.duration = 0;
+		this.isActual = true;
 	}
 	get(): {
 			player1: number | undefined,
@@ -107,6 +118,9 @@ export class GamesSet {
 			return player;
 		}
 		return undefined;
+	}
+	setResult(result: Result) {
+		this.resultQueue.push(result);
 	}
 	getPlayerById(userId: number): Player | undefined {
 		const duplicates = new Array<Player>;

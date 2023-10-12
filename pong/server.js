@@ -15,7 +15,7 @@ import express from 'express';
 import { GameCmd, GameCommand, GameMode, GameStatus } from './static/common.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
-import { GamesSet } from './GamesSet.js';
+import { GamesSet, Result } from './GamesSet.js';
 import { io as ioc } from 'socket.io-client';
 import { ControlOptions, Options } from './static/options.js';
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
@@ -53,16 +53,28 @@ else {
     console.log("port is not assigned");
     process.exit(1);
 }
+// const roomes = new Map<any, string>();
+// io.in(roomes.get(key)).emit('event', data);
 io.on("connection", (socket) => {
+    // socket.on('watch', (userId) => {
+    //register socket to room
+    // socket.join(roomes.get(key));
+    //connect to game
+    // });
     socket.on("new player", (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
             socket.emit("player created", user === null || user === void 0 ? void 0 : user.scheme);
             const pong = games.getPong(socket.id);
             if (pong) {
-                socket.emit("player created");
+                // socket.emit("player created");
                 pong.status = GameStatus.PLAYING;
                 socket.emit("pong restored");
+                const result = new Result();
+                if (user && user.id > 0) {
+                    result.makeRestoredKey(user.id);
+                    games.setResult(result);
+                }
             }
         }
         else {
@@ -142,29 +154,18 @@ io.on("connection", (socket) => {
         var _a;
         const inviter = games.getPlayer(socket.id);
         if (inviter) {
-            // const user = {
-            // 	name: inviter.name,
-            // 	id: inviter.id,
-            // 	side: inviter.side,
-            // 	scheme: inviter.scheme,
-            // };
-            // inviter = games.newPlayer(socket.id, user);
-            // if (inviter) {
-            // socket.emit("player created", inviter.scheme);
             const pong = games.getPong(socket.id);
             if (pong && pong.owner) {
                 games.deletePong(pong.owner.socketId);
             }
             const invited = games.getPlayerById(user_id);
             if (invited) {
-                console.log(games.getPlayers());
                 const invitedSocket = io.sockets.sockets.get(invited.socketId);
                 if (invitedSocket) {
                     (_a = io.sockets.sockets.get(invited.socketId)) === null || _a === void 0 ? void 0 : _a.emit('confirm partner', [socket.id, inviter.name]);
                     return;
                 }
             }
-            // }
         }
         socket.emit('partner unavailable');
     });
