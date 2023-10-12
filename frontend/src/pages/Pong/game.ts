@@ -111,6 +111,8 @@ export function game(socket: any, user: any) {
 				}, ControlOptions.game_startTime);
 			}
 		}
+	});	socket.on("pong restored", function () {
+		score.gameIsOn = true;
 	});
 	socket.on("state", function (state: ServerMsg) {
 		browserState.copy(state);

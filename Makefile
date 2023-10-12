@@ -22,7 +22,7 @@ mkdir:
 
 up:
 	@echo "======================================"
-	docker-compose -f docker-compose.yml up -d --build
+	docker-compose up --build
 	@echo "======================================"
 	docker images
 	@echo "======================================"

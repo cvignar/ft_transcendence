@@ -1,17 +1,21 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
-import { GameMode, GameScheme } from './static/common.js';
-import { Options } from './static/options.js';
+import { GameMode, GameScheme, GameStatus } from './static/common.js';
+import { Options, PongOptions } from './static/options.js';
 export class Player {
     constructor(socketId, user) {
         this.id = 0;
         this.side = 0;
         this.scheme = GameScheme.GENERAL;
+        this.disconnectTime = 0;
+        this.timeOutOf = false;
         this.socketId = socketId;
         this.name = user.name;
         this.id = user.id;
         this.side = user.side;
         this.scheme = user.scheme;
+        this.disconnectTime = 0;
+        this.timeOutOf = false;
     }
 }
 export class Result {
@@ -67,9 +71,13 @@ export class GamesSet {
         this.pongs = new Map;
         this.pongsIdx = new Map;
         this.resultQueue = new Array();
+        this.deletePlayerQueue = new Array();
     }
     getPongs() {
         return this.pongs;
+    }
+    getPlayers() {
+        return this.players;
     }
     size() {
         return this.pongs.size;
@@ -85,11 +93,24 @@ export class GamesSet {
         return undefined;
     }
     getPlayerById(userId) {
+        const duplicates = new Array;
         for (const socketId of this.players.keys()) {
             const player = this.getPlayer(socketId);
             if (player && player.id == userId) {
-                return player;
+                duplicates.push(player);
             }
+        }
+        while (duplicates.length > 1) {
+            const player = duplicates.shift();
+            if (player) {
+                const result = this.deletePlayer(player.socketId);
+                if (result === null) {
+                    duplicates.push(player);
+                }
+            }
+        }
+        if (duplicates.length === 1) {
+            return duplicates.shift();
         }
         return undefined;
     }
@@ -107,13 +128,27 @@ export class GamesSet {
         return undefined;
     }
     newPlayer(socketId, user) {
-        if (user && user.name && user.side) {
+        if (user && user.name && user.side && user.scheme) {
             if (this.players.has(socketId)) {
                 this.deletePlayer(socketId);
             }
             let player = this.getPlayerById(user.id);
             if (player && player.id > 0) {
-                this.deletePlayer(player.socketId);
+                if (player) {
+                    const pong = this.getPong(player.socketId);
+                    if (pong) {
+                        if (pong.mode == GameMode.PARTNER_GAME && pong.status == GameStatus.PAUSED) {
+                            player.disconnectTime = 0;
+                            player.timeOutOf = false;
+                            const priorSocketId = player.socketId;
+                            this.renewPlayerSocketId(priorSocketId, socketId);
+                            return player;
+                        }
+                        else {
+                            this.deletePlayer(player.socketId);
+                        }
+                    }
+                }
             }
             player = new Player(socketId, user);
             this.players.set(socketId, player);
@@ -122,20 +157,29 @@ export class GamesSet {
         return undefined;
     }
     deletePlayer(socketId) {
-        const pong = this.getPong(socketId);
-        if (pong) {
-            if (pong.mode == GameMode.PARTNER_GAME &&
-                pong.leftScore < Options.maxWins &&
-                pong.rightScore < Options.maxWins) {
-                // Generating the signal that the game is interrupted
-                pong.leftScore = Options.maxWins;
-                pong.rightScore = Options.maxWins;
-                pong.gameResult.set(pong);
-            }
-            pong.mode = GameMode.STOPPING;
-        }
         const player = this.players.get(socketId);
-        this.players.delete(socketId);
+        if (player) {
+            const pong = this.getPong(socketId);
+            if (pong) {
+                // Partner game is interrupted
+                if (pong.mode == GameMode.PARTNER_GAME &&
+                    pong.leftScore < Options.maxWins &&
+                    pong.rightScore < Options.maxWins) {
+                    // The player just disconnected
+                    if (player.disconnectTime == 0) {
+                        player.disconnectTime = Date.now();
+                        pong.status = GameStatus.PAUSED;
+                        return null;
+                    }
+                    // Generating the signal that the partner game is interrupted
+                    pong.leftScore = Options.maxWins;
+                    pong.rightScore = Options.maxWins;
+                    pong.gameResult.set(pong);
+                }
+                pong.mode = GameMode.STOPPING;
+            }
+            this.players.delete(socketId);
+        }
         return player;
     }
     nwePong(owner) {
@@ -193,14 +237,16 @@ export class GamesSet {
         let player = this.getPlayer(socketId);
         if (player) {
             let pong = this.getPong(socketId);
-            if (pong && pong.partner && pong.partner == player) {
-                if (pong.owner) {
-                    return pong.owner.socketId;
+            if (pong && pong.atGameStart) {
+                if (pong && pong.partner && pong.partner == player) {
+                    if (pong.owner) {
+                        return pong.owner.socketId;
+                    }
                 }
-            }
-            else if (pong && pong.owner && pong.owner == player) {
-                if (pong.partner) {
-                    return pong.partner.socketId;
+                else if (pong && pong.owner && pong.owner == player) {
+                    if (pong.partner) {
+                        return pong.partner.socketId;
+                    }
                 }
             }
         }
@@ -223,5 +269,51 @@ export class GamesSet {
             return true;
         }
         return false;
+    }
+    checkPlayerForDelete(pong) {
+        if (pong.owner &&
+            pong.owner.disconnectTime != 0 &&
+            pong.owner.timeOutOf == false &&
+            Date.now() - pong.owner.disconnectTime > PongOptions.playerDisconnect_timeout) {
+            this.deletePlayerQueue.push(pong.owner.socketId);
+            pong.owner.timeOutOf = true;
+        }
+        if (pong.partner &&
+            pong.partner.disconnectTime != 0 &&
+            pong.partner.timeOutOf == false &&
+            Date.now() - pong.partner.disconnectTime > PongOptions.playerDisconnect_timeout) {
+            this.deletePlayerQueue.push(pong.partner.socketId);
+            pong.partner.timeOutOf = true;
+        }
+    }
+    getNextPlayerForDeleteFromQueue() {
+        if (this.deletePlayerQueue.length) {
+            return this.deletePlayerQueue.shift();
+        }
+        return undefined;
+    }
+    isPlayerForDeleteInQueue() {
+        if (this.deletePlayerQueue.length) {
+            return true;
+        }
+        return false;
+    }
+    renewPlayerSocketId(prior, renewed) {
+        const player = this.players.get(prior);
+        if (player) {
+            this.players.delete(prior);
+            this.players.set(renewed, player);
+            player.socketId = renewed;
+        }
+        let pong = this.pongs.get(prior);
+        if (pong) {
+            this.pongs.delete(prior);
+            this.pongs.set(renewed, pong);
+        }
+        pong = this.pongsIdx.get(prior);
+        if (pong) {
+            this.pongsIdx.delete(prior);
+            this.pongsIdx.set(renewed, pong);
+        }
     }
 }
