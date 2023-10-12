@@ -43,6 +43,17 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		return false;
 	};
 
+	const IAmOwner = () => {
+		if (channelState.members) {
+			for (const member of channelState.members) {
+				if (user.profile && user.profile.id === member.id && member.isOwner === true) {
+					return true;
+				}
+			}
+		}
+		return false;
+	};
+
 	const itIsOwner = () => {
 		if (channelState.members) {
 			for (const member of channelState.members) {
@@ -56,9 +67,6 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 
 	const getRole = () => {
 		if (appearence !== 'member') {
-			return '';
-		}
-		if (user.profile && user.profile.id === props.id) {
 			return '';
 		}
 		if (props.isOwner === true) {
@@ -135,21 +143,31 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								}
 							}
 						}}/>
-					{appearence === 'member' && IAmAdmin() === true && itIsOwner() === false
+					{appearence === 'member' && itIsOwner() === false
 						? <div className={styles['member-btns']}>
-							{props.isAdmin
-								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
-								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={makeAdmin}>Make admin</Button>
+							{IAmOwner() === true
+								? <>
+									{props.isAdmin
+										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
+										: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={makeAdmin}>Make admin</Button>
+									}
+								</>
+								: <></>
 							}
-							{props.isBlocked
-								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={unblockMember}>Unblock</Button>
-								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={blockMember}>Block</Button>}
-							{props.isMuted
-								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
-								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
-							<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
+							{IAmAdmin() === true
+								? <>
+									{props.isMuted
+										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
+										: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
+									{props.isBlocked
+										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={unblockMember}>Unblock</Button>
+										: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={blockMember}>Block</Button>}
+									<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
+								</>
+								: <></>
+							}
 						</div>
-						: <div className={styles['role']}>{getRole()}</div>}
+						: <>{  <div className={styles['role']}>{getRole()}</div>}</>}
 
 				</div>
 				<div className={classNames(styles['header-message'], appearence === 'member'
