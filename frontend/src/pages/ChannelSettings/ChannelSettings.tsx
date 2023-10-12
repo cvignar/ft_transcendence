@@ -30,13 +30,13 @@ function ChannelSettings() {
 		console.log(e.currentTarget.type.value);
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
-			setPicture('/default_channel_public.png')
+			setPicture('/default_channel_public.png');
 		} else if (e.currentTarget.type.value === 'protected') {
 			setIsProtected(true);
-			setPicture('/default_channel_protected.png')
+			setPicture('/default_channel_protected.png');
 		} else if (e.currentTarget.type.value === 'private') {
 			setIsProtected(false);
-			setPicture('/default_channel_private.png')
+			setPicture('/default_channel_private.png');
 		}
 	};
 
@@ -63,7 +63,8 @@ function ChannelSettings() {
 		// 	dispatch(updateProfile(update_user));
 		// 	window.location.reload(false);
 		// }
-	}
+	};
+	
 	const showMembers = () => {
 		if (channelState.selectedChannel && channelState.selectedChannel.id && user.profile) {
 			dispatch(channelActions.readChannelStatus({channelId: channelState.selectedChannel.id, email: user.profile.email}));
@@ -128,66 +129,66 @@ function ChannelSettings() {
 
 	return (
 		<>
-		<div className={styles['channel-card']}>
-		<form className={settingStyles['form']} onSubmit={onSubmit} onChange={onChange}>
-			<div className={styles['join']}>
-				<div className={settingStyles['avatar_setting']}>
-					<img className={settingStyles['avatar']} src={picture}/>
-					<div className={settingStyles['middle_settings']}>
-						<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
-						<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
-					</div>
-				</div>
-				<Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>
-				{IAmOwner() !== true
-				? IAmMember() !== true 
-					? <Button
-						className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-						onClick={joinChannel}>Join</Button>
-					: <Button
-						className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-						onClick={leaveChannel}>Leave</Button>
-				: <></>}
-			</div>
-			{channelState.error ? <div>{channelState.error}</div> : <></>}
-			{IAmOwner() === true
-				? <>
-					<fieldset>
-						<label htmlFor='type-radio' className={classNames(settingStyles['radio-set'], styles['radio-set'])}>
-							Type of your channel
-						</label>
-						<div id='type-radio' className={settingStyles['radio-set']}>
-							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC
-							? <input type="radio" id="public" name="type" value="public" defaultChecked />
-							: <input type="radio" id="public" name="type" value="public" />}
-							<label htmlFor="public">public</label>
-
-							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE
-								? <input type="radio" id="private" name="type" value="private" defaultChecked />
-								: <input type="radio" id="private" name="type" value="private" />}
-							<label htmlFor="private">private</label>
-
-							{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED
-								? <input type="radio" id="protected" name="type" value="protected" defaultChecked />
-								: <input type="radio" id="protected" name="type" value="protected" />}
-							<label htmlFor="protected">protected</label>
+			<div className={styles['channel-card']}>
+				<form className={settingStyles['form']} onSubmit={onSubmit} onChange={onChange}>
+					<div className={styles['join']}>
+						<div className={settingStyles['avatar_setting']}>
+							<img className={settingStyles['avatar']} src={picture}/>
+							<div className={settingStyles['middle_settings']}>
+								<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
+								<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
+							</div>
 						</div>
-					</fieldset>
-					{isProtected && <Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>}
-					<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
-				</>
-				: <></>}
-			{showMmbrs === false
-				? <Button className={classNames(settingStyles['button'], styles['button'])} onClick={showMembers}>Show members</Button>
-				: <div className={styles['members']}> <h4 className={styles['headling']}>Members</h4>
-				{channelState.members && channelState.members.length > 0
-					? channelState.members.map((member: any) => (
-						<ChannelShortInfo key={member.id} appearence='member' props={member}/>
-					))
-					: <></>}
-				</div>
-			}
-		</form>
+						<Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>
+						{IAmOwner() !== true
+							? IAmMember() !== true 
+								? <Button
+									className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+									onClick={joinChannel}>Join</Button>
+								: <Button
+									className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+									onClick={leaveChannel}>Leave</Button>
+							: <></>}
+					</div>
+					{channelState.error ? <div>{channelState.error}</div> : <></>}
+					{IAmOwner() === true
+						? <>
+							<fieldset>
+								<label htmlFor='type-radio' className={classNames(settingStyles['radio-set'], styles['radio-set'])}>
+									Type of your channel
+								</label>
+								<div id='type-radio' className={settingStyles['radio-set']}>
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC
+										? <input type="radio" id="public" name="type" value="public" defaultChecked />
+										: <input type="radio" id="public" name="type" value="public" />}
+									<label htmlFor="public">public</label>
+
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE
+										? <input type="radio" id="private" name="type" value="private" defaultChecked />
+										: <input type="radio" id="private" name="type" value="private" />}
+									<label htmlFor="private">private</label>
+
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED
+										? <input type="radio" id="protected" name="type" value="protected" defaultChecked />
+										: <input type="radio" id="protected" name="type" value="protected" />}
+									<label htmlFor="protected">protected</label>
+								</div>
+							</fieldset>
+							{isProtected && <Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>}
+							<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
+						</>
+						: <></>}
+					{showMmbrs === false
+						? <Button className={classNames(settingStyles['button'], styles['button'])} onClick={showMembers}>Show members</Button>
+						: <div className={styles['members']}> <h4 className={styles['headling']}>Members</h4>
+							{channelState.members && channelState.members.length > 0
+								? channelState.members.map((member: any) => (
+									<ChannelShortInfo key={member.id} appearence='member' props={member}/>
+								))
+								: <></>}
+						</div>
+					}
+				</form>
 			</div>
 		</>
 	);

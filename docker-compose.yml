@@ -13,42 +13,42 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_data/db
+      device: ${PROJECT_PATH}/ft_data/db
 
   upload:
     name: upload
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_data/upload
+      device: ${PROJECT_PATH}/ft_data/upload
 
   backend:
     name: backend
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_transcendence/backend
+      device: ${PROJECT_PATH}/ft_transcendence/backend
 
   contracts:
     name: contracts
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_transcendence/contracts
+      device: ${PROJECT_PATH}/ft_transcendence/contracts
 
   frontend:
     name: frontend
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_transcendence/frontend
+      device: ${PROJECT_PATH}/ft_transcendence/frontend
 
   pong:
     name: pong
     driver_opts:
       type: none
       o: bind
-      device: ${PROJECT_PATH}ft_transcendence/pong
+      device: ${PROJECT_PATH}/ft_transcendence/pong
 
 services:
 

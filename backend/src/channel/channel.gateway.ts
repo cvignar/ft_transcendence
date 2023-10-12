@@ -96,9 +96,13 @@ export class ChannelGateway {
 		@ConnectedSocket() client: Socket,
 	) {
 		console.log('create channel event', channelData.name);
-		if (!channelData.name || channelData.name.length < 1 || channelData.name === undefined) {
+		if (
+			!channelData.name ||
+			channelData.name.length < 1 ||
+			channelData.name === undefined
+		) {
 			client.emit('exception', 'Channel name must not be empty');
-			return ;
+			return;
 		}
 		const channelId = await this.channelService.createChannel(channelData);
 		if (channelId == undefined) {
@@ -305,7 +309,9 @@ export class ChannelGateway {
 			const channelName = await this.channelService.getChannelNameById(
 				messageData.channelId,
 			);
-			const data = await this.channelService.getMessages(messageData.channelId);
+			const data = await this.channelService.getMessages(
+				messageData.channelId,
+			);
 			// client.emit('get messages', data);
 			// this.broadcast('get messages', data, messageData.channelId);
 			this.server.in(channelName).emit('update channel request');
@@ -316,16 +322,11 @@ export class ChannelGateway {
 			);
 	}
 
-	async broadcast(
-		event: string,
-		data: any,
-		channelId: number,
-	) {
+	async broadcast(event: string, data: any, channelId: number) {
 		const channelName =
 			await this.channelService.getChannelNameById(channelId);
 		this.server.in(channelName).emit(event, data);
 	}
-	
 
 	async getRole(
 		email: string,
@@ -447,19 +448,20 @@ export class ChannelGateway {
 		this.server.in(channelName).emit('update channel request');
 	}
 
-	@SubscribeMessage('get member')
-	async getMember(
-		@MessageBody() data: { channelId: number; memberId: number },
-	) {}
-
 	@SubscribeMessage('make admin')
-	async	makeAdmin(
-		@MessageBody() channelData: {userId: number, channelId: number},
+	async makeAdmin(
+		@MessageBody() channelData: { userId: number; channelId: number },
 		@ConnectedSocket() client: Socket,
 	) {
-		const channel = await this.channelService.makeAdmin(channelData);
+		const channel = await this.channelService.makeAdmin(
+			channelData,
+			client.data.id,
+		);
 		if (channel) {
-			const members = await this.channelService.getMembers(channelData.userId, channel.id);
+			const members = await this.channelService.getMembers(
+				channelData.userId,
+				channel.id,
+			);
 			client.emit('get members', members);
 			this.server.in(channel.name).emit('update channel request');
 		} else {
@@ -468,73 +470,88 @@ export class ChannelGateway {
 	}
 
 	@SubscribeMessage('remove admin')
-	async	removeAdmin(
-		@MessageBody() channelData: {userId: number, channelId: number},
+	async removeAdmin(
+		@MessageBody() channelData: { userId: number; channelId: number },
 		@ConnectedSocket() client: Socket,
 	) {
-		const channel = await this.channelService.removeAdmin(channelData);
+		const channel = await this.channelService.removeAdmin(
+			channelData,
+			client.data.id,
+		);
 		if (channel) {
-			const members = await this.channelService.getMembers(channelData.userId, channel.id);
+			const members = await this.channelService.getMembers(
+				channelData.userId,
+				channel.id,
+			);
 			client.emit('get members', members);
 			this.server.in(channel.name).emit('update channel request');
 		} else {
 			client.emit('exception', 'Cannot remove this administrator');
 		}
 	}
-	//async handleBeAdmin(
-	//  @MessageBody() channelData: UpdateChannel.Request,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const channelName = await this.channelService.getChannelNameById(
-	//    channelData.id,
-	//  );
-	//  await this.channelService.be__admin(channelData);
-	//  const id = await this.channelService.get__id__ByEmail(channelData.email);
-	//  const admins = await this.channelService.fetch__admins(id, channelData.id);
-	//  client.emit('fetch admins', admins);
-	//  const members = await this.channelService.fetch__members(
-	//    id,
-	//    channelData.id,
-	//  );
-	//  client.emit('fetch members', members);
-	//  this.server.in(channelName).emit('update channel request');
-	//}
 
-	//@SubscribeMessage('not admin')
-	//async handleNotAdmin(
-	//  @MessageBody() data: updateChannel,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
-	//  await this.chatservice.not__admin(data);
-	//  const id = await this.chatservice.get__id__ByEmail(data.email);
-	//  const admins = await this.chatservice.fetch__admins(id, data.channelId);
-	//  client.emit('fetch admins', admins);
-	//  const members = await this.chatservice.fetch__members(id, data.channelId);
-	//  client.emit('fetch members', members);
-	//  this.updateChannelRequest('update channel request', cName);
-	//}
+	@SubscribeMessage('block member')
+	async blockMember(
+		@MessageBody() channelData: { userId: number; channelId: number },
+		@ConnectedSocket() client: Socket,
+	) {
+		const channel = await this.channelService.blockMember(
+			channelData,
+			client.data.id,
+		);
+		if (channel) {
+			const members = await this.channelService.getMembers(
+				channelData.userId,
+				channel.id,
+			);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot block this member');
+		}
+	}
 
-	//@SubscribeMessage('get setting')
-	//async handleGetSetting(
-	//  @MessageBody() channelId: number,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const info = await this.chatservice.get__setting(channelId);
-	//  client.emit('setting info', info);
-	//}
+	@SubscribeMessage('unblock member')
+	async unblockMember(
+		@MessageBody() channelData: { userId: number; channelId: number },
+		@ConnectedSocket() client: Socket,
+	) {
+		const channel = await this.channelService.unblockMember(
+			channelData,
+			client.data.id,
+		);
+		if (channel) {
+			const members = await this.channelService.getMembers(
+				channelData.userId,
+				channel.id,
+			);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot unblock non-blocked member');
+		}
+	}
 
-	//@SubscribeMessage('update setting')
-	//async handleUpdateSetting(
-	//  @MessageBody() data: updateChannel,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const cName = await this.chatservice.get__Cname__ByCId(data.channelId);
-	//  await this.chatservice.update__setting(data);
-	//  const info = await this.chatservice.get__setting(data.channelId);
-	//  client.emit('setting info', info);
-	//  this.updateChannelRequest('update channel request', cName);
-	//}
+	@SubscribeMessage('kick member')
+	async kickMember(
+		@MessageBody() channelData: { userId: number; channelId: number },
+		@ConnectedSocket() client: Socket,
+	) {
+		const channel = await this.channelService.kickMember(
+			channelData,
+			client.data.id,
+		);
+		if (channel) {
+			const members = await this.channelService.getMembers(
+				channelData.userId,
+				channel.id,
+			);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot kick this member');
+		}
+	}
 
 	@SubscribeMessage('mute user')
 	async muteUser(@MessageBody() data: any) /*FIXME!!!!*/ {
@@ -543,5 +560,4 @@ export class ChannelGateway {
 	//async handleMuteUser(@MessageBody() data: mute) {
 	//  await this.chatservice.new__mute(data);
 	//}
-
 }
