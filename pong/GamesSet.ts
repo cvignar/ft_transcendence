@@ -1,7 +1,7 @@
 import { Pong } from './Pong.js';
 import { deletePongAndNotifyPlayers } from './server.js';
-import { GameMode, GameScheme, Side } from './static/common.js';
-import { Options } from './static/options.js';
+import { GameMode, GameScheme, GameStatus, Side } from './static/common.js';
+import { Options, PongOptions } from './static/options.js';
 
 
 export class Player {
@@ -10,12 +10,16 @@ export class Player {
 	id: number = 0;
 	side: Side = 0;
 	scheme: GameScheme = GameScheme.GENERAL;
+	disconnectTime: number = 0;
+	timeOutOf: boolean = false;
 	constructor(socketId: string, user: {name: string, id: number, side: Side, scheme: GameScheme}) {
 		this.socketId = socketId;
 		this.name = user.name;
 		this.id = user.id;
 		this.side = user.side;
 		this.scheme = user.scheme;
+		this.disconnectTime = 0;
+		this.timeOutOf = false;
 	}
 }
 
@@ -28,6 +32,7 @@ export class Result {
 	private endTime: number = 0;
 	private duration: number = 0;
 	private isActual = false;
+	constructor() {}
 	setIsActual(isActual: boolean) {
 		this.isActual = isActual;
 	}
@@ -51,6 +56,16 @@ export class Result {
 			}
 		}
 	}
+	makeRestoredKey(userId: number) {
+		this.player1 = userId;
+		this.player2 = -1;
+		this.score1 = 0;
+		this.score2 = 0;
+		this.startTime = 0;
+		this.endTime = 0;
+		this.duration = 0;
+		this.isActual = true;
+	}
 	get(): {
 			player1: number | undefined,
 			player2: number | undefined,
@@ -73,18 +88,23 @@ export class Result {
 }
 
 export class GamesSet {
-	private players:		Map<string, Player>;
-	private pongs:			Map<string, Pong>;
-	private pongsIdx:		Map<string, Pong>;
-	private resultQueue:	Result[];
+	private players:			Map<string, Player>;
+	private pongs:				Map<string, Pong>;
+	private pongsIdx:			Map<string, Pong>;
+	private resultQueue:		Result[];
+	private deletePlayerQueue:	string[];
 	constructor() {
 		this.players = new Map<string, Player>;
 		this.pongs = new Map<string, Pong>;
 		this.pongsIdx = new Map<string, Pong>;
 		this.resultQueue = new Array();
+		this.deletePlayerQueue = new Array();
 	}
 	getPongs() {
 		return this.pongs;
+	}
+	getPlayers() {
+		return this.players;
 	}
 	size(): number {
 		return this.pongs.size;
@@ -99,12 +119,29 @@ export class GamesSet {
 		}
 		return undefined;
 	}
+	setResult(result: Result) {
+		this.resultQueue.push(result);
+	}
 	getPlayerById(userId: number): Player | undefined {
+		const duplicates = new Array<Player>;
 		for (const socketId of this.players.keys()) {
 			const player = this.getPlayer(socketId);
+			
 			if (player && player.id == userId) {
-				return player;
+				duplicates.push(player);
 			}
+		}
+		while(duplicates.length > 1) {
+			const player = duplicates.shift();
+			if (player) {
+				const result = this.deletePlayer(player.socketId);
+				if (result === null) {
+					duplicates.push(player);
+				}
+			}
+		}
+		if (duplicates.length === 1) {
+			return duplicates.shift();
 		}
 		return undefined;
 	}
@@ -121,13 +158,26 @@ export class GamesSet {
 		return undefined;
 	}
 	newPlayer(socketId: string, user: {name: string, id: number, side: Side, scheme: GameScheme} | undefined): Player | undefined {
-		if (user && user.name && user.side) {
+		if (user && user.name && user.side && user.scheme) {
 			if (this.players.has(socketId)) {
 				this.deletePlayer(socketId);
 			}
 			let player = this.getPlayerById(user.id)
 			if (player && player.id > 0) {
-				this.deletePlayer(player.socketId);
+				if (player) {
+					const pong = this.getPong(player.socketId)
+					if (pong) {
+						if (pong.mode == GameMode.PARTNER_GAME && pong.status == GameStatus.PAUSED) {
+							player.disconnectTime = 0;
+							player.timeOutOf = false;
+							const priorSocketId = player.socketId;
+							this.renewPlayerSocketId(priorSocketId, socketId);
+							return player;
+						} else {
+							this.deletePlayer(player.socketId);
+						}
+					}
+				}
 			}
 			player = new Player(socketId, user);
 			this.players.set(socketId, player);
@@ -135,21 +185,31 @@ export class GamesSet {
 		}
 		return undefined;
 	}
-	deletePlayer(socketId: string): Player | undefined {
-		const pong = this.getPong(socketId);
-		if (pong) {
-			if (pong.mode == GameMode.PARTNER_GAME && 
-				pong.leftScore < Options.maxWins &&
-				pong.rightScore < Options.maxWins) {
-					// Generating the signal that the game is interrupted
+	deletePlayer(socketId: string): Player | undefined | null {
+		const player = this.players.get(socketId);
+		if (player) {
+			const pong = this.getPong(socketId);
+			if (pong) {
+				// Partner game is interrupted
+				if (pong.mode == GameMode.PARTNER_GAME &&
+					pong.leftScore < Options.maxWins &&
+					pong.rightScore < Options.maxWins)
+				{
+					// The player just disconnected
+					if (player.disconnectTime == 0) {
+						player.disconnectTime = Date.now();
+						pong.status = GameStatus.PAUSED;
+						return null;
+					}
+					// Generating the signal that the partner game is interrupted
 					pong.leftScore = Options.maxWins;
 					pong.rightScore = Options.maxWins;
 					pong.gameResult.set(pong);
 				}
-			pong.mode = GameMode.STOPPING;
+				pong.mode = GameMode.STOPPING;
+			}
+			this.players.delete(socketId);
 		}
-		const player = this.players.get(socketId);
-		this.players.delete(socketId);
 		return player;
 	}
 	nwePong(owner: Player): Pong {
@@ -207,13 +267,16 @@ export class GamesSet {
 		let player = this.getPlayer(socketId);
 		if (player) {
 			let pong = this.getPong(socketId);
-			if (pong && pong.partner && pong.partner == player) {
-				if (pong.owner) {
-					return pong.owner.socketId;
-				}
-			} else if (pong && pong.owner && pong.owner == player) {
-				if (pong.partner) {
-					return pong.partner.socketId;
+			if (pong && pong.atGameStart)
+			{
+				if (pong && pong.partner && pong.partner == player) {
+					if (pong.owner) {
+						return pong.owner.socketId;
+					}
+				} else if (pong && pong.owner && pong.owner == player) {
+					if (pong.partner) {
+						return pong.partner.socketId;
+					}
 				}
 			}
 		}
@@ -225,7 +288,7 @@ export class GamesSet {
 			pong.gameResult.setIsActual(false);
 		}
 	}
-	getNextResultFromQueue():Result | undefined {
+	getNextResultFromQueue(): Result | undefined {
 		if (this.resultQueue.length) {
 			return this.resultQueue.shift();
 		}
@@ -236,5 +299,53 @@ export class GamesSet {
 			return true;
 		}
 		return false;
+	}
+	checkPlayerForDelete(pong: Pong) {
+		if (pong.owner &&
+			pong.owner.disconnectTime != 0 &&
+			pong.owner.timeOutOf == false &&
+			Date.now() - pong.owner.disconnectTime > PongOptions.playerDisconnect_timeout)
+		{
+				this.deletePlayerQueue.push(pong.owner.socketId);
+				pong.owner.timeOutOf = true;
+		}
+		if (pong.partner &&
+			pong.partner.disconnectTime != 0 &&
+			pong.partner.timeOutOf == false &&
+			Date.now() - pong.partner.disconnectTime > PongOptions.playerDisconnect_timeout)
+		{
+				this.deletePlayerQueue.push(pong.partner.socketId);
+				pong.partner.timeOutOf = true;
+		}
+	}
+	getNextPlayerForDeleteFromQueue(): string | undefined {
+		if (this.deletePlayerQueue.length) {
+			return this.deletePlayerQueue.shift();
+		}
+		return undefined;
+	}
+	isPlayerForDeleteInQueue(): boolean {
+		if (this.deletePlayerQueue.length) {
+			return true;
+		}
+		return false;
+	}
+	renewPlayerSocketId(prior: string, renewed: string) {
+		const player = this.players.get(prior);
+		if (player) {
+			this.players.delete(prior);
+			this.players.set(renewed, player);
+			player.socketId = renewed;
+		}
+		let pong = this.pongs.get(prior);
+		if (pong) {
+			this.pongs.delete(prior);
+			this.pongs.set(renewed, pong);
+		}
+		pong = this.pongsIdx.get(prior);
+		if (pong) {
+			this.pongsIdx.delete(prior);
+			this.pongsIdx.set(renewed, pong);
+		}
 	}
 }

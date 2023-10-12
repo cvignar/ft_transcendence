@@ -12,10 +12,10 @@ config();
 import http from 'http';
 import * as socketIO from 'socket.io';
 import express from 'express';
-import { GameCmd, GameCommand, GameMode } from './static/common.js';
+import { GameCmd, GameCommand, GameMode, GameStatus } from './static/common.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
-import { GamesSet } from './GamesSet.js';
+import { GamesSet, Result } from './GamesSet.js';
 import { io as ioc } from 'socket.io-client';
 import { ControlOptions, Options } from './static/options.js';
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
@@ -53,11 +53,29 @@ else {
     console.log("port is not assigned");
     process.exit(1);
 }
+// const roomes = new Map<any, string>();
+// io.in(roomes.get(key)).emit('event', data);
 io.on("connection", (socket) => {
+    // socket.on('watch', (userId) => {
+    //register socket to room
+    // socket.join(roomes.get(key));
+    //connect to game
+    // });
     socket.on("new player", (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
             socket.emit("player created", user === null || user === void 0 ? void 0 : user.scheme);
+            const pong = games.getPong(socket.id);
+            if (pong) {
+                // socket.emit("player created");
+                pong.status = GameStatus.PLAYING;
+                socket.emit("pong restored");
+                const result = new Result();
+                if (user && user.id > 0) {
+                    result.makeRestoredKey(user.id);
+                    games.setResult(result);
+                }
+            }
         }
         else {
             socket.emit("player not created");
@@ -65,7 +83,19 @@ io.on("connection", (socket) => {
         gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? "new player" : "new player not created");
     });
     socket.on("disconnect", (reason) => {
+        var _a, _b;
         const player = games.deletePlayer(socket.id);
+        if (player) {
+            const pong = games.getPong(socket.id);
+            if (pong && pong.mode == GameMode.PARTNER_GAME && pong.status == GameStatus.PAUSED) {
+                if (pong.owner) {
+                    (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit('partner disconnected');
+                }
+                if (pong.partner) {
+                    (_b = io.sockets.sockets.get(pong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit('partner disconnected');
+                }
+            }
+        }
         gebugPprinting(player === null || player === void 0 ? void 0 : player.name, reason);
     });
     socket.on("get partners list", () => {
@@ -104,14 +134,15 @@ io.on("connection", (socket) => {
         }
     });
     socket.on("partner choosed", (socket_id) => {
-        const partner = games.getPlayer(socket.id);
-        if (partner) {
+        const player = games.getPlayer(socket.id);
+        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, "choosing partner");
+        if (player) {
             const choosedOwner = games.getPlayer(socket_id);
             if (choosedOwner) {
                 const choosedOwnerSocket = io.sockets.sockets.get(socket_id);
                 if (choosedOwnerSocket) {
                     setTimeout(function () {
-                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit("confirm partner", [socket.id, partner.name]);
+                        choosedOwnerSocket === null || choosedOwnerSocket === void 0 ? void 0 : choosedOwnerSocket.emit("confirm partner", [socket.id, player.name]);
                     }, ControlOptions.game_startTime);
                     return;
                 }
@@ -120,27 +151,19 @@ io.on("connection", (socket) => {
         socket.emit("partner unavailable");
     });
     socket.on('invite partner', (user_id) => {
-        let inviter = games.getPlayer(socket.id);
+        var _a;
+        const inviter = games.getPlayer(socket.id);
         if (inviter) {
-            const user = {
-                name: inviter.name,
-                id: inviter.id,
-                side: inviter.side,
-                scheme: inviter.scheme,
-            };
-            inviter = games.newPlayer(socket.id, user);
-            if (inviter) {
-                socket.emit("player created", inviter.scheme);
-                gebugPprinting(inviter.name, "inviting player");
-                const invited = games.getPlayerById(user_id);
-                if (invited) {
-                    const invitedSocket = io.sockets.sockets.get(invited.socketId);
-                    if (invitedSocket) {
-                        setTimeout(function () {
-                            invitedSocket === null || invitedSocket === void 0 ? void 0 : invitedSocket.emit('confirm partner', [socket.id, inviter === null || inviter === void 0 ? void 0 : inviter.name]);
-                        }, ControlOptions.game_startTime);
-                        return;
-                    }
+            const pong = games.getPong(socket.id);
+            if (pong && pong.owner) {
+                games.deletePong(pong.owner.socketId);
+            }
+            const invited = games.getPlayerById(user_id);
+            if (invited) {
+                const invitedSocket = io.sockets.sockets.get(invited.socketId);
+                if (invitedSocket) {
+                    (_a = io.sockets.sockets.get(invited.socketId)) === null || _a === void 0 ? void 0 : _a.emit('confirm partner', [socket.id, inviter.name]);
+                    return;
                 }
             }
         }
@@ -196,14 +219,15 @@ io.on("connection", (socket) => {
 // Calculation loop
 setInterval(function () {
     var _a, _b;
-    let socketIdForDelete = undefined;
+    let pongSocketIdForDelete = undefined;
     for (const socketId of games.getPongs().keys()) {
         const pong = games.getPong(socketId);
         if (pong) {
             games.checkResult(pong);
+            games.checkPlayerForDelete(pong);
             if (pong.mode == GameMode.STOPPING) {
-                if (!socketIdForDelete) {
-                    socketIdForDelete = socketId;
+                if (!pongSocketIdForDelete) {
+                    pongSocketIdForDelete = socketId;
                 }
                 continue;
             }
@@ -216,9 +240,9 @@ setInterval(function () {
             }
         }
     }
-    if (socketIdForDelete) {
-        deletePongAndNotifyPlayers(socketIdForDelete);
-        socketIdForDelete = undefined;
+    if (pongSocketIdForDelete) {
+        deletePongAndNotifyPlayers(pongSocketIdForDelete);
+        pongSocketIdForDelete = undefined;
     }
 }, Pong.calculation_period);
 // Token request
@@ -250,7 +274,7 @@ function tokenRequest() {
 if (access_token) {
     setInterval(tokenRequest, Pong.tokenRequest_period);
 }
-// Send game results loop
+// Send game results and disconnect timeout players loop
 setInterval(function () {
     return __awaiter(this, void 0, void 0, function* () {
         if (access_token) {
@@ -281,6 +305,11 @@ setInterval(function () {
         }
         else {
             yield tokenRequest();
+        }
+        const playerSocketId = games.getNextPlayerForDeleteFromQueue();
+        if (playerSocketId) {
+            const player = games.deletePlayer(playerSocketId);
+            gebugPprinting(player === null || player === void 0 ? void 0 : player.name, 'disconnect timeout, deleted');
         }
     });
 }, Pong.sendResult_period);

@@ -325,10 +325,17 @@ export class Image extends ImageOptions {
 		this.drawBack();
 		this.drawScore(score);
 		this.drawDividingNet();
-		this.drawLeftPaddle(this.leftPaddle_y);
 		this.drawRightPaddle(this.rightPaddle_y);
 		this.drawBall(browserState.ballCenter_x, browserState.ballCenter_y);
-	}
+		this.drawLeftPaddle(this.leftPaddle_y);
+		if (browserState.mode == GameMode.PARTNER_GAME &&
+			browserState.status == GameStatus.PAUSED) {
+				this.drawMsg('waiting...');
+			}
+		if (score.getLeft() == Image.maxWins || score.getRight() == Image.maxWins) {
+			this.drawMsg('GAME OVER');
+		}
+		}
 	clear() {
 		this.context.clearRect(0, 0, Image.width, Image.height);
 	}
@@ -346,6 +353,13 @@ export class Image extends ImageOptions {
 		this.context.fillText(score.getLeft(), Image.scoreLeft_xPos, Image.score_yPos);
 		this.context.textAlign = 'left';
 		this.context.fillText(score.getRight(), Image.scoreRight_xPos, Image.score_yPos);
+	}
+	drawMsg(msg: string) {
+		this.context.fillStyle = Image.color_score;
+		this.context.font = Image.msg_fontSize;
+		this.context.textBaseline = 'center';
+		this.context.textAlign = 'center';
+		this.context.fillText(msg, Image.msg_xPos, Image.msg_yPos);
 	}
 	drawDividingNet() {
 		this.context.fillStyle = Image.color_dividingNet;
