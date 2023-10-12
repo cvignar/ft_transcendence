@@ -40,8 +40,9 @@ PongOptions.ball_StartClicksForSpeedup = 12;
 PongOptions.ball_speedUp = 1.2;
 PongOptions.ball_speedUpMax = 6;
 PongOptions.calculation_period = 1000 / 60;
-PongOptions.sendResult_period = 2000;
+PongOptions.sendResult_period = 1000;
 PongOptions.tokenRequest_period = 179990000; // 300 min
+PongOptions.playerDisconnect_timeout = 1000 * 20; // 20 sec
 export class ControlOptions extends Options {
 }
 _c = ControlOptions;
