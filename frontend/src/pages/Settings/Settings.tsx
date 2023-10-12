@@ -49,7 +49,6 @@ export function Settings() {
 			pongColorScheme: user.profile?.pongColorScheme,
 			twoFA: user.profile?.twoFA,
 		});
-		console.log(previousUserData);
 
 		let username = user.profile?.username;
 		console.log(e.currentTarget.side.value);

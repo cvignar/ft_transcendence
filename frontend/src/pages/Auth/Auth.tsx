@@ -34,7 +34,6 @@ export function AuthForm() {
 	useEffect(() => {
 		const timerId = setTimeout(() => {
 			if (profile != null) {
-				console.log('must navigate?: ', profile);
 				dispatch(userActions.setUser(profile));
 				navigate('/Chat');
 			}

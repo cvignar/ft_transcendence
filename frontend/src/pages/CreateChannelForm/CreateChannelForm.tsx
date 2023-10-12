@@ -21,7 +21,6 @@ export function CreateChannelFrom() {
 	const [isProtected, setIsProtected] = useState<boolean>(false);
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		console.log(e.currentTarget.type.value);
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
 			setPicture('/default_channel_public.png')

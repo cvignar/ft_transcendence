@@ -31,14 +31,12 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 	};
 
 	useEffect(() => {
-		console.log('get search');
 		dispatch(channelActions.getUpdateSearch());
 	}, []);
 
 	useEffect(() => {
 		sortedSearch = Array.from(search, x => x).sort(compareNames);
 		setFilteredSearch([...sortedSearch]);
-		console.log('sort search', search);
 	}, [search]);
 	
 
