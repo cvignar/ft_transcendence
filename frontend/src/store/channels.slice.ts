@@ -9,9 +9,8 @@ import { CreateMessage } from '../interfaces/createMessage.interface';
 import { Message } from '../interfaces/message.interface';
 import { loadState } from './storage';
 
-
 export enum ChannelsEvent {
-	AddPreview = 'add preview', // add channel
+	AddPreview = 'add preview',
 	getBlocked = 'get blocked',
 	getError = 'exception',
 	update = 'update channel request',
@@ -39,6 +38,9 @@ export enum ChannelsEvent {
 	makeAdmin = 'make admin',
 	removeAdmin = 'remove admin',
 	channelCreated = 'channel created',
+	blockMember = 'block member',
+	unblockMember = 'unblock member',
+	kickMember = 'kick member',
 }
 
 export interface ChannelsState {
@@ -53,7 +55,7 @@ export interface ChannelsState {
 	error?: any;
 	members: any[];
 }
- 
+
 const initialState: ChannelsState = {
 	channels: [],
 	messages: loadState<Message[]>('messages') ?? [],
@@ -67,7 +69,7 @@ const initialState: ChannelsState = {
 		unreadCount: 0,
 		ownerEmail: '',
 		ownerId: -1,
-		tag: ''
+		tag: '',
 	},
 	search: [],
 	isEstablishingConnection: false,
@@ -75,7 +77,7 @@ const initialState: ChannelsState = {
 	state: 0,
 	members: [],
 };
- 
+
 const channelSlice = createSlice({
 	name: 'channels',
 	initialState,
@@ -95,102 +97,114 @@ const channelSlice = createSlice({
 				unreadCount: 0,
 				ownerEmail: '',
 				ownerId: -1,
-				tag: ''
+				tag: '',
 			};
 		},
-		startConnecting: (state => {
+		startConnecting: (state) => {
 			state.isEstablishingConnection = true;
-		}),
-		connectionEstablished: (state => {
+		},
+		connectionEstablished: (state) => {
 			state.isConnected = true;
 			state.isEstablishingConnection = true;
-		}),
-		connsctionNotEstablished: (state => {
+		},
+		connsctionNotEstablished: (state) => {
 			state.isConnected = false;
 			state.isEstablishingConnection = false;
-		}),
-		getChannel: ((state, action: PayloadAction<number>) => {
+		},
+		getChannel: (state, action: PayloadAction<number>) => {
 			return;
-		}),
+		},
 		// setSelectedChannel: ((state, action: PayloadAction<{
 		// 	channel: ChannelPreview
 		// }>) => {
 		// 	state.selectedChannel = action.payload.channel;
 		// }),
-		setChannel: ((state, action: PayloadAction<{
-			channel: ChannelPreview
-		}>) => {
+		setChannel: (
+			state,
+			action: PayloadAction<{
+				channel: ChannelPreview;
+			}>
+		) => {
 			//if ()
 			state.channels.unshift(action.payload.channel);
-		}),
-		getChannels: ((state, action: PayloadAction<string | undefined>) => {
+		},
+		getChannels: (state, action: PayloadAction<string | undefined>) => {
 			return;
-		}),
-		setChannels: ((state, action: PayloadAction<{ channels: ChannelPreview[] }>) => {
+		},
+		setChannels: (state, action: PayloadAction<{ channels: ChannelPreview[] }>) => {
 			state.channels = action.payload.channels;
-		}),
-		sendMessage: ((state, action: PayloadAction<CreateMessage>) => {
+		},
+		sendMessage: (state, action: PayloadAction<CreateMessage>) => {
 			return;
-		}),
-		getMessages: ((state, action: PayloadAction<number>) => {
-			return;			
-		}),
-		setMessages: ((state, action: PayloadAction<Message[]>) => {
+		},
+		getMessages: (state, action: PayloadAction<number>) => {
+			return;
+		},
+		setMessages: (state, action: PayloadAction<Message[]>) => {
 			console.log('state messages: ', action.payload);
 			state.messages = action.payload;
-		}),
-		recieveMessage: ((state, action: PayloadAction<Message>) => {
+		},
+		recieveMessage: (state, action: PayloadAction<Message>) => {
 			if (!state.messages.includes(action.payload)) {
 				state.messages.push(action.payload);
 			}
-		}),
-		createChannel: ((state, action: PayloadAction<CreateChannel>) => {
+		},
+		createChannel: (state, action: PayloadAction<CreateChannel>) => {
 			return;
-		}),
-		updateState: (state => {
+		},
+		updateState: (state) => {
 			state.state = state.state + 1;
-		}),
-		setError: ((state, action: PayloadAction<string>) => {
+		},
+		setError: (state, action: PayloadAction<string>) => {
 			state.error = action.payload;
-		}),
-		getUpdateSearch: ((state) => {
+		},
+		getUpdateSearch: (state) => {
 			return;
-		}),
-		setSearchUpdate: ((state, action: PayloadAction<any>) => {
+		},
+		setSearchUpdate: (state, action: PayloadAction<any>) => {
 			state.search = action.payload;
-		}),
-		getSelectedChannel: ((state, action: PayloadAction<any>) => {
+		},
+		getSelectedChannel: (state, action: PayloadAction<any>) => {
 			return;
-		}),
-		setSelectedChannel: ((state, action: PayloadAction<any>) => {
+		},
+		setSelectedChannel: (state, action: PayloadAction<any>) => {
 			state.selectedChannel = action.payload;
-		}),
-		getDirectChannel: ((state, action: PayloadAction<{targetId: number, selfEmail: string}>) => {
+		},
+		getDirectChannel: (state, action: PayloadAction<{ targetId: number; selfEmail: string }>) => {
 			return;
-		}),
-		readChannelStatus: ((state, action: PayloadAction<{channelId: number, email: string}>) => {
+		},
+		readChannelStatus: (state, action: PayloadAction<{ channelId: number; email: string }>) => {
 			return;
-		}),
-		setMembers: ((state, action: PayloadAction<any[]>) => {
+		},
+		setMembers: (state, action: PayloadAction<any[]>) => {
 			state.members = action.payload;
-		}),
-		joinChannel: ((state, action: PayloadAction<any>) => {
+		},
+		joinChannel: (state, action: PayloadAction<any>) => {
 			return;
-		}),
-		leaveChannel: ((state, action: PayloadAction<any>) => {
+		},
+		leaveChannel: (state, action: PayloadAction<any>) => {
 			return;
-		}),
-		makeAdmin: ((state, action: PayloadAction<{userId: number, channelId: number}>) => {
+		},
+		makeAdmin: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
 			return;
-		}),
-		removeAdmin: ((state, action: PayloadAction<{userId: number, channelId: number}>) => {
+		},
+		removeAdmin: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
 			return;
-		}),
+		},
+		blockMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
+			return;
+		},
+		unblockMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
+			return;
+		},
+		kickMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
+			return;
+		},
 	}
 });
- 
+
 export const channelActions = channelSlice.actions;
- 
+
 export default channelSlice.reducer;
 
 //export const CART_PERSISTENT_STATE = 'cartData';

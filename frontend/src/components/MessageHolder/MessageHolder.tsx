@@ -7,7 +7,7 @@ import Button from '../../components/Button/Button';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../../store/store';
-import { auth, userActions } from '../../store/user.slice';
+import { auth, getUserProfile, userActions } from '../../store/user.slice';
 import Search from '../../components/Search/Search';
 import { channelActions } from '../../store/channels.slice';
 import { ChannelList } from './ChannelList/ChannelList';
@@ -23,6 +23,7 @@ import ModalContainer from '../ModalContainer/ModalContainer';
 
 function MessageHolder({message, appearence = 'self', ...props}: MessageHolderProps) {
 
+	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const onClick = () => {
 		//delete message
@@ -34,7 +35,10 @@ function MessageHolder({message, appearence = 'self', ...props}: MessageHolderPr
 				? <>
 					<img src={message.owner.avatar
 						? message.owner.avatar
-						: '/default_avatar.png'} className={styles['avatar']} onClick={() => {navigate(`/Chat/channel/${message.cid}/member/${message.owner.id}`);}}/>
+						: '/default_avatar.png'} className={styles['avatar']} onClick={() => {
+						dispatch(getUserProfile(message.owner.id));
+						navigate(`/Chat/channel/${message.cid}/member/${message.owner.id}`);
+					}}/>
 				</>
 				: <></> }
 			<div {...props} className={classNames(styles['message'], styles[appearence])}>

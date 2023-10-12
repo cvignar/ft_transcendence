@@ -12,7 +12,10 @@ import {
 import { typeEnum } from '../../../contracts/enums';
 import { WsException } from '@nestjs/websockets';
 import { MemberPreview } from 'contracts/user.schema';
-import { CreateMessage, MessagePreview } from '../../../contracts/message.schema';
+import {
+	CreateMessage,
+	MessagePreview,
+} from '../../../contracts/message.schema';
 import { Message } from '@prisma/client';
 //import { ExceptionWithMessage } from '@prisma/client/runtime/library';
 
@@ -122,7 +125,9 @@ export class ChannelService {
 			const user = await this.userService.getUserByEmail(userEmail);
 			const targetUser = await this.userService.getUserById(targetId);
 			if (user.id == targetUser.id) {
-				throw new WsException('Cannot create a direct chat with yourself');
+				throw new WsException(
+					'Cannot create a direct chat with yourself',
+				);
 			}
 
 			ids.push(user.id, data.id);
@@ -130,13 +135,17 @@ export class ChannelService {
 				where: { type: typeEnum.DIRECT },
 				select: {
 					id: true,
-					owners: true
-				}
+					owners: true,
+				},
 			});
 			if (channels) {
 				for (const channel of channels) {
-					if ((channel.owners[0].id === targetUser.id || channel.owners[0].id === user.id)
-						&& (channel.owners[1].id === targetUser.id || channel.owners[1].id === user.id)) {
+					if (
+						(channel.owners[0].id === targetUser.id ||
+							channel.owners[0].id === user.id) &&
+						(channel.owners[1].id === targetUser.id ||
+							channel.owners[1].id === user.id)
+					) {
 						return channel.id;
 					}
 				}
@@ -338,7 +347,7 @@ export class ChannelService {
 									id: true,
 									email: true,
 									username: true,
-									avatar: true
+									avatar: true,
 								},
 							},
 							messages: {
@@ -348,7 +357,7 @@ export class ChannelService {
 								take: 1,
 							},
 						},
-						orderBy: { updatedAt: 'desc' }
+						orderBy: { updatedAt: 'desc' },
 					},
 				},
 			});
@@ -402,7 +411,9 @@ export class ChannelService {
 								? channelsList.owner[i].owners[0].id
 								: channelsList.owner[i].owners[1].id;
 					}
-					console.log(`channel type: ${channelsList.owner[i].type}, channel name: ${channelsList.member[i].name}`);
+					console.log(
+						`channel type: ${channelsList.owner[i].type}, channel name: ${channelsList.member[i].name}`,
+					);
 					if (channelsList.owner[i].type === typeEnum.DIRECT) {
 						if (channelsList.owner[i].owners[0].email == email) {
 							name = channelsList.owner[i].owners[1].username;
@@ -426,7 +437,9 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.owner[i].owners[0].email,
 						ownerId: ownerId,
-						picture: avatar ? avatar : channelsList.owner[i].picture,
+						picture: avatar
+							? avatar
+							: channelsList.owner[i].picture,
 					};
 					previews.push(channelPreview);
 				}
@@ -435,7 +448,9 @@ export class ChannelService {
 				for (let i = 0; i < channelsList.admin.length; i++) {
 					let name = '';
 					let avatar = '';
-					console.log(`channel type: ${channelsList.admin[i].type}, channel name: ${channelsList.member[i].name}`);
+					console.log(
+						`channel type: ${channelsList.admin[i].type}, channel name: ${channelsList.member[i].name}`,
+					);
 					if (channelsList.admin[i].type === typeEnum.DIRECT) {
 						if (channelsList.admin[i].owners[0].email == email) {
 							name = channelsList.admin[i].owners[1].username;
@@ -459,7 +474,9 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.admin[i].owners[0].email,
 						ownerId: channelsList.admin[i].owners[0].id,
-						picture: avatar ? avatar : channelsList.admin[i].picture,
+						picture: avatar
+							? avatar
+							: channelsList.admin[i].picture,
 					};
 					previews.push(channelPreview);
 				}
@@ -468,7 +485,9 @@ export class ChannelService {
 				for (let i = 0; i < channelsList.member.length; i++) {
 					let name = '';
 					let avatar = '';
-					console.log(`channel type: ${channelsList.member[i].type}, channel name: ${channelsList.member[i].name}`);
+					console.log(
+						`channel type: ${channelsList.member[i].type}, channel name: ${channelsList.member[i].name}`,
+					);
 					if (channelsList.member[i].type === typeEnum.DIRECT) {
 						if (channelsList.member[i].owners[0].email == email) {
 							name = channelsList.member[i].owners[1].username;
@@ -492,7 +511,9 @@ export class ChannelService {
 								: '',
 						ownerEmail: channelsList.member[i].owners[0].email,
 						ownerId: channelsList.member[i].owners[0].id,
-						picture: avatar ? avatar : channelsList.member[i].picture,
+						picture: avatar
+							? avatar
+							: channelsList.member[i].picture,
 					};
 					previews.push(channelPreview);
 				}
@@ -511,8 +532,8 @@ export class ChannelService {
 							channelsList.invited[i].type === 'protected'
 								? ''
 								: messageCount > 0
-									? channelsList.invited[i].messages[0].msg
-									: '',
+								? channelsList.invited[i].messages[0].msg
+								: '',
 						//ownerEmail: channelsList.invited[i].ownerEmail,
 						//ownerId: channelsList.invited[i].ownerId,
 						ownerEmail: channelsList.invited[i].owners[0].email,
@@ -556,7 +577,7 @@ export class ChannelService {
 					? channel.owners[1].avatar
 					: channel.owners[0].avatar;
 		}
-		
+
 		let ownerId = -1;
 		if (channel.owners.length > 1) {
 			ownerId =
@@ -566,7 +587,7 @@ export class ChannelService {
 		} else {
 			ownerId = channel.owners[0].id;
 		}
-		
+
 		const preview: ChannelPreview.Response = {
 			id: channel.id,
 			type: channel.type,
@@ -577,8 +598,8 @@ export class ChannelService {
 				channel.type === 'protected'
 					? ''
 					: messageCount > 0
-						? channel.messages[0].msg
-						: '',
+					? channel.messages[0].msg
+					: '',
 			ownerEmail:
 				channel.owners.length > 0 ? channel.owners[0].email : '',
 			ownerId: ownerId,
@@ -598,28 +619,178 @@ export class ChannelService {
 		}
 	}
 
-	async makeAdmin(channelData: { userId: number, channelId: number }) {
-		const channel = await this.getChannelById(channelData.channelId);
-		if (channel) {
-			const updatedChannel = await this.prismaService.channel.update({
-				where: { id: channelData.channelId },
-				data: {
-					admins: { connect: { id: channelData.userId } }
+	async makeAdmin(
+		channelData: { userId: number; channelId: number },
+		ownerID: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelData.channelId },
+			select: {
+				owners: {
+					where: { id: ownerID },
 				},
+			},
+		});
+		if (channel.owners.length > 0) {
+			return await this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: { admins: { connect: { id: channelData.userId } } },
 			});
-			return updatedChannel;
 		}
 		return undefined;
 	}
 
-	async removeAdmin(channelData: { userId: number, channelId: number }) {
-		const channel = await this.getChannelById(channelData.channelId);
-		console.log(channelData);
-		if (channel) {
+	async removeAdmin(
+		channelData: { userId: number; channelId: number },
+		ownerID: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelData.channelId },
+			select: {
+				owners: {
+					where: { id: ownerID },
+				},
+			},
+		});
+		if (channel && channel.owners.length > 0) {
+			return await this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: {
+					admins: { disconnect: { id: channelData.userId } },
+				},
+			});
+		}
+		return undefined;
+	}
+
+	async blockMember(
+		channelData: { userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelData.channelId },
+			select: {
+				admins: {
+					where: { id: adminId },
+				},
+				blocked: {
+					where: { id: channelData.userId },
+				},
+				members: {
+					where: { id: channelData.userId },
+				},
+				owners: {
+					where: { id: channelData.userId },
+				},
+			},
+		});
+		if (
+			channel &&
+			channel.admins.length > 0 &&
+			channel.owners.length === 0 &&
+			channel.blocked.length === 0 &&
+			channel.members.length > 0
+		) {
+			return this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: {
+					blocked: { connect: { id: channelData.userId } },
+				},
+			});
+		}
+		return undefined;
+	}
+
+	async unblockMember(
+		channelData: { userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelData.channelId },
+			select: {
+				admins: {
+					where: { id: adminId },
+				},
+				blocked: {
+					where: { id: channelData.userId },
+				},
+				members: {
+					where: { id: channelData.userId },
+				},
+			},
+		});
+		if (
+			channel &&
+			channel.members.length > 0 &&
+			channel.blocked.length > 0
+		) {
+			return this.prismaService.channel.update({
+				where: { id: channelData.channelId },
+				data: {
+					blocked: { disconnect: { id: channelData.userId } },
+				},
+			});
+		}
+		return undefined;
+	}
+
+	async kickMember(
+		channelData: { userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelData.channelId },
+			select: {
+				admins: {
+					where: { id: adminId },
+				},
+				owners: {
+					where: { id: channelData.userId },
+				},
+				blocked: {
+					where: { id: channelData.userId },
+				},
+				muted: {
+					where: {
+						AND: [
+							{
+								userId: channelData.userId,
+								cid: channelData.channelId,
+							},
+						],
+					},
+				},
+			},
+		});
+		if (
+			channel &&
+			channel.admins.length > 0 &&
+			channel.owners.length === 0
+		) {
+			const mute = await this.prismaService.mute.findFirst({
+				where: {
+					AND: [
+						{ userId: channelData.userId },
+						{ cid: channelData.channelId },
+					],
+				},
+				select: { id: true },
+			});
+			if (mute) {
+				await this.prismaService.channel.update({
+					where: { id: channelData.channelId },
+					data: {
+						muted: { disconnect: { id: mute?.id } },
+					},
+				});
+			}
 			const updatedChannel = await this.prismaService.channel.update({
 				where: { id: channelData.channelId },
 				data: {
-					admins: { disconnect: { id: channelData.userId } }
+					admins: { disconnect: { id: channelData.userId } },
+					members: { disconnect: { id: channelData.userId } },
+					inviteds: { disconnect: { id: channelData.userId } },
+					blocked: { connect: { id: channelData.userId } },
 				},
 			});
 			return updatedChannel;
@@ -782,9 +953,11 @@ export class ChannelService {
 		try {
 			const channel = await this.prismaService.channel.findUnique({
 				where: { id: channelId },
-				select: { members: {
-					orderBy: { username: 'asc' }
-				} },
+				select: {
+					members: {
+						orderBy: { username: 'asc' },
+					},
+				},
 			});
 			const members: MemberPreview.Response[] = [];
 			if (channel && channel.members) {
@@ -837,8 +1010,8 @@ export class ChannelService {
 						isFriend:
 							userId != channel.inviteds[i].id
 								? await this.userService.isFriend(
-									userId,
-									channel.inviteds[i].id,
+										userId,
+										channel.inviteds[i].id,
 								  )
 								: false,
 					};
@@ -912,8 +1085,8 @@ export class ChannelService {
 				where: {
 					OR: [
 						{ type: typeEnum.PUBLIC },
-						{ type: typeEnum.PROTECTED }
-					]
+						{ type: typeEnum.PROTECTED },
+					],
 				},
 			});
 			return channels;

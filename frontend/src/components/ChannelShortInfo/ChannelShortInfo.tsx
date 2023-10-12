@@ -30,7 +30,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		} else if (props) {
 			return '/default_avatar.png';
 		}
-	}
+	};
 
 	const IAmAdmin = () => {
 		if (channelState.members) {
@@ -73,20 +73,36 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 			return 'member';
 		}
 
-	}
+	};
 
 	const makeAdmin = () => {
-		if (props && props.id && channelState.selectedChannel)
-		dispatch(channelActions.makeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
-	}
+		if (props && props.id && channelState.selectedChannel) {
+			dispatch(channelActions.makeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
+		}
+	};
 
 	const removeAdmin = () => {
-		if (props && props.id && channelState.selectedChannel)
-		dispatch(channelActions.removeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
-	}
+		if (props && props.id && channelState.selectedChannel) {
+			dispatch(channelActions.removeAdmin({userId: props.id, channelId: channelState.selectedChannel.id}));
+		}
+	};
+
+	const blockMember = () => {
+		if (channelState.selectedChannel && props.id) {
+			dispatch(channelActions.blockMember({userId: props.id, channelId: channelState.selectedChannel.id}));
+		}
+	};
+
+	const unblockMember = () => {
+		if (channelState.selectedChannel && props.id) {
+			dispatch(channelActions.unblockMember({userId: props.id, channelId: channelState.selectedChannel.id}));
+		}
+	};
 
 	const kickMember = () => {
-
+		if (channelState.selectedChannel && props.id) {
+			dispatch(channelActions.kickMember({userId: props.id, channelId: channelState.selectedChannel.id}));
+		}
 	};
 
 	return (
@@ -95,12 +111,12 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 			<div className={classNames(styles['info'],
 				appearence === 'member' ? styles['info-no-list'] : '')}>
 				<div className={appearence === 'member'
-				? styles['member-row']
-				: styles['normal']}>
+					? styles['member-row']
+					: styles['normal']}>
 					<img
 						className={appearence === 'member'
-						? styles['avatar-member']
-						: styles['avatar']}
+							? styles['avatar-member']
+							: styles['avatar']}
 						src={props?.picture ? props.picture : (props.avatar ? props.avatar : chooseDefaultPicture())}
 						onClick={() => {
 							if (props.type && props.type == 'direct') {
@@ -115,32 +131,32 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 									dispatch(getUserProfile(props.id));
 									navigate(`/Chat/channel/${channelState.selectedChannel.id}/member/:${props.id}`);
 								} else if (user.profile && props.id == user.profile.id) {
-									navigate(`/Settings/Stats`);
+									navigate('/Settings/Stats');
 								}
 							}
-							}}/>
+						}}/>
 					{appearence === 'member' && IAmAdmin() === true && itIsOwner() === false
-					? <div className={styles['member-btns']}>
-						{props.isAdmin
-							? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
-							: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={makeAdmin}>Make admin</Button>
-						}
-						{props.isBlocked
-						? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unblock</Button>
-						: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Block</Button>}
-						{props.isMuted
-						? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
-						: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
-						<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
-					</div>
-					: <div className={styles['role']}>{getRole()}</div>}
+						? <div className={styles['member-btns']}>
+							{props.isAdmin
+								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={removeAdmin}>Remove admin</Button>
+								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={makeAdmin}>Make admin</Button>
+							}
+							{props.isBlocked
+								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={unblockMember}>Unblock</Button>
+								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={blockMember}>Block</Button>}
+							{props.isMuted
+								? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
+								: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
+							<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
+						</div>
+						: <div className={styles['role']}>{getRole()}</div>}
 
 				</div>
 				<div className={classNames(styles['header-message'], appearence === 'member'
 					? styles['header-message-member'] : '')}>
 					<div className={appearence === 'member'
-							? styles['header-member']
-							: styles['header']}>{props?.name ? props.name : (props.username ? props.username : '')}</div>
+						? styles['header-member']
+						: styles['header']}>{props?.name ? props.name : (props.username ? props.username : '')}</div>
 					{appearence === 'list' ? <div className={styles['message']}>{props?.lastMessage ? props.lastMessage : ''}</div> : ''}
 				</div>
 			</div>

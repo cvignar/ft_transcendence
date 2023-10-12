@@ -7,13 +7,13 @@ import { ChannelPreview } from '../interfaces/channel.interface';
 import { Message } from '../interfaces/message.interface';
 import { userActions, UserEvents } from './user.slice';
 import { Profile } from '../interfaces/user.interface';
- 
-const channelsMiddleware: Middleware = store => {
+
+const channelsMiddleware: Middleware = (store) => {
 	let socket: Socket;
-	return next => (action) => {
+	return (next) => (action) => {
 		console.log(action);
 
-		let isConnectionEstablished = (socket && socket.connected) ? true : false;
+		let isConnectionEstablished = socket && socket.connected ? true : false;
 		if (channelActions.startConnecting.match(action) && !isConnectionEstablished) {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
 			socket.on('connect', () => {
@@ -42,24 +42,24 @@ const channelsMiddleware: Middleware = store => {
 				store.dispatch(channelActions.recieveMessage(message));
 			});
 			socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
-				store.dispatch(channelActions.setChannels({channels: channels}));
+				store.dispatch(channelActions.setChannels({ channels: channels }));
 			});
 			socket.on(ChannelsEvent.AddPreview, (channel: ChannelPreview) => {
-				store.dispatch(channelActions.setChannel({channel: channel}));
+				store.dispatch(channelActions.setChannel({ channel: channel }));
 			});
 			socket.on(ChannelsEvent.update, () => {
 				if (store.getState().user.prodile && store.getState().channel.selectedChannel) {
-					socket.emit(ChannelsEvent.readChannelStatus, {email: store.getState().user.prodile.email, channelId: store.getState().channel.selectedChannel.id});
+					socket.emit(ChannelsEvent.readChannelStatus, { email: store.getState().user.prodile.email, channelId: store.getState().channel.selectedChannel.id });
 				}
 			});
 			socket.on(ChannelsEvent.channelCreated, (channel: ChannelPreview) => {
 				store.dispatch(channelActions.setSelectedChannel(channel));
 			});
 			// socket.on(ChannelsEvent.update, () => {
-				// store.dispatch(channelActions.updateState());
-				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
-				//	store.dispatch(channelActions.getChannels({ channels }));
-				//});
+			// store.dispatch(channelActions.updateState());
+			//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
+			//	store.dispatch(channelActions.getChannels({ channels }));
+			//});
 			// });
 			socket.on(ChannelsEvent.getError, (error: any) => {
 				const err: any[] = [];
@@ -81,7 +81,7 @@ const channelsMiddleware: Middleware = store => {
 			});
 			socket.on(ChannelsEvent.getMembers, (members: any[]) => {
 				store.dispatch(channelActions.setMembers(members));
-			})
+			});
 
 			socket.on(UserEvents.updateProfile, (profile: Profile) => {
 				store.dispatch(userActions.updateProfile(profile));
@@ -112,19 +112,19 @@ const channelsMiddleware: Middleware = store => {
 		}
 		if (channelActions.getChannel.match(action) && isConnectionEstablished) {
 			if (action.payload != -1) {
-				socket.emit(ChannelsEvent.AddPreview, {email: store.getState().user.profile.email, channelId: action.payload});
+				socket.emit(ChannelsEvent.AddPreview, { email: store.getState().user.profile.email, channelId: action.payload });
 			}
 		}
 		if (channelActions.getUpdateSearch.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.getUpdateSearch, store.getState().user.profile.email);
 		}
 		if (channelActions.getSelectedChannel.match(action) && isConnectionEstablished) {
-			socket.emit(ChannelsEvent.getSelectedChannel, {email: store.getState().user.profile.email, channelId: action.payload});
+			socket.emit(ChannelsEvent.getSelectedChannel, { email: store.getState().user.profile.email, channelId: action.payload });
 		}
 		if (channelActions.getDirectChannel.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.getDirectChannel, {
 				id: action.payload.targetId,
-				email: action.payload.selfEmail
+				email: action.payload.selfEmail,
 			});
 		}
 		if (channelActions.readChannelStatus.match(action) && isConnectionEstablished) {
@@ -142,29 +142,38 @@ const channelsMiddleware: Middleware = store => {
 		if (channelActions.removeAdmin.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.removeAdmin, action.payload);
 		}
+		if (channelActions.blockMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.blockMember, action.payload);
+		}
+		if (channelActions.unblockMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.unblockMember, action.payload);
+		}
+		if (channelActions.kickMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.kickMember, action.payload);
+		}
 
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.addFriend, {
 				selfId: action.payload.selfId,
-				friendId: action.payload.friendId
+				friendId: action.payload.friendId,
 			});
 		}
 		if (userActions.removeFriend.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.removeFriend, {
 				selfId: action.payload.selfId,
-				friendId: action.payload.friendId
+				friendId: action.payload.friendId,
 			});
 		}
 		if (userActions.blockUser.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.blockUser, {
 				selfId: action.payload.selfId,
-				friendId: action.payload.friendId
+				friendId: action.payload.friendId,
 			});
 		}
 		if (userActions.unblockUser.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.unblockUser, {
 				selfId: action.payload.selfId,
-				friendId: action.payload.friendId
+				friendId: action.payload.friendId,
 			});
 		}
 		if (userActions.getGameHistory.match(action) && isConnectionEstablished) {
