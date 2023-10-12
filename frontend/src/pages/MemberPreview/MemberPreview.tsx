@@ -24,10 +24,18 @@ function MemberPreview() {
 
 	const findStatus = (statuses: any) => {
 		for (const status of statuses) {
-			if (Number(status[0]) === Number(selectedUser?.id))
+			if (selectedUser && Number(status[0]) === Number(selectedUser.id))
 				return status[1];
 		}
 	};
+
+	const myStatus = (statuses: any) => {
+		for (const status of statuses) {
+			if (profile && Number(status[0]) === Number(profile.id))
+				return status[1];
+		}
+	};
+
 	const emitInvite = () => {
 		if (selectedUser && findStatus(statusMap) === Status.online) {
 			socket.emit('invite partner', Number(selectedUser.id));
@@ -148,7 +156,11 @@ function MemberPreview() {
 									? styles['inActive']
 									: styles['btn-dark']}
 							onClick={emitInvite}>Invite to game</Button>
-						{findStatus(statusMap) === Status.playing && isBlocked() === false ? 
+						{profile &&
+							selectedUser &&
+							findStatus(statusMap) === Status.playing &&
+							isBlocked() === false &&
+							myStatus(statusMap) !== Status.playing ? 
 							watch === false
 								? <Button
 									className={styles['btn-dark']}

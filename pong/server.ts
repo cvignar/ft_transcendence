@@ -6,7 +6,7 @@ import express from 'express';
 import { GameCmd, GameCommand, GameMode, GameScheme, GameStatus, Side } from './static/common.js';
 import { Pong } from './Pong.js';
 import { routes } from './routes.js';
-import { GamesSet} from './GamesSet.js';
+import { GamesSet, Result} from './GamesSet.js';
 import {io as ioc, Socket} from 'socket.io-client'
 import { ControlOptions, Options } from './static/options.js';
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
@@ -47,16 +47,30 @@ if (port) {
 	process.exit(1);
 }
 
+// const roomes = new Map<any, string>();
+
+// io.in(roomes.get(key)).emit('event', data);
+
 io.on("connection", (socket) => {
+	// socket.on('watch', (userId) => {
+		//register socket to room
+		// socket.join(roomes.get(key));
+		//connect to game
+	// });
 	socket.on("new player", (user: { name: string; id: number; side: Side; scheme: GameScheme } | undefined) => {
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
 			socket.emit("player created", user?.scheme);
 			const pong = games.getPong(socket.id);
 			if (pong) {
-				socket.emit("player created");
+				// socket.emit("player created");
 				pong.status = GameStatus.PLAYING;
 				socket.emit("pong restored");
+				const result: Result = new Result();
+				if (user && user.id > 0) {
+					result.makeRestoredKey(user.id);
+					games.setResult(result);
+				}
 			}
 		} else {
 			socket.emit("player not created");
@@ -140,7 +154,6 @@ io.on("connection", (socket) => {
 			}
 			const invited = games.getPlayerById(user_id);
 			if (invited) {
-				console.log(games.getPlayers());
 				const invitedSocket = io.sockets.sockets.get(invited.socketId);
 				if (invitedSocket) {
 					io.sockets.sockets.get(invited.socketId)?.emit('confirm partner', [ socket.id, inviter.name ]);

@@ -53,6 +53,16 @@ export class Result {
             }
         }
     }
+    makeRestoredKey(userId) {
+        this.player1 = userId;
+        this.player2 = -1;
+        this.score1 = 0;
+        this.score2 = 0;
+        this.startTime = 0;
+        this.endTime = 0;
+        this.duration = 0;
+        this.isActual = true;
+    }
     get() {
         return {
             player1: this.player1,
@@ -91,6 +101,9 @@ export class GamesSet {
             return player;
         }
         return undefined;
+    }
+    setResult(result) {
+        this.resultQueue.push(result);
     }
     getPlayerById(userId) {
         const duplicates = new Array;
