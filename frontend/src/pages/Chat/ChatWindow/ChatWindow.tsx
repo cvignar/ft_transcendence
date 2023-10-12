@@ -48,7 +48,6 @@ function ChatWindow() {
 				email: email,
 				channelId: channel.selectedChannel?.id
 			};
-			console.log(newMessage);
 			dispatch(channelActions.sendMessage(newMessage));
 		}
 	};
@@ -56,7 +55,6 @@ function ChatWindow() {
 	const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
 		setValue(event.target.value);
 		setMessage(event.target.value);
-		console.log(`'${event.target.value}'`);
 	};
 
 	// useEffect(() => {

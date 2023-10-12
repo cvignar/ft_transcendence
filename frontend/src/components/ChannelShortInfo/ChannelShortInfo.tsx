@@ -143,7 +143,7 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								}
 							}
 						}}/>
-					{appearence === 'member' && itIsOwner() === false
+					{appearence === 'member' && itIsOwner() === false && (IAmAdmin() === true || IAmOwner() === true)
 						? <div className={styles['member-btns']}>
 							{IAmOwner() === true
 								? <>
@@ -167,7 +167,10 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 								: <></>
 							}
 						</div>
-						: <>{  <div className={styles['role']}>{getRole()}</div>}</>}
+						: <></>}
+					{appearence === 'member' && IAmAdmin() === false && IAmOwner() === false
+						? <div className={styles['role']}>{getRole()}</div>
+						: <></>}
 
 				</div>
 				<div className={classNames(styles['header-message'], appearence === 'member'

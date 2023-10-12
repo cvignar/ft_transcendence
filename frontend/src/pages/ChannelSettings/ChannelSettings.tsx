@@ -27,7 +27,6 @@ function ChannelSettings() {
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		console.log(e.currentTarget.type.value);
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
 			setPicture('/default_channel_public.png');
@@ -117,9 +116,7 @@ function ChannelSettings() {
 	const IAmOwner = () => {
 		if (channelState.members) {
 			for (const member of channelState.members) {
-				console.log('check owner', member);
 				if (user.profile && user.profile.id === member.id && member.isOwner === true) {
-					console.log(user.profile.id, member.id, member.isOwner);
 					return true;
 				}
 			}
