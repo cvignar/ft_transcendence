@@ -114,11 +114,9 @@ socket.on('state', function(state) {
 	if (score.mode == GameMode.STOPPING) {
 		controls.stop();
 	}
-
 	sounds.play(browserState);// This blok from pong launched
 	controls.colorizeButtons(browserState);
 	image.render(browserState, score.get(browserState));
-
 });
 socket.on('pong deleted', function() {
 	sounds.playSound(Sound.SPEEDUP);

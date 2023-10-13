@@ -12,6 +12,7 @@ export class Player {
 	scheme: GameScheme = GameScheme.GENERAL;
 	disconnectTime: number = 0;
 	timeOutOf: boolean = false;
+	imWatching: string = '';
 	constructor(socketId: string, user: {name: string, id: number, side: Side, scheme: GameScheme}) {
 		this.socketId = socketId;
 		this.name = user.name;
@@ -20,6 +21,7 @@ export class Player {
 		this.scheme = user.scheme;
 		this.disconnectTime = 0;
 		this.timeOutOf = false;
+		this.imWatching = '';
 	}
 }
 
@@ -207,6 +209,10 @@ export class GamesSet {
 					pong.gameResult.set(pong);
 				}
 				pong.mode = GameMode.STOPPING;
+			}
+			const watchingPong = this.getPong(player.imWatching)
+			if (watchingPong) {
+				watchingPong.whatchers.delete(socketId);
 			}
 			this.players.delete(socketId);
 		}

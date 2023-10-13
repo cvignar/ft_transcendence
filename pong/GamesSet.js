@@ -9,6 +9,7 @@ export class Player {
         this.scheme = GameScheme.GENERAL;
         this.disconnectTime = 0;
         this.timeOutOf = false;
+        this.imWatching = '';
         this.socketId = socketId;
         this.name = user.name;
         this.id = user.id;
@@ -16,6 +17,7 @@ export class Player {
         this.scheme = user.scheme;
         this.disconnectTime = 0;
         this.timeOutOf = false;
+        this.imWatching = '';
     }
 }
 export class Result {
@@ -190,6 +192,10 @@ export class GamesSet {
                     pong.gameResult.set(pong);
                 }
                 pong.mode = GameMode.STOPPING;
+            }
+            const watchingPong = this.getPong(player.imWatching);
+            if (watchingPong) {
+                watchingPong.whatchers.delete(socketId);
             }
             this.players.delete(socketId);
         }
