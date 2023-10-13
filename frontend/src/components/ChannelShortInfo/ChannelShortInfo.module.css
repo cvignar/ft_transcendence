@@ -108,3 +108,10 @@
 	font-weight: 400;
 	line-height: normal;
 }
+
+.mute-limit {
+	display: flex;
+	flex-direction: column;
+	width: 150px;
+}
+

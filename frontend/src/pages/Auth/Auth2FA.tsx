@@ -32,7 +32,7 @@ export function Auth2FaForm() {
 		const timerId = setTimeout(() => {
 			if (profile) {
 				dispatch(channelActions.startConnecting());
-				navigate('/Chat');
+				navigate('/Settings/Stats');
 			}
 		}, 1000);
 		return () => clearTimeout(timerId);

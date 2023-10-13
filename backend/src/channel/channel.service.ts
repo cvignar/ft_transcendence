@@ -798,6 +798,135 @@ export class ChannelService {
 		return undefined;
 	}
 
+	async muteMember(
+		muteData: { finishAt: string; userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: muteData.channelId },
+			select: {
+				owners: {
+					where: { id: muteData.userId },
+				},
+				admins: {
+					where: { id: adminId },
+				},
+				members: {
+					where: { id: muteData.userId },
+				},
+			},
+		});
+		if (
+			channel &&
+			channel.owners.length === 0 &&
+			channel.admins.length > 0 &&
+			channel.members.length > 0
+		) {
+			const mute = await this.prismaService.mute.findFirst({
+				where: {
+					AND: [
+						{ userId: muteData.userId },
+						{ cid: muteData.channelId },
+					],
+				},
+				select: { id: true },
+			});
+			if (!mute) {
+				const newMute = await this.prismaService.mute.create({
+					data: {
+						finishAt: new Date(muteData.finishAt),
+						finished:
+							new Date(muteData.finishAt).getTime() <
+							new Date(Date.now()).getTime(),
+						checkAt: new Date(Date.now()),
+						muted: { connect: { id: muteData.userId } },
+						channel: { connect: { id: muteData.channelId } },
+					},
+				});
+				if (newMute && newMute.finished === false) {
+					const updatedChannel =
+						await this.prismaService.channel.update({
+							where: { id: muteData.channelId },
+							data: {
+								muted: {
+									connect: { id: newMute.id },
+								},
+							},
+						});
+					return updatedChannel;
+				}
+			}
+			return undefined;
+		}
+	}
+
+	async updateMute(id: number, channelId: number) {
+		try {
+			await this.prismaService.mute.updateMany({
+				where: {
+					AND: [
+						{ userId: id },
+						{ cid: channelId },
+						{ finished: false },
+					],
+				},
+				data: {
+					checkAt: new Date(),
+				},
+			});
+		} catch (error) {
+			throw new WsException(error);
+		}
+	}
+
+	async unmuteMember(
+		muteData: { userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: muteData.channelId },
+			select: {
+				admins: {
+					where: { id: adminId },
+				},
+				members: {
+					where: { id: muteData.userId },
+				},
+				name: true,
+				id: true,
+			},
+		});
+		if (
+			channel &&
+			channel.admins.length > 0 &&
+			channel.members.length > 0
+		) {
+			const mute = await this.prismaService.mute.findFirst({
+				where: {
+					AND: [
+						{ userId: muteData.userId },
+						{ cid: muteData.channelId },
+					],
+				},
+				select: {
+					id: true,
+					cid: true,
+					userId: true,
+				},
+			});
+			if (mute) {
+				await this.prismaService.mute.update({
+					where: { id: mute.id },
+					data: {
+						finished: true,
+					},
+				});
+				return channel;
+			}
+		}
+		return undefined;
+	}
+
 	async getRole(
 		userId: number,
 		channelId: number,
@@ -826,7 +955,8 @@ export class ChannelService {
 			let isBlocked = false;
 			let isMuted = false;
 			for (let i = 0; i < channel.muted.length; i++) {
-				if (userId === channel.muted[i].userId) {
+				if (userId === channel.muted[i].userId &&
+					channel.muted[i].finished === false) {
 					isMuted = true;
 					break;
 				}

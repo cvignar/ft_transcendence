@@ -27,15 +27,17 @@ function ChannelSettings() {
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		if (e.currentTarget.type.value === 'public') {
-			setIsProtected(false);
-			setPicture('/default_channel_public.png');
-		} else if (e.currentTarget.type.value === 'protected') {
-			setIsProtected(true);
-			setPicture('/default_channel_protected.png');
-		} else if (e.currentTarget.type.value === 'private') {
-			setIsProtected(false);
-			setPicture('/default_channel_private.png');
+		if (e.currentTarget.type) {
+			if (e.currentTarget.type.value === 'public') {
+				setIsProtected(false);
+				setPicture('/default_channel_public.png');
+			} else if (e.currentTarget.type.value === 'protected') {
+				setIsProtected(true);
+				setPicture('/default_channel_protected.png');
+			} else if (e.currentTarget.type.value === 'private') {
+				setIsProtected(false);
+				setPicture('/default_channel_private.png');
+			}
 		}
 	};
 
@@ -137,8 +139,8 @@ function ChannelSettings() {
 							</div>
 						</div>
 						<Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>
-						{IAmOwner() !== true
-							? IAmMember() !== true 
+						{IAmOwner() === false
+							? IAmMember() === false 
 								? <Button
 									className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
 									onClick={joinChannel}>Join</Button>

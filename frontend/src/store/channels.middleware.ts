@@ -151,6 +151,12 @@ const channelsMiddleware: Middleware = (store) => {
 		if (channelActions.kickMember.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.kickMember, action.payload);
 		}
+		if (channelActions.muteMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.muteMember, action.payload);
+		}
+		if (channelActions.unmuteMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.unmuteMember, action.payload);
+		}
 
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.addFriend, {

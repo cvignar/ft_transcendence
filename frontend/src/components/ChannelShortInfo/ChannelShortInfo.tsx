@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { ChannelPreview } from '../../interfaces/channel.interface';
 import ModalContainer from '../ModalContainer/ModalContainer';
 import settingStyles from '../../pages/Settings/Settings.module.css';
@@ -11,11 +11,14 @@ import { getUserProfile, userActions } from '../../store/user.slice';
 import { channelActions } from '../../store/channels.slice';
 import classNames from 'classnames';
 import Button from '../Button/Button';
+import Input from '../Input/Input';
 export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortInfoProps) {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
 	const user = useSelector((s: RootState) => s.user);
 	const channelState = useSelector((s: RootState) => s.channel);
+	const [showMuteInput, setShowMuteInput] = useState<boolean>(false);
+	const [muteLimit, setMuteLimit] = useState<string>(null);
 	const chooseDefaultPicture = () => {
 		if (props && props.type) {
 			if (props.type === 'public') {
@@ -113,6 +116,40 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 		}
 	};
 
+	const muteChange = (e: ChangeEvent<HTMLInputElement>) => {
+		if (e.currentTarget) {
+			console.log(e.currentTarget.value);
+			setMuteLimit(e.currentTarget.value);
+		}
+	};
+
+	const cancelMute = () => {
+		setMuteLimit('');
+		setShowMuteInput(false);
+	};
+
+	const muteMember = () => {
+		if (muteLimit != '' && props && channelState.selectedChannel) {
+			const muteData = {
+				finishAt: muteLimit,
+				userId: Number(props.id),
+				channelId: channelState.selectedChannel.id
+			};
+			dispatch(channelActions.muteMember(muteData));
+			setShowMuteInput(false);
+		}
+	};
+
+	const unmuteMember = () => {
+		if (props && channelState.selectedChannel) {
+			const muteData = {
+				userId: Number(props.id),
+				channelId: channelState.selectedChannel.id,
+			};
+			dispatch(channelActions.unmuteMember(muteData));
+		}
+	};
+
 	return (
 		<div className={classNames(styles['card'],
 			appearence !== 'list' ? styles['card-no-list'] : '')}>
@@ -156,13 +193,16 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 							}
 							{IAmAdmin() === true
 								? <>
-									{props.isMuted
-										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Unmute</Button>
-										: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])}>Mute</Button>}
 									{props.isBlocked
 										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={unblockMember}>Unblock</Button>
 										: <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={blockMember}>Block</Button>}
 									<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={kickMember}>Kick</Button>
+									{props.isMuted
+										? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={unmuteMember}>Unmute</Button>
+										: showMuteInput === false
+											? <Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={() => setShowMuteInput(true)}>Mute</Button>
+											: <>
+											</>}
 								</>
 								: <></>
 							}
@@ -180,6 +220,13 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 						: styles['header']}>{props?.name ? props.name : (props.username ? props.username : '')}</div>
 					{appearence === 'list' ? <div className={styles['message']}>{props?.lastMessage ? props.lastMessage : ''}</div> : ''}
 				</div>
+				{appearence === 'member' && showMuteInput === true
+					? <div className={styles['mute-limit']}>
+						<input name="mute_limit" type='datetime-local' onChange={muteChange}/>
+						<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={muteMember}>Submit</Button>
+						<Button className={classNames(settingStyles['btn-dark'], styles['btn-smaller'])} onClick={cancelMute}>Cancel</Button>
+					</div>
+					: <></>}
 			</div>
 		</div>
 	);
