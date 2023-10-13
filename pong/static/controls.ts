@@ -56,7 +56,7 @@ export class Controls extends ControlOptions {
 				}
 			}
 		});
-		
+
 		// Button controls
 		this.bttnNew = document.getElementById('NEW');
 		if (this.bttnNew) {
@@ -115,7 +115,6 @@ export class Controls extends ControlOptions {
 			return true;
 		return false;
 	}
-
 	keydown(key: number) {
 		if (!this.interval) {
 			let requiredKey: boolean = true;

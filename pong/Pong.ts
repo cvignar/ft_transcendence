@@ -61,6 +61,7 @@ export class Paddle extends geometry.Rectangle {
 export class Pong extends PongOptions {
 	owner: Player | undefined = undefined;
 	partner: Player | undefined = undefined;
+	whatchers: Set<string> = new Set<string>;
 	gameStartTime: number = 0;
 	gameEndTime: number = 0;
 	gameResult: Result = new Result;

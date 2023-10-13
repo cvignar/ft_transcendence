@@ -49,7 +49,7 @@ export class Score {
             }
             else {
                 this.windowLeft.style.fontWeight = 'normal';
-                this.windowLeft.textContent = 'auto';
+                // this.windowLeft.textContent = 'auto';
             }
         }
         if (this.windowRight) {
@@ -59,7 +59,7 @@ export class Score {
             }
             else {
                 this.windowRight.style.fontWeight = 'normal';
-                this.windowRight.textContent = 'auto';
+                // this.windowRight.textContent = 'auto';
             }
         }
     }
@@ -277,7 +277,8 @@ export class Image extends ImageOptions {
         }
     }
     renderData(browserState) {
-        if ((browserState.mode == GameMode.PARTNER_GAME || browserState.mode == GameMode.TRNNG_GAME) &&
+        if ((browserState.mode == GameMode.PARTNER_GAME ||
+            browserState.mode == GameMode.TRNNG_GAME) &&
             this.mouseOn) {
             if (browserState.paddleSide == Side.RIGHT) {
                 this.leftPaddle_y = browserState.leftPaddle_y;
