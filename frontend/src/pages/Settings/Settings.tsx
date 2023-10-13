@@ -230,22 +230,6 @@ export function Settings() {
 				? <canvas id='qrcode'/>
 				: <></>}
 
-				{/* <> <h3>Friends</h3>
-					{user.friends && user.friends.length > 0
-						? user.friends.map((friend: any) => (
-							<CardNavLink
-								to={`/Settings/friend/${friend.id}`}
-								className={classNames(styles['preview-button'])}
-								key={friend.id}
-								onClick={() => {
-									// setActive(friend.id);
-									dispatch(getUserProfile(friend.id));
-								}}>
-								<ChannelShortInfo appearence='list' props={friend}/>
-							</CardNavLink>
-						))
-						: <></>}
-				</> */}
 				{showGH === false
 					? <Button className={classNames(styles['submit'])} onClick={showGameHistory}>Show friends</Button>
 					: <> <h3>Friends</h3>

@@ -92,6 +92,9 @@ const channelsMiddleware: Middleware = (store) => {
 			socket.on(UserEvents.getFriends, (friends: any[]) => {
 				store.dispatch(userActions.setFriends(friends));
 			});
+			socket.on(UserEvents.getLeaderboard, (leaderboard: any[]) => {
+				store.dispatch(userActions.setLeaderboard(leaderboard));
+			});
 		}
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
 			console.log('create channel', action.payload);
@@ -187,6 +190,9 @@ const channelsMiddleware: Middleware = (store) => {
 		}
 		if (userActions.getFriends.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.getFriends, action.payload);
+		}
+		if (userActions.getLeaderboard.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.getLeaderboard);
 		}
 		next(action);
 	};

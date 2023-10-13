@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import { channelActions } from '../../store/channels.slice';
 import { AppDispatch } from '../../store/store';
@@ -73,17 +73,11 @@ export function Layout() {
 
 			<NavLink to='/Leaderboard' className={({isActive}) => classNames(styles['link'], {
 				[styles['active']]: isActive
-			})}>
+			})} onClick={() => {
+				dispatch(userActions.getLeaderboard());
+			}}>
 				<img src='/ladder.svg' alt='leaderboard' className={styles['svg']}/>
 			</NavLink>
-
-
-			<NavLink to='/InvitePartner' className={({isActive}) => classNames(styles['link'], {
-				[styles['active']]: isActive
-			})}>
-				<img src='/invitePartner.svg' alt='invitePartner' className={styles['svg']}/>
-			</NavLink>
-
 
 			<NavLink to='/Settings/Stats' className={({isActive}) => classNames(styles['link'], {
 				[styles['active']]: isActive

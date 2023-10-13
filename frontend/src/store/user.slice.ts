@@ -14,7 +14,8 @@ export const JWT_PERSISTENT_STATE = "userToken";
 export const EMAIL_PERSISTENT_STATE = "userEmail";
 export const USERNAME_PERSISTENT_STATE = "userName";
 export const USERID_PERSISTENT_STATE = "userId";
-export const PROFILE_PERSISTENT_STATE = "userProfile";
+export const PROFILE_PERSISTENT_STATE = 'userProfile';
+export const LEADERBOARD_PRSISTENT_STATE = 'leaderboard';
 const back_prefix = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}`;
 const uri = `${back_prefix}/auth/intra42`;
 const uri2fa = `${back_prefix}/auth/2fa`;
@@ -29,6 +30,7 @@ export enum UserEvents {
 	unblockUser = 'unblock user',
 	getGameHistory = 'get gameHistory',
 	getFriends = 'get friends',
+	getLeaderboard = 'get leaderboard',
 }
 export interface UserState {
 	token: string | null;
@@ -44,13 +46,14 @@ export interface UserState {
 	selectedGameHistory: any;
 	qrUri: string | undefined;
 	friends: any[];
+	leaderboard: any[];
 	//registerError?: string;
 }
 
 const initialState: UserState = {
 	token: loadState<string>(JWT_PERSISTENT_STATE) ?? null,
-	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? "",
-	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? "",
+	email: loadState<string>(EMAIL_PERSISTENT_STATE) ?? '',
+	username: loadState<string>(USERNAME_PERSISTENT_STATE) ?? '',
 	userId: loadState<number | null>(USERID_PERSISTENT_STATE) ?? null,
 	profile: loadState<Profile>(PROFILE_PERSISTENT_STATE) ?? null,
 	selectedUser: loadState<Profile>('selectedUser') ?? null,
@@ -58,6 +61,7 @@ const initialState: UserState = {
 	selectedGameHistory: [],
 	qrUri: '',
 	friends: [],
+	leaderboard: loadState<any>(LEADERBOARD_PRSISTENT_STATE) ?? [],
 };
 
 export const auth = createAsyncThunk("auth/login", async () => {
@@ -171,66 +175,72 @@ export const uploadAvatar = createAsyncThunk("/uploadAvatar", async (img_data: F
 });
 
 export const userSlice = createSlice({
-	name: "user",
+	name: 'user',
 	initialState,
 	reducers: {
 		logout: (state) => {
 			setCookie('accessToken', '');
 			setCookie('userId', '');
-			state.email = "";
+			state.email = '';
 			state.token = null;
-			state.username = "";
+			state.username = '';
 			state.profile = null;
 		},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
 		},
-		setUser: ((state, action: PayloadAction<any>) => {
+		setUser: (state, action: PayloadAction<any>) => {
 			state.email = action.payload.email;
 			state.userId = action.payload.userId;
-		}),
-		setStatuses: ((state, action: PayloadAction<any>) => {
+		},
+		setStatuses: (state, action: PayloadAction<any>) => {
 			state.statuses = action.payload;
-		}),
-		setProfile: ((state, action: PayloadAction<UpdateUser>) => {
+		},
+		setProfile: (state, action: PayloadAction<UpdateUser>) => {
 			if (state.profile && action.payload) {
 				state.profile.username = action.payload.username ?? state.profile?.username;
 				state.profile.avatar = action.payload.avatar ?? state.profile?.avatar;
 				state.profile.prefferedTableSide = action.payload.prefferedTableSide ?? state.profile?.prefferedTableSide;
 				state.profile.pongColorScheme = action.payload.pongColorScheme ?? state.profile?.pongColorScheme;
 			}
-		}),
-		addFriend: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
-			return ;
-		}),
-		updateProfile: ((state, action: PayloadAction<Profile>) => {
+		},
+		addFriend: (state, action: PayloadAction<{ selfId: number; friendId: number }>) => {
+			return;
+		},
+		updateProfile: (state, action: PayloadAction<Profile>) => {
 			if (action.payload) {
 				console.log(action.payload);
 				state.profile = action.payload;
 			}
-		}),
-		removeFriend: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+		},
+		removeFriend: (state, action: PayloadAction<{ selfId: number; friendId: number }>) => {
 			return;
-		}),
-		blockUser: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+		},
+		blockUser: (state, action: PayloadAction<{ selfId: number; friendId: number }>) => {
 			return;
-		}),
-		unblockUser: ((state, action: PayloadAction<{selfId: number, friendId: number}>) => {
+		},
+		unblockUser: (state, action: PayloadAction<{ selfId: number; friendId: number }>) => {
 			return;
-		}),
-		getGameHistory: ((state, action: PayloadAction<number>) => {
+		},
+		getGameHistory: (state, action: PayloadAction<number>) => {
 			return;
-		}),
-		setGameHistory: ((state, action: PayloadAction<any>) => {
+		},
+		setGameHistory: (state, action: PayloadAction<any>) => {
 			state.selectedGameHistory = action.payload;
-		}),
-		getFriends: ((state, action: PayloadAction<number>) => {
+		},
+		getFriends: (state, action: PayloadAction<number>) => {
 			return;
-		}),
-		setFriends: ((state, action: PayloadAction<any[]>) => {
+		},
+		setFriends: (state, action: PayloadAction<any[]>) => {
 			state.friends = action.payload;
 			console.log(action.payload);
-		})
+		},
+		getLeaderboard: (state) => {
+			return;
+		},
+		setLeaderboard: (state, action: PayloadAction<any[]>) => {
+			state.leaderboard = action.payload;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(auth.fulfilled, (state, action) => {
@@ -251,11 +261,10 @@ export const userSlice = createSlice({
 		});
 		builder.addCase(auth2fa.fulfilled, (state, action) => {
 			console.log('return in 2fa fullfilled');
-			if (action.payload.data)
-				console.log(action.payload.data);
+			if (action.payload.data) console.log(action.payload.data);
 		});
 		builder.addCase(getProfile.fulfilled, (state, action) => {
-			console.log("fulfiled!", action.payload);
+			console.log('fulfiled!', action.payload);
 			if (!action.payload) {
 				return;
 			}
@@ -312,7 +321,6 @@ export const userSlice = createSlice({
 			state.profileError = action.error.message;
 			console.log(action.error);
 		});
-		
 	},
 });
 

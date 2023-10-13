@@ -517,4 +517,32 @@ export class UserService {
 		});
 		return friends;
 	}
+
+	async getUsersOrderedByRank() {
+		const users = await this.prismaService.user.findMany({
+			select: {
+				id: true,
+				email: true,
+				username: true,
+				avatar: true,
+				prefferedTableSide: true,
+				gamesWon: true,
+				gamesLost: true,
+				gamesPlayed: true,
+				winRate: true,
+				playTime: true,
+				score: true,
+				rank: true,
+				friends: true,
+				adding: true,
+				added: true,
+				blocking: true,
+				blocked: true,
+			},
+			orderBy: {
+				rank: 'asc',
+			},
+		});
+		return users;
+	}
 }

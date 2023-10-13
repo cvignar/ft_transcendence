@@ -42,7 +42,7 @@ export enum ChannelsEvent {
 	unblockMember = 'unblock member',
 	kickMember = 'kick member',
 	muteMember = 'mute member',
-	unmuteMember = 'unmute member'
+	unmuteMember = 'unmute member',
 }
 
 export interface ChannelsState {
