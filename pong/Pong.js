@@ -47,6 +47,7 @@ export class Pong extends PongOptions {
         super(...arguments);
         this.owner = undefined;
         this.partner = undefined;
+        this.whatchers = new Set;
         this.gameStartTime = 0;
         this.gameEndTime = 0;
         this.gameResult = new Result;

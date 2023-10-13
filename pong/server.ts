@@ -47,25 +47,14 @@ if (port) {
 	process.exit(1);
 }
 
-// const roomes = new Map<any, string>();
-
-// io.in(roomes.get(key)).emit('event', data);
-
 io.on("connection", (socket) => {
-	// socket.on('watch', (userId) => {
-		//register socket to room
-		// socket.join(roomes.get(key));
-		//connect to game
-	// });
 	socket.on("new player", (user: { name: string; id: number; side: Side; scheme: GameScheme } | undefined) => {
 		const player = games.newPlayer(socket.id, user);
 		if (player) {
 			socket.emit("player created", user?.scheme);
 			const pong = games.getPong(socket.id);
 			if (pong) {
-				// socket.emit("player created");
 				pong.status = GameStatus.PLAYING;
-				socket.emit("pong restored");
 				const result: Result = new Result();
 				if (user && user.id > 0) {
 					result.makeRestoredKey(user.id);
@@ -77,7 +66,18 @@ io.on("connection", (socket) => {
 		}
 		gebugPprinting(player?.name, player ? "new player" : "new player not created");
 	});
-
+	
+	socket.on("stop watch", (user: { name: string; id: number; side: Side; scheme: GameScheme } | undefined) => {
+		socket.emit("pong deleted");
+		const player = games.newPlayer(socket.id, user);
+		if (player) {
+			socket.emit("player created", user?.scheme);
+		} else {
+			socket.emit("player not created");
+		}
+		gebugPprinting(player?.name, player ? "new player" : "new player not created");
+	});
+	
 	socket.on("disconnect", (reason) => {
 		const player = games.deletePlayer(socket.id);
 		if (player) {
@@ -93,13 +93,13 @@ io.on("connection", (socket) => {
 		}
 		gebugPprinting(player?.name, reason);
 	});
-
+	
 	socket.on("get partners list", () => {
 		const partnersList = games.getPartnersList(socket.id);
 		socket.emit("partners list", partnersList);
 		gebugPprinting(games.getPlayer(socket.id)?.name + " partnersList: ", partnersList);
 	});
-
+	
 	socket.on("controls", (msg) => {
 		const player = games.getPlayer(socket.id);
 		if (player) {
@@ -126,7 +126,7 @@ io.on("connection", (socket) => {
 			gebugPprinting(player?.name, GameCommand[msg.cmd] + " controls");
 		}
 	});
-
+	
 	socket.on("partner choosed", (socket_id) => {
 		const player = games.getPlayer(socket.id);
 		gebugPprinting(player?.name, "choosing partner");
@@ -144,7 +144,7 @@ io.on("connection", (socket) => {
 		}
 		socket.emit("partner unavailable");
 	});
-
+	
 	socket.on('invite partner', (user_id: number) => {
 		const inviter = games.getPlayer(socket.id);
 		if (inviter) {
@@ -163,7 +163,7 @@ io.on("connection", (socket) => {
 		}
 		socket.emit('partner unavailable');
 	});
-
+	
 	socket.on('partner confirmation', (socket_id) => {
 		const player = games.getPlayer(socket.id);
 		if (player) {
@@ -181,13 +181,13 @@ io.on("connection", (socket) => {
 		socket.emit('partner unavailable');
 		io.sockets.sockets.get(socket_id)?.emit('partner unavailable');
 	});
-
+	
 	socket.on("refusal", (socket_id) => {
 		if (games.getPlayer(socket.id)) {
 			io.sockets.sockets.get(socket_id)?.emit("partner unavailable");
 		}
 	});
-
+	
 	socket.on('start partner game', () => {
 		let opposerSocketId = games.getOpposerSocketId(socket.id);
 		if (opposerSocketId) {
@@ -199,7 +199,7 @@ io.on("connection", (socket) => {
 			}
 		}
 	});
-
+	
 	socket.on('partner refused', () => {
 		let opposerSocketId = games.getOpposerSocketId(socket.id);
 		if (opposerSocketId) {
@@ -211,6 +211,24 @@ io.on("connection", (socket) => {
 			}
 		}
 	});
+	
+	socket.on('whatch game', (user_id) => {
+		const player = games.getPlayer(socket.id);
+		if (player) {
+			const showPlayer = games.getPlayerById(user_id);
+			if (showPlayer) {
+				const pong = games.getPong(showPlayer.socketId);
+				if (pong) {
+					deletePongAndNotifyPlayers(socket.id);// delete player's pong if it is
+					pong.whatchers.add(player.socketId);
+					player.imWatching = showPlayer.socketId;
+					socket.emit("players", pong.getPlayerNames());
+					socket.emit("pong restored");
+				}
+			}
+		}
+	});
+	
 });
 
 // Calculation loop
@@ -228,11 +246,21 @@ setInterval(function () {
 				continue;
 			}
 			pong.calculate();
+			let ownerState;
 			if (pong.owner) {
-				io.sockets.sockets.get(pong.owner.socketId)?.emit("state", pong.getPongState(pong.owner.side));
+				ownerState = pong.getPongState(pong.owner.side);
+				io.sockets.sockets.get(pong.owner.socketId)?.emit("state", ownerState);
 			}
 			if (pong.partner) {
 				io.sockets.sockets.get(pong.partner.socketId)?.emit("state", pong.getPongState(pong.partner.side));
+			}
+			if (pong.whatchers.size) {
+				if (ownerState) {
+					ownerState.mode = GameMode.AUTO_GAME;
+				}
+				for (const watcherSocketId of pong.whatchers.keys()) {
+					io.sockets.sockets.get(watcherSocketId)?.emit("state", ownerState);
+				}
 			}
 		}
 	}

@@ -128,7 +128,7 @@ function MemberPreview() {
 	const stopWatch = () => {
 		setWatch(false);
 		if (profile) {
-			socket.emit("new player", { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
+			socket.emit("stop watch", { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
 		}
 	}
 

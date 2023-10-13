@@ -53,29 +53,31 @@ else {
     console.log("port is not assigned");
     process.exit(1);
 }
-// const roomes = new Map<any, string>();
-// io.in(roomes.get(key)).emit('event', data);
 io.on("connection", (socket) => {
-    // socket.on('watch', (userId) => {
-    //register socket to room
-    // socket.join(roomes.get(key));
-    //connect to game
-    // });
     socket.on("new player", (user) => {
         const player = games.newPlayer(socket.id, user);
         if (player) {
             socket.emit("player created", user === null || user === void 0 ? void 0 : user.scheme);
             const pong = games.getPong(socket.id);
             if (pong) {
-                // socket.emit("player created");
                 pong.status = GameStatus.PLAYING;
-                socket.emit("pong restored");
                 const result = new Result();
                 if (user && user.id > 0) {
                     result.makeRestoredKey(user.id);
                     games.setResult(result);
                 }
             }
+        }
+        else {
+            socket.emit("player not created");
+        }
+        gebugPprinting(player === null || player === void 0 ? void 0 : player.name, player ? "new player" : "new player not created");
+    });
+    socket.on("stop watch", (user) => {
+        socket.emit("pong deleted");
+        const player = games.newPlayer(socket.id, user);
+        if (player) {
+            socket.emit("player created", user === null || user === void 0 ? void 0 : user.scheme);
         }
         else {
             socket.emit("player not created");
@@ -215,10 +217,26 @@ io.on("connection", (socket) => {
             }
         }
     });
+    socket.on('whatch game', (user_id) => {
+        const player = games.getPlayer(socket.id);
+        if (player) {
+            const showPlayer = games.getPlayerById(user_id);
+            if (showPlayer) {
+                const pong = games.getPong(showPlayer.socketId);
+                if (pong) {
+                    deletePongAndNotifyPlayers(socket.id); // delete player's pong if it is
+                    pong.whatchers.add(player.socketId);
+                    player.imWatching = showPlayer.socketId;
+                    socket.emit("players", pong.getPlayerNames());
+                    socket.emit("pong restored");
+                }
+            }
+        }
+    });
 });
 // Calculation loop
 setInterval(function () {
-    var _a, _b;
+    var _a, _b, _c;
     let pongSocketIdForDelete = undefined;
     for (const socketId of games.getPongs().keys()) {
         const pong = games.getPong(socketId);
@@ -232,11 +250,21 @@ setInterval(function () {
                 continue;
             }
             pong.calculate();
+            let ownerState;
             if (pong.owner) {
-                (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("state", pong.getPongState(pong.owner.side));
+                ownerState = pong.getPongState(pong.owner.side);
+                (_a = io.sockets.sockets.get(pong.owner.socketId)) === null || _a === void 0 ? void 0 : _a.emit("state", ownerState);
             }
             if (pong.partner) {
                 (_b = io.sockets.sockets.get(pong.partner.socketId)) === null || _b === void 0 ? void 0 : _b.emit("state", pong.getPongState(pong.partner.side));
+            }
+            if (pong.whatchers.size) {
+                if (ownerState) {
+                    ownerState.mode = GameMode.AUTO_GAME;
+                }
+                for (const watcherSocketId of pong.whatchers.keys()) {
+                    (_c = io.sockets.sockets.get(watcherSocketId)) === null || _c === void 0 ? void 0 : _c.emit("state", ownerState);
+                }
             }
         }
     }
