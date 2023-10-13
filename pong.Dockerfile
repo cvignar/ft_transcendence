@@ -11,7 +11,9 @@ WORKDIR /pong
 
 RUN npm install \
 	&& npm install -g npm@10.0.0 \
-	&& npm i
+	&& npm install -g typescript \
+	&& npm i \
+	&& tsc
 
 EXPOSE 12080
 
