@@ -12,6 +12,9 @@ import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
 import { channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
+import { getCookie } from 'typescript-cookie';
+import { uploadChannelAvatar } from '../../store/channels.slice'
+import bcrypt from 'bcryptjs';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
@@ -40,29 +43,25 @@ function ChannelSettings() {
 		}
 	};
 
-	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
-		// const target = e.target as HTMLInputElement;
-		// const user_id = Number(getCookie('userId'))
-		// 		if (user_id && target.files && target.files.length) {
-		// 	const avatar = target.files[0];
+	const updateChannelAvatar = (e: FormEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		const user_id = Number(getCookie('userId'))
 
-		// 	const formData = new FormData();
-		// 	formData.append('avatar', avatar, );
-		// 	const file_name = dispatch(uploadAvatar(formData));
-		// 				console.log(`Filename: ${file_name}`);
-		// 	const old_filename = target.files[0].name;
-		// 	const extension = old_filename.split('.').pop()
-		// 	let update_user: UpdateUser = {
-		// 		id: user.profile?.id,
-		// 		username: user.profile?.username, //FIXME!!! username from the form
-		// 		avatar: `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + '.png', //FIXME!!! avatar from the form
-		// 		prefferedTableSide: user.profile?.prefferedTableSide,
-		// 		pongColorScheme: user.profile?.pongColorScheme,
-		// 	};
-			
-		// 	dispatch(updateProfile(update_user));
-		// 	window.location.reload(false);
-		// }
+		if (user_id && target.files && target.files.length && channelState.selectedChannel && user.profile) {
+			const avatar = target.files[0];
+
+			const formData = new FormData();
+			formData.append('avatar', avatar, );
+			const file_name = dispatch(uploadChannelAvatar({ channelId: channelState.selectedChannel.id, img_data: formData}));
+			const old_filename = target.files[0].name;
+			const extension = old_filename.split('.').pop();
+			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + extension;
+			// CVIGNAR: need to get the channel img url to set in the frontend
+
+			// console.log(`Filename: ${file_name}`);
+			// const old_filename = target.files[0].name;
+			// const extension = old_filename.split('.').pop()
+		}
 	};
 	
 	const showMembers = () => {
@@ -73,12 +72,17 @@ function ChannelSettings() {
 	};
 
 	const joinChannel = () => {
+		const password: string | null = null;
+		let hashed_password: string | null = null;
 		if (channelState.selectedChannel && user.profile) {
+			if (password) {
+				hashed_password = bcrypt.hash(password, channelState.selectedChannel.ownerEmail);
+			}
 			const joinData = {
 				id: channelState.selectedChannel.id,
 				type: channelState.selectedChannel.type,
 				email: user.profile.email,
-				password: null, //FIXME!!! formData password!
+				password: password? hashed_password : null, //FIXME!!! formData password!
 				memberId: -1,
 				newPassword: null //FIXME!!! formData newPassword
 			};
@@ -134,10 +138,14 @@ function ChannelSettings() {
 					<div className={styles['join']}>
 						<div className={settingStyles['avatar_setting']}>
 							<img className={settingStyles['avatar']} src={picture}/>
-							<div className={settingStyles['middle_settings']}>
-								<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
-								<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
-							</div>
+							{IAmOwner() === true
+								? <>
+									<div className={settingStyles['middle_settings']}>
+										<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateChannelAvatar} hidden/>
+										<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
+									</div>
+								</>
+								: <></>}
 						</div>
 						<Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>
 						{IAmOwner() !== true

@@ -55,7 +55,7 @@ export class UserController {
 		return await this.userService.updateUser(userId, userData);
 	}
 
-		@Post('uploadAvatar/:id')
+	@Post('uploadAvatar/:id')
 	@UseInterceptors(FileInterceptor('avatar'))
 	async updateAvatar(
 		@Param('id', ParseIntPipe) user_id: number,
@@ -73,16 +73,14 @@ export class UserController {
 	)
 	{
 		// console.log(file);
-
-
 		const extension = path.extname(file.originalname);
 		const new_name = user_id + extension;
-
 		
 		// const file_extension = path.extname(file.originalname);
 		const url_path = '/user/avatars/';
-		const server_path = '/upload/'
-		
+		const server_path = '/upload/user/'
+		if (!fs.existsSync(server_path))
+			fs.mkdirSync(server_path)
 		fs.writeFile(server_path + new_name, file.buffer, err => {if (err) {console.error(err);}});
 		return url_path + new_name;
 	}
@@ -98,8 +96,8 @@ export class UserController {
 	@Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
-		// console.log(`get ImagesFile: ${img_name}`);
-		return res.sendFile(img_name, {root: '/upload/'})
+		console.log(`get ImagesFile: ${img_name}`);
+		return res.sendFile(img_name, {root: '/upload/user'})
 	}
 
 	@Get('enable2fa')

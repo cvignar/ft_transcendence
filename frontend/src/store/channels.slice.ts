@@ -78,6 +78,24 @@ const initialState: ChannelsState = {
 	members: [],
 };
 
+export const uploadChannelAvatar = createAsyncThunk("/uploadChannelAvatar", async (input_data: {channelId: number, img_data: FormData}) => {
+	try {
+		// console.log("id:", getCookie('userId'));
+		const { data } = await axios.post<any>(`${BACK_PREFIX}/channel/uploadAvatar/${input_data.channelId}`, input_data.img_data, {
+			headers: {
+				'Content-Type': 'multipart/form-data'
+			}
+		});
+
+		// console.log(`DATA: ${data.path}`)
+		return data;
+	} catch (e) {
+		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
 const channelSlice = createSlice({
 	name: 'channels',
 	initialState,
@@ -200,6 +218,15 @@ const channelSlice = createSlice({
 		kickMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
 			return;
 		},
+	},
+	extraReducers: (builder) => {
+		builder.addCase(uploadChannelAvatar.fulfilled, (state, action) => {
+			return ;
+		});
+		builder.addCase(uploadChannelAvatar.rejected, (state, action) => {
+			state.error = action.error.message;
+			console.log(action.error);
+		});
 	}
 });
 
