@@ -73,16 +73,17 @@ export class AuthController {
 			throw new UnauthorizedException();
 		}
 		if (!user.twoFA) {
-		const payload = { sub: user.id, username: user.username };
-		const token = await this.jwtService.signAsync(payload);
-		this.userService.updateJWTAccess(user.id, token);
-		res.cookie('accessToken', token);
-		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
+			const payload = { sub: user.id, username: user.username };
+			const token = await this.jwtService.signAsync(payload);
+			this.userService.updateJWTAccess(user.id, token);
+			res.cookie('accessToken', token);
+			res.cookie('userId', user.id);
+			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
 		}
 		else {
-		res.cookie('userId', user.id);
-		res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
+			res.cookie('userId', user.id);
+			res.cookie('twoFA', true);
+			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
 		}
 	}
 

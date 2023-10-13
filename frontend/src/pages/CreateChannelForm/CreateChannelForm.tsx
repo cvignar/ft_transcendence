@@ -37,7 +37,7 @@ export function CreateChannelFrom() {
 		const newChannel: CreateChannel = {
 			name: e.currentTarget.name.value,
 			type: e.currentTarget.type.value,
-			password: e.currentTarget.password ? e.currentTarget.password : null,
+			password: e.currentTarget.password ? e.currentTarget.password.value : null,
 			email: user.profile?.email,
 			members: [{
 				id: user.profile?.id,
@@ -55,10 +55,7 @@ export function CreateChannelFrom() {
 
 	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
 		const target = e.target as HTMLInputElement;
-		const user_id = Number(getCookie('userId'))
-				if (user_id && target.files && target.files.length) {
-			const avatar = target.files[0];
-
+		if (user_id && target.files && target.files.length) {
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
 			const file_name = dispatch(uploadAvatar(formData));

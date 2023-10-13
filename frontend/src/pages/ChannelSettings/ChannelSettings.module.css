@@ -20,7 +20,6 @@
 }
 
 .join-btn {
-	margin-left: auto;
 	width: 60px;
 	background: var(--white-color);
 }
@@ -57,6 +56,13 @@ label.radio-set {
 
 .button {
 	width: 50%;
+}
+
+.guard {
+	display: flex;
+	flex-direction: column;
+	margin-left: auto;
+	align-items: flex-end;
 }
 /*.head {
 	height: 50px;

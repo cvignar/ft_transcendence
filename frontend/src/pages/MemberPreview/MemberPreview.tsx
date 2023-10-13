@@ -129,7 +129,7 @@ function MemberPreview() {
 	const stopWatch = () => {
 		setWatch(false);
 		if (profile) {
-			socket.emit("stop watch", { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
+			socket.emit('stop watch', { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
 		}
 	};
 
@@ -137,7 +137,7 @@ function MemberPreview() {
 		if(userId) {
 			dispatch(getUserProfile(Number(userId)));
 		}
-	});
+	}, []);
 
 	return (
 		<>
