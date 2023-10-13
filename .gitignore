@@ -1,8 +1,7 @@
-node_modules
-package-lock.json
-Icon?
-dist
 .env
 .DS_Store
+Icon?
+package-lock.json
+node_modules
+dist
 core.*
-migrations

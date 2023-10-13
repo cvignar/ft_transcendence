@@ -1,0 +1,17 @@
+docker-compose.yml
+*.Dockerfile
+.env
+.gitignore
+.vscode
+.git
+.DS_Store
+Icon?
+Makefile
+README.md
+package-lock.json
+node_modules
+dist
+core.*
+.eslintrc.js
+.prettierrc
+nest-cli.json

@@ -9,46 +9,10 @@ networks:
 volumes:
 
   db_vol:
-    name: db
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_data/db
+    name: db_vol
 
   upload:
     name: upload
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_data/upload
-
-  backend:
-    name: backend
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_transcendence/backend
-
-  contracts:
-    name: contracts
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_transcendence/contracts
-
-  frontend:
-    name: frontend
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_transcendence/frontend
-
-  pong:
-    name: pong
-    driver_opts:
-      type: none
-      o: bind
-      device: ${PROJECT_PATH}/ft_transcendence/pong
 
 services:
 
@@ -66,7 +30,8 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: .
+      dockerfile: backend.Dockerfile
     image: backend:img
     container_name: backend
     env_file: .env
@@ -76,17 +41,14 @@ services:
     ports:
       - "${BACK_PORT}:${BACK_PORT}"
     volumes:
-      - frontend:/frontend
-      - backend:/backend
-      - contracts:/contracts
-      - pong:/pong
       - upload:/upload
     networks:
       - ft_transcendence
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: frontend.Dockerfile
     image: frontend:img
     container_name: frontend
     env_file: .env
@@ -95,17 +57,13 @@ services:
       - pong
     ports:
       - "${HOST_PORT}:${FRONT_PORT}"
-    volumes:
-      - frontend:/frontend
-      - backend:/backend
-      - contracts:/contracts
-      - pong:/pong
     networks:
       - ft_transcendence
 
   pong:
     build:
-      context: ./pong
+      context: .
+      dockerfile: pong.Dockerfile
     image: pong:img
     container_name: pong
     env_file: .env
@@ -114,7 +72,5 @@ services:
       - backend
     ports:
       - "${PONG_PORT}:${PONG_PORT}"
-    volumes:
-      - pong:/pong
     networks:
       - ft_transcendence
