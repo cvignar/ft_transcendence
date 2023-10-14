@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import styles from './Pong.module.css';
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 import { game } from './game';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
-export const	socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
+export const	socket: Socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
 
 export function Pong() {
 	const user = useSelector((s: RootState) => s.user);

@@ -13,7 +13,6 @@ export function game(socket: any, user: any) {
 	const score = new Score();
 
 	// Player
-	console.log(user);
 	socket.emit("new player", { name: user.profile.username, id: user.profile.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme });
 	socket.on("player not created", function () {
 		let nickname: string | null = "";

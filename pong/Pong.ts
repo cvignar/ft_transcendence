@@ -542,7 +542,7 @@ export class Pong extends PongOptions {
 			if (this.owner) {
 				return this.owner.socketId;
 			}
-		} else if (this.partner && this.partner.socketId == playerSocketId) {
+		} else if (this.owner && this.owner.socketId == playerSocketId) {
 			if (this.partner) {
 				return this.partner.socketId;
 			}

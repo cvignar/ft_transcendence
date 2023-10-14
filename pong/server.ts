@@ -58,6 +58,8 @@ io.on("connection", (socket) => {
 				if (user && user.id > 0) {
 					const result: Result = new Result();
 					games.setResult(result.makeRestoredKey(user.id));
+					socket.emit('pong restored');
+					socket.emit("players", pong.getPlayerNames());
 				}
 			}
 		} else {
@@ -103,6 +105,9 @@ io.on("connection", (socket) => {
 	socket.on("controls", (msg) => {
 		const player = games.getPlayer(socket.id);
 		if (player) {
+			if (player.imWatching) {
+				return;
+			}
 			let pong = games.getPong(player.socketId);
 			if (pong) {
 				if (msg.cmd == GameCmd.NEW && !pong.partner) {

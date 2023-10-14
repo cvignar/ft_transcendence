@@ -178,7 +178,7 @@ export class GamesSet {
 				if (player) {
 					const pong = this.getPong(player.socketId)
 					if (pong) {
-						if (pong.mode == GameMode.PARTNER_GAME && pong.status == GameStatus.PAUSED) {
+						if (pong.isPartnerGameInProgressPaused()) {
 							player.disconnectTime = 0;
 							player.timeOutOf = false;
 							const priorSocketId = player.socketId;
