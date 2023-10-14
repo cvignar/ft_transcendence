@@ -425,10 +425,24 @@ export class UserService {
 				data: {
 					prefferedTableSide: userData.prefferedTableSide,
 					pongColorScheme: userData.pongColorScheme,
+					avatar: userData.avatar,
 				},
 			});
 		} catch (e) {
 			console.log(e.message);
+		}
+	}
+
+	async updateAvatar(userId: number, avatar: string) {
+		try {
+			const updateUser = await this.prismaService.user.update({
+				where: { id: userId },
+				data: { avatar: avatar },
+			});
+			return updateUser;
+		} catch (error)
+		{
+			console.log(`update avatar error: ${error}`);
 		}
 	}
 

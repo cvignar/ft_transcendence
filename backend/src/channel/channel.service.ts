@@ -264,6 +264,18 @@ export class ChannelService {
 		}
 	}
 
+	async updateAvatar(channelId: number, avatar_url: string) {
+		try {
+			const channel = await this.prismaService.channel.update({
+				where: {id: channelId},
+				data: {picture: avatar_url},
+			});
+			return channel.picture;
+		} catch (error) {
+			console.log(`update avatar error: ${error}`);
+		}
+	}
+
 	async inviteMember(channelData: UpdateChannel.Request) {
 		try {
 			const channel = await this.prismaService.channel.update({

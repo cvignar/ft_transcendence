@@ -17,4 +17,4 @@ RUN npm i
 
 EXPOSE 3000
 
-	CMD [ "/bin/sh", "-c", "npx prisma migrate deploy && npm run start:dev" ]
+CMD [ "/bin/sh", "-c", "npx prisma migrate deploy && npm run start:dev" ]

@@ -10,9 +10,14 @@ import classNames from 'classnames';
 import CardNavLink from '../../components/CardNavLink/CardNavLink';
 import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
-import { channelActions } from '../../store/channels.slice';
+import { ChannelsState, channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
 import { useParams } from 'react-router-dom';
+import { getCookie } from 'typescript-cookie';
+import { uploadChannelAvatar } from '../../store/channels.slice'
+// import bcrypt from 'bcryptjs';
+import { updateChannel } from '../../interfaces/updateChannel.interface';
+// import { salt } from '../../helpers/hashing';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
@@ -24,48 +29,69 @@ function ChannelSettings() {
 	const dispatch = useDispatch<AppDispatch>();
 	const [password, setPassword] = useState<string | null>(null);
 	const {channelId} = useParams();
-	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+
+	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		// let hashed_password: string | undefined = undefined;
+		// let hashed_new_password: string | undefined = undefined;
+		// if (e.currentTarget.password) {
+		// 	hashed_password = await bcrypt.hash(e.currentTarget.password, salt);
+		// }
+		// if (e.currentTarget.new_password) {
+		// 	hashed_new_password = await bcrypt.hash(e.currentTarget.password, salt);
+		// }
+		const updateChannel: updateChannel = {
+			id: channelState.selectedChannel.id,
+			type: e.currentTarget.type.value,
+			email: channelState.selectedChannel.ownerEmail,
+			// password: hashed_password? hashed_password : null,
+			password: e.currentTarget.password? e.currentTarget.password.value : null,
+			memberId: user.profile.id,
+			newPassword: e.currentTarget.new_password ? e.currentTarget.new_password.value : null,
+
+		};
+		console.log(updateChannel);
+		// dispatch(channelActions.updateChannel(updateChannel));
+		// setTimeout(() => {
+		// 	if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
+		// 		navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
+		// 	}
+		// }, 500);
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		if (e.currentTarget.type) {
-			if (e.currentTarget.type.value === 'public') {
-				setIsProtected(false);
-				setPicture('/default_channel_public.png');
-			} else if (e.currentTarget.type.value === 'protected') {
-				setIsProtected(true);
-				setPicture('/default_channel_protected.png');
-			} else if (e.currentTarget.type.value === 'private') {
-				setIsProtected(false);
-				setPicture('/default_channel_private.png');
-			}
+		if (channelState.selectedChannel.picture !== null && channelState.selectedChannel.picture !== '')
+		{
+			return ;
+		}
+		if (e.currentTarget.type.value === 'public') {
+			setIsProtected(false);
+			setPicture('/default_channel_public.png');
+		} else if (e.currentTarget.type.value === 'protected') {
+			setIsProtected(true);
+			setPicture('/default_channel_protected.png');
+		} else if (e.currentTarget.type.value === 'private') {
+			setIsProtected(false);
+			setPicture('/default_channel_private.png');
 		}
 	};
 
-	const updateAvatar = (e: FormEvent<HTMLInputElement>) => {
-		// const target = e.target as HTMLInputElement;
-		// const user_id = Number(getCookie('userId'))
-		// 		if (user_id && target.files && target.files.length) {
-		// 	const avatar = target.files[0];
+	const updateChannelAvatar = (e: FormEvent<HTMLInputElement>) => {
+		const target = e.target as HTMLInputElement;
+		const user_id = Number(getCookie('userId'))
 
-		// 	const formData = new FormData();
-		// 	formData.append('avatar', avatar, );
-		// 	const file_name = dispatch(uploadAvatar(formData));
-		// 				console.log(`Filename: ${file_name}`);
-		// 	const old_filename = target.files[0].name;
-		// 	const extension = old_filename.split('.').pop()
-		// 	let update_user: UpdateUser = {
-		// 		id: user.profile?.id,
-		// 		username: user.profile?.username, //FIXME!!! username from the form
-		// 		avatar: `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + '.png', //FIXME!!! avatar from the form
-		// 		prefferedTableSide: user.profile?.prefferedTableSide,
-		// 		pongColorScheme: user.profile?.pongColorScheme,
-		// 	};
+		if (user_id && target.files && target.files.length && channelState.selectedChannel && user.profile) {
+			const avatar = target.files[0];
+
+			const formData = new FormData();
+			formData.append('avatar', avatar, );
+			dispatch(uploadChannelAvatar({ channelId: channelState.selectedChannel.id, img_data: formData}));
 			
-		// 	dispatch(updateProfile(update_user));
-		// 	window.location.reload(false);
-		// }
+			// get url from backend
+			setTimeout(() => {
+				setPicture(channelState.selectedChannel.picture);
+			}, (500));
+		}
 	};
 	
 	const showMembers = () => {
@@ -76,12 +102,16 @@ function ChannelSettings() {
 	};
 
 	const joinChannel = () => {
+		let hashed_password: string | null = null;
 		if (channelState.selectedChannel && user.profile) {
+			// if (channelState.selectedChannel.type === typeEnum.PROTECTED && password) {
+			// 	hashed_password = bcrypt.hash(password, channelState.selectedChannel.ownerEmail);
+			// }
 			const joinData = {
 				id: channelState.selectedChannel.id,
 				type: channelState.selectedChannel.type,
 				email: user.profile.email,
-				password: password, //FIXME!!! formData password!
+				password: password ? password : null, //FIXME!!! formData password!
 				memberId: -1,
 				newPassword: null //FIXME!!! formData newPassword
 			};
@@ -153,6 +183,12 @@ function ChannelSettings() {
 		}
 	}, [channelId]);
 
+	useEffect(() => {
+		if (channelState.selectedChannel) {
+			setPicture(channelState.selectedChannel.picture);
+		}
+	}, [channelState.selectedChannel]);
+
 	return (
 		<>
 			<div className={styles['channel-card']}>
@@ -160,10 +196,14 @@ function ChannelSettings() {
 					<div className={styles['join']}>
 						<div className={settingStyles['avatar_setting']}>
 							<img className={settingStyles['avatar']} src={picture}/>
-							<div className={settingStyles['middle_settings']}>
-								<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
-								<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
-							</div>
+							{IAmOwner() === true
+								? <>
+									<div className={settingStyles['middle_settings']}>
+										<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateChannelAvatar} hidden/>
+										<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
+									</div>
+								</>
+								: <></>}
 						</div>
 						<Headling onClick={() => {}}>{channelState.selectedChannel?.name}</Headling>
 						<div className={styles['guard']}>
@@ -205,7 +245,15 @@ function ChannelSettings() {
 									<label htmlFor="protected">protected</label>
 								</div>
 							</fieldset>
-							{isProtected && <Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>}
+							{
+								isProtected && channelState.selectedChannel.type !== typeEnum.PROTECTED &&
+								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+							}
+							{
+								isProtected && channelState.selectedChannel.type === typeEnum.PROTECTED &&
+								<><Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
+								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/></>
+							}
 							<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
 						</>
 						: <></>}

@@ -57,7 +57,8 @@ export class UserController {
 		@Body() userData: any,
 		@Req() req: Request,
 	) {
-		console.log(req.cookies);
+		// console.log(req.cookies);
+		console.log(userData);
 		return await this.userService.updateUser(userId, userData);
 	}
 
@@ -82,16 +83,20 @@ export class UserController {
 
 		const extension = path.extname(file.originalname);
 		const new_name = user_id + extension;
-
+		
 		// const file_extension = path.extname(file.originalname);
 		const url_path = '/user/avatars/';
-		const server_path = '/upload/';
-
+		const server_path = '/upload/user/';
+		if (!fs.existsSync(server_path))
+			fs.mkdirSync(server_path)
 		fs.writeFile(server_path + new_name, file.buffer, (err) => {
 			if (err) {
 				console.error(err);
 			}
 		});
+		const avatar_url = `http://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+		this.userService.updateAvatar(user_id, avatar_url);
+		console.log(`avatar of user ( ${user_id} ) is updated: ${avatar_url}`);
 		return url_path + new_name;
 	}
 
@@ -107,7 +112,7 @@ export class UserController {
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
 		// console.log(`get ImagesFile: ${img_name}`);
-		return res.sendFile(img_name, { root: '/upload/' });
+		return res.sendFile(img_name, {root: '/upload/user'})
 	}
 
 	@Get('enable2fa')
