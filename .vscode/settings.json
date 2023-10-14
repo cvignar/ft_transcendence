@@ -1,6 +1,0 @@
-{
-	"html.format.wrapLineLength": 300,
-	"javascript.preferences.quoteStyle": "single",
-	"typescript.preferences.quoteStyle": "single",
-	"files.autoSave": "afterDelay",
-}
