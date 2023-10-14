@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
 						player = games.newPlayerFrom(player);
 						gebugPrinting(player?.name, player ? "new player" : "new player not created");
 						if (player) {
-							socket.emit("player created", user?.scheme);
+							socket.emit("player created", player.scheme);
 						} else {
 							socket.emit("player not created");
 							return;
