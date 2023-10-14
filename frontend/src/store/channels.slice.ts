@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAction, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosError } from 'axios';
 import { Socket } from 'socket.io-client';
 import { typeEnum } from '../../../contracts/enums';
@@ -229,6 +229,8 @@ const channelSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(uploadChannelAvatar.fulfilled, (state, action) => {
+			console.log(isAction);
+			state.selectedChannel.picture = action.payload;
 			return ;
 		});
 		builder.addCase(uploadChannelAvatar.rejected, (state, action) => {

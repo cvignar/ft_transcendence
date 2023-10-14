@@ -25,15 +25,18 @@ export function CreateChannelFrom() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
+		if (ChannelAvatar) {
+			return;
+		}
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
-			setPicture('/default_channel_public.png')
+			setPicture('/default_channel_public.png');
 		} else if (e.currentTarget.type.value === 'protected') {
 			setIsProtected(true);
-			setPicture('/default_channel_protected.png')
+			setPicture('/default_channel_protected.png');
 		} else if (e.currentTarget.type.value === 'private') {
 			setIsProtected(false);
-			setPicture('/default_channel_private.png')
+			setPicture('/default_channel_private.png');
 		}
 	};
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -55,28 +58,32 @@ export function CreateChannelFrom() {
 		dispatch(channelActions.createChannel(newChannel));
 		setTimeout(() => {
 			if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
+				// CVIGNAR: get new channel id to upload the channel avatar
+				const new_channel_id = channelState.selectedChannel.id;
+				if (ChannelAvatar) {
+					const formData = new FormData();
+					formData.append('avatar', ChannelAvatar );
+					dispatch(uploadChannelAvatar({channelId: new_channel_id ,img_data: formData}));
+					const old_filename = ChannelAvatar.name;
+					const extension = old_filename.split('.').pop();
+					const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + new_channel_id + extension;
+					setPicture(`http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + new_channel_id + extension);
+					// CVIGNAR: need to update frontend avatar url for the new channel
+					// updateChannelAvatar();
+				}
 				navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
 			}
 		}, 500);
-		// CVIGNAR: get new channel id to upload the channel avatar
-		const new_channel_id = 0;
-		if (ChannelAvatar) {
-			const formData = new FormData();
-			formData.append('avatar', ChannelAvatar, );
-			const file_name = dispatch(uploadChannelAvatar({channelId: new_channel_id ,img_data: formData}));
-			const old_filename = ChannelAvatar.name;
-			const extension = old_filename.split('.').pop();
-			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + new_channel_id + extension;
-			// CVIGNAR: need to update frontend avatar url for the new channel
-		}
-		// updateChannelAvatar();
 	};
 
 	const updateChannelAvatar = (e: FormEvent<HTMLInputElement>) => {
 		const target = e.target as HTMLInputElement;
-		const user_id = Number(getCookie('userId'))
+		const user_id = Number(getCookie('userId'));
 		if (user_id && target.files && target.files.length) {
 			setChannelAvatar(target.files[0]);
+			if (ChannelAvatar) {
+				setPicture(ChannelAvatar.name);
+			}
 			// CVIGNAR: setPicture can be set to the new selected profile picture... not sure this will work
 		}
 	};
@@ -85,7 +92,7 @@ export function CreateChannelFrom() {
 		if (channelState.error) {
 			console.log(channelState.error);
 		}
-	}, [channelState.error])
+	}, [channelState.error]);
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
