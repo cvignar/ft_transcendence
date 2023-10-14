@@ -1,7 +1,5 @@
 FROM node:18
 
-RUN apt-get install unzip -y
-
 ENV NVM_DIR /root/.nvm
 ENV NODE_VERSION 18
 
@@ -19,4 +17,4 @@ RUN npm i
 
 EXPOSE 3000
 
-CMD [ "/bin/sh", "-c", "npx prisma migrate deploy && npm run start:dev" ]
+	CMD [ "/bin/sh", "-c", "npx prisma migrate deploy && npm run start:dev" ]
