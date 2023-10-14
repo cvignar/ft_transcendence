@@ -1,0 +1,41 @@
+.info-page {
+	background: var(--white-hover-color);
+	width: 100%;
+	height: 100%;
+	overflow: scroll;
+}
+
+.header {
+	font-size: 34px;
+	margin: 0px;
+	padding: 0px;
+	height: fit-content;
+}
+
+.text-block {
+	margin: 5px;
+	margin-top: 0px;
+}
+
+.text {
+	/* display: flex; */
+	margin-top: 10px;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	gap: 20px;
+}
+
+.img {
+	/* display: flex; */
+	float: left;
+	margin-right: 10px;
+	height: 190px;
+	width: 190px;
+}
+
+.link {
+	color: var(--text-color);
+}

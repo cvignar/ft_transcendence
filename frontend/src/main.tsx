@@ -23,6 +23,7 @@ import { SearchPage } from './pages/Search/SearchPage';
 import ChannelSettings from './pages/ChannelSettings/ChannelSettings';
 import { SelfStats } from './pages/Settings/SelfStats/SeldStats';
 import { GoToSettings } from './helpers/GoToSettings';
+import { Info } from './pages/Info/Info';
 
 const router = createBrowserRouter([
 	{
@@ -100,7 +101,12 @@ const router = createBrowserRouter([
 						element:  <RequireAuth><MemberPreview/></RequireAuth>
 					}
 				]
+			},
+			{
+				path: '/Info',
+				element: <RequireAuth><Info/></RequireAuth>
 			}
+
 		]
 	}
 ]);

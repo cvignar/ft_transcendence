@@ -161,7 +161,6 @@ export function Settings() {
 		// 	dispatch(userActions.getFriends(user.profile.id));
 		// }
 	}, [user.profile, error]);
-
 	return (
 		<>
 			<div className={styles['profile-card']}>
