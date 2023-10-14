@@ -546,8 +546,6 @@ export class ChannelService {
 								: messageCount > 0
 								? channelsList.invited[i].messages[0].msg
 								: '',
-						//ownerEmail: channelsList.invited[i].ownerEmail,
-						//ownerId: channelsList.invited[i].ownerId,
 						ownerEmail: channelsList.invited[i].owners[0].email,
 						ownerId: channelsList.invited[i].owners[0].id,
 					};
@@ -1351,15 +1349,36 @@ export class ChannelService {
 		}
 	}
 
-	async deleteMessage(messageData: MessagePreview.Response) {
-		try {
-			await this.prismaService.message.update({
-				where: { id: messageData.id },
-				data: { unsent: true },
-			});
-		} catch (e) {
-			console.log('deleteMessage error: ', e);
-			throw new WsException(e);
-		}
+	// async deleteMessage(messageData: MessagePreview.Response) {
+	// 	try {
+	// 		await this.prismaService.message.update({
+	// 			where: { id: messageData.id },
+	// 			data: { unsent: true },
+	// 		});
+	// 	} catch (e) {
+	// 		console.log('deleteMessage error: ', e);
+	// 		throw new WsException(e);
+	// 	}
+	// }
+
+	async updateChannel(channelData: UpdateChannel.Request, ownerId: number) {
+		const channel = this.prismaService.channel.findUnique({
+			where: { id: channelData.id },
+			select: {
+				id: true,
+				owners: {
+					where: { id: ownerId },
+				},
+				type: true,
+				password: true,
+				name: true,
+			}
+		});
+		// if (channel &&
+		// 	channel.owners.length > 0) {
+		// 	if (channelData.type === typeEnum.PROTECTED) {
+
+		// 	}
+		// }
 	}
 }

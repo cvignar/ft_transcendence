@@ -16,7 +16,7 @@ import { useParams } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
 import { uploadChannelAvatar } from '../../store/channels.slice'
 // import bcrypt from 'bcryptjs';
-import { updateChannel } from '../../interfaces/updateChannel.interface';
+import { UpdateChannel } from '../../interfaces/updateChannel.interface';
 // import { salt } from '../../helpers/hashing';
 
 function ChannelSettings() {
@@ -40,18 +40,18 @@ function ChannelSettings() {
 		// if (e.currentTarget.new_password) {
 		// 	hashed_new_password = await bcrypt.hash(e.currentTarget.password, salt);
 		// }
-		const updateChannel: updateChannel = {
+		const updateChannel: UpdateChannel = {
 			id: channelState.selectedChannel.id,
 			type: e.currentTarget.type.value,
 			email: channelState.selectedChannel.ownerEmail,
+			memberId: -1,
 			// password: hashed_password? hashed_password : null,
 			password: e.currentTarget.password? e.currentTarget.password.value : null,
-			memberId: user.profile.id,
 			newPassword: e.currentTarget.new_password ? e.currentTarget.new_password.value : null,
 
 		};
 		console.log(updateChannel);
-		// dispatch(channelActions.updateChannel(updateChannel));
+		dispatch(channelActions.updateChannel(updateChannel));
 		// setTimeout(() => {
 		// 	if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
 		// 		navigate(`/Chat/channel/${channelState.selectedChannel.id}`);

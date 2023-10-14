@@ -79,7 +79,7 @@ const UpdateChannelSchema = zod.object({
 	id: zod.number().int(),
 	type: zod.nativeEnum(typeEnum),
 	email: zod.string().email(),
-	password: zod.password().nullable(),
+	password: zod.password().min(1).nullable(),
 	memberId: zod.number().int().default(-1),
 	newPassword: zod.password().nullable(),
 });

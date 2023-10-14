@@ -8,6 +8,7 @@ import { CreateChannel } from '../interfaces/createChannel.interface';
 import { CreateMessage } from '../interfaces/createMessage.interface';
 import { Message } from '../interfaces/message.interface';
 import { loadState } from './storage';
+import { UpdateChannel } from '../interfaces/updateChannel.interface';
 
 export enum ChannelsEvent {
 	AddPreview = 'add preview',
@@ -43,6 +44,7 @@ export enum ChannelsEvent {
 	kickMember = 'kick member',
 	muteMember = 'mute member',
 	unmuteMember = 'unmute member',
+	updateChannel = 'update channel',
 }
 
 export interface ChannelsState {
@@ -226,18 +228,20 @@ const channelSlice = createSlice({
 		unmuteMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
 			return;
 		},
+		updateChannel: (state, action: PayloadAction<UpdateChannel>) => {
+			return;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addCase(uploadChannelAvatar.fulfilled, (state, action) => {
 			console.log(isAction);
 			state.selectedChannel.picture = action.payload;
-			return ;
+			return;
 		});
 		builder.addCase(uploadChannelAvatar.rejected, (state, action) => {
 			state.error = action.error.message;
 			console.log(action.error);
 		});
-		
 	},
 });
 
