@@ -103,12 +103,30 @@ io.on("connection", (socket) => {
 	});
 	
 	socket.on("controls", (msg) => {
-		const player = games.getPlayer(socket.id);
+		let player = games.getPlayer(socket.id);
+		if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
+			gebugPrinting(player?.name, GameCommand[msg.cmd] + " controls");
+		}
 		if (player) {
 			if (player.imWatching) {
-				return;
+				const watchingPong = games.getPong(player.imWatching);
+				if (watchingPong) {
+					if (watchingPong.isPartnerGameInProgress()) {
+						return;
+					} else {
+						socket.emit("pong deleted");
+						player = games.newPlayerFrom(player);
+						gebugPrinting(player?.name, player ? "new player" : "new player not created");
+						if (player) {
+							socket.emit("player created", user?.scheme);
+						} else {
+							socket.emit("player not created");
+							return;
+						}
+					}
+				}
 			}
-			let pong = games.getPong(player.socketId);
+			let pong = games.getPong(socket.id);
 			if (pong) {
 				if (msg.cmd == GameCmd.NEW && !pong.partner) {
 				} else {
@@ -126,9 +144,6 @@ io.on("connection", (socket) => {
 				pong = games.nwePong(player);
 				socket.emit("pong launched", msg.cmd);
 			}
-		}
-		if (msg.paddle_y == 0 && msg.cmd != GameCmd.MOUSE && msg.cmd != GameCmd.NOCMD) {
-			gebugPrinting(player?.name, GameCommand[msg.cmd] + " controls");
 		}
 	});
 	

@@ -196,6 +196,15 @@ export class GamesSet {
 		}
 		return undefined;
 	}
+	newPlayerFrom(player: Player): Player | undefined {
+		const user = {
+			name: player.name,
+			id: player.id,
+			side: player.side,
+			scheme: player.scheme,
+		};
+		return this.newPlayer(player.socketId, user);
+	}
 	deletePlayer(socketId: string): Player | undefined | null {
 		const player = this.players.get(socketId);
 		if (player) {

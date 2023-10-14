@@ -118,7 +118,7 @@ export function game(socket: any, user: any) {
 		if (score.mode == GameMode.STOPPING) {
 			controls.stop();
 		}
-		sounds.play(browserState); // This blok from pong launched
+		sounds.play(browserState);
 		controls.colorizeButtons(browserState);
 		image.render(browserState, score.get(browserState));
 	});
@@ -129,7 +129,4 @@ export function game(socket: any, user: any) {
 		score.clear();
 		image.clear();
 	});
-	// socket.on('disconnect', function() {
-	// 	clearInterval(renderTimer);
-	// });
 }
