@@ -82,11 +82,12 @@ export class UserController {
 
 		const extension = path.extname(file.originalname);
 		const new_name = user_id + extension;
-
+		
 		// const file_extension = path.extname(file.originalname);
 		const url_path = '/user/avatars/';
-		const server_path = '/upload/';
-
+		const server_path = '/upload/user/';
+		if (!fs.existsSync(server_path))
+			fs.mkdirSync(server_path)
 		fs.writeFile(server_path + new_name, file.buffer, (err) => {
 			if (err) {
 				console.error(err);
@@ -107,7 +108,7 @@ export class UserController {
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
 		// console.log(`get ImagesFile: ${img_name}`);
-		return res.sendFile(img_name, { root: '/upload/' });
+		return res.sendFile(img_name, {root: '/upload/user'})
 	}
 
 	@Get('enable2fa')
