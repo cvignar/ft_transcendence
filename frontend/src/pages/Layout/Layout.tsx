@@ -23,6 +23,7 @@ export function Layout() {
 		dispatch(userActions.logout());
 		dispatch(channelActions.logout());
 		removeCookie('accessToken');
+		removeCookie('userId');
 		window.location.reload();
 		//navigate('/Auth');
 	};
