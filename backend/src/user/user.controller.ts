@@ -43,7 +43,11 @@ export class UserController {
 	}
 
 	@Get('getProfile/:id')
-	async getProfile(@Param('id', ParseIntPipe) id: number) {
+	async getProfile(
+		@Param('id', ParseIntPipe) id: number,
+		@Req() req: Request,
+	) {
+		console.log(req.cookies);
 		return await this.userService.getProfile(id);
 	}
 
@@ -51,11 +55,13 @@ export class UserController {
 	async updateProfile(
 		@Param('id', ParseIntPipe) userId: number,
 		@Body() userData: any,
+		@Req() req: Request,
 	) {
+		console.log(req.cookies);
 		return await this.userService.updateUser(userId, userData);
 	}
 
-		@Post('uploadAvatar/:id')
+	@Post('uploadAvatar/:id')
 	@UseInterceptors(FileInterceptor('avatar'))
 	async updateAvatar(
 		@Param('id', ParseIntPipe) user_id: number,
@@ -65,51 +71,53 @@ export class UserController {
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new FileTypeValidator({ fileType: '.(png|jpeg|jpg)'}), //'.(png|jpeg|jpg)' -> when all 3 should be supported
-					new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4}),	// should be enabled in productive system
+					new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }), //'.(png|jpeg|jpg)' -> when all 3 should be supported
+					new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }), // should be enabled in productive system
 				],
-			})
-		) file: Express.Multer.File,
-	)
-	{
+			}),
+		)
+		file: Express.Multer.File,
+	) {
 		// console.log(file);
-
 
 		const extension = path.extname(file.originalname);
 		const new_name = user_id + extension;
 
-		
 		// const file_extension = path.extname(file.originalname);
 		const url_path = '/user/avatars/';
-		const server_path = '/upload/'
-		
-		fs.writeFile(server_path + new_name, file.buffer, err => {if (err) {console.error(err);}});
+		const server_path = '/upload/';
+
+		fs.writeFile(server_path + new_name, file.buffer, (err) => {
+			if (err) {
+				console.error(err);
+			}
+		});
 		return url_path + new_name;
 	}
 
 	/**
 	 * Return images from upload folder -> used for avatar images
-	 * @param img_name 
-	 * @param req 
-	 * @param res 
-	 * @returns 
+	 * @param img_name
+	 * @param req
+	 * @param res
+	 * @returns
 	 */
 
 	@Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
 		// console.log(`get ImagesFile: ${img_name}`);
-		return res.sendFile(img_name, {root: '/upload/'})
+		return res.sendFile(img_name, { root: '/upload/' });
 	}
 
 	@Get('enable2fa')
-	async enable2fa (@Req() req: Request) {
+	async enable2fa(@Req() req: Request) {
 		if (req.cookies && req.cookies.userId)
 			return await this.userService.enable2fa(req.cookies.userId);
 	}
 
 	@Get('disable2fa')
-	async disable2fa (@Req() req: Request) {
+	async disable2fa(@Req() req: Request) {
 		if (req.cookies && req.cookies.userId)
 			return await this.userService.disable2fa(req.cookies.userId);
 	}

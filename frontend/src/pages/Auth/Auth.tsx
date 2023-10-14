@@ -35,7 +35,7 @@ export function AuthForm() {
 		const timerId = setTimeout(() => {
 			if (profile != null) {
 				dispatch(userActions.setUser(profile));
-				navigate('/Chat');
+				navigate('/Settings/Stats');
 			}
 		}, 1000);
 		return () => clearTimeout(timerId);

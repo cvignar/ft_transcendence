@@ -22,6 +22,8 @@ import { CreateChannelFrom } from './pages/CreateChannelForm/CreateChannelForm';
 import { SearchPage } from './pages/Search/SearchPage';
 import ChannelSettings from './pages/ChannelSettings/ChannelSettings';
 import { SelfStats } from './pages/Settings/SelfStats/SeldStats';
+import { GoToSettings } from './helpers/GoToSettings';
+import { Info } from './pages/Info/Info';
 
 const router = createBrowserRouter([
 	{
@@ -45,7 +47,7 @@ const router = createBrowserRouter([
 						element: <RequireAuth><ChatWindow/></RequireAuth>
 					},
 					{
-						path: '/Chat/channel/:channelId/member/:memberId',
+						path: '/Chat/channel/:channelId/member/:userId',
 						element: <RequireAuth><MemberPreview/></RequireAuth>
 					},
 					{
@@ -91,13 +93,20 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: '/InvitePartner',
-				element: <RequireAuth><InvitePartner/></RequireAuth>
+				path: '/Leaderboard',
+				element: <RequireAuth><Leaderboard/></RequireAuth>,
+				children: [
+					{
+						path: '/Leaderboard/user/:userId',
+						element:  <RequireAuth><MemberPreview/></RequireAuth>
+					}
+				]
 			},
 			{
-				path: '/Leaderboard',
-				element: <RequireAuth><Leaderboard/></RequireAuth>
+				path: '/Info',
+				element: <RequireAuth><Info/></RequireAuth>
 			}
+
 		]
 	}
 ]);

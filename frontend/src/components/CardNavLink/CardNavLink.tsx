@@ -5,7 +5,8 @@ import { CardNavLinkProps } from './CardNavLink.props';
 
 function CardNavLink({ children, className, ...props }: CardNavLinkProps) {
 	return (
-		<NavLink {...props} className={classNames(styles['card-button'], styles['no-link'], className)}>
+		<NavLink {...props}
+			className={({isActive}) => classNames(styles['card-button'], styles['no-link'], {[styles['active']]: isActive}, className)}>
 			{children}
 		</NavLink>
 	);

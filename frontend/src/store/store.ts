@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import channelsMiddleware from './channels.middleware';
 import channelSlice from './channels.slice';
 import { saveState } from './storage';
-import userSlice, { EMAIL_PERSISTENT_STATE, JWT_PERSISTENT_STATE, PROFILE_PERSISTENT_STATE, USERID_PERSISTENT_STATE, USERNAME_PERSISTENT_STATE } from './user.slice';
+import userSlice, { EMAIL_PERSISTENT_STATE, JWT_PERSISTENT_STATE, LEADERBOARD_PRSISTENT_STATE, PROFILE_PERSISTENT_STATE, USERID_PERSISTENT_STATE, USERNAME_PERSISTENT_STATE } from './user.slice';
 import {applyMiddleware} from '@reduxjs/toolkit';
 
 export const store = configureStore({
@@ -25,6 +25,7 @@ store.subscribe(() => {
 	saveState(store.getState().user.username, USERNAME_PERSISTENT_STATE);
 	saveState(store.getState().user.profile, PROFILE_PERSISTENT_STATE);
 	saveState(store.getState().user.statuses, 'statuses');
+	saveState(store.getState().user.leaderboard, LEADERBOARD_PRSISTENT_STATE);
 	saveState(store.getState().user.selectedUser, 'selectedUser');
 	saveState(store.getState().channel.selectedChannel, 'selectedChannel');
 	saveState(store.getState().channel.messages, 'messages');

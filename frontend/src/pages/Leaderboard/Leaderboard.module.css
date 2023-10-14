@@ -1,10 +1,35 @@
+.leaderboard {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+}
 
-.invite-partner {
-	min-width: 400px;
-	max-width: 800px;
-	width: 800px;
+.other {
+	background: var(--white-hover-color);
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+	font-size: 14px;
+	overflow: scroll;
+	/*border: 1px solid red;*/
+}
+
+.header {
 	display: flex;
 	flex-direction: row;
-	margin-left: 10px;
-	max-height: 677px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 80%;
+}
+
+.btn-dark {
+	font-size: 16px;
+	background: var(--white-hover-color);
+	margin-left: auto;
+}
+
+.btn-dark:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
 }

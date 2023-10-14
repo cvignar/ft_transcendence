@@ -6,9 +6,9 @@ import { msToTime } from '../../helpers/functions';
 import Button from '../../components/Button/Button';
 import { Status } from '../../helpers/enums';
 import { socket } from '../Pong/pong';
-import { userActions } from '../../store/user.slice';
+import { getUserProfile, userActions } from '../../store/user.slice';
 import { channelActions } from '../../store/channels.slice';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import GameHistoryItem from './GameHistoryItem/GameHistoryItem';
 
@@ -21,6 +21,8 @@ function MemberPreview() {
 	const [goToDM, setGoToDM] = useState<boolean>(false);
 	const [showGH, setShowGH] = useState<boolean>(false);
 	const [watch, setWatch] = useState<boolean>(false);
+	const { userId } = useParams();
+	const location = useLocation();
 
 	const findStatus = (statuses: any) => {
 		for (const status of statuses) {
@@ -128,9 +130,15 @@ function MemberPreview() {
 	const stopWatch = () => {
 		setWatch(false);
 		if (profile) {
-			socket.emit("stop watch", { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
+			socket.emit('stop watch', { name: profile.username, id: profile.id, side: profile?.prefferedTableSide, scheme: profile?.pongColorScheme });
 		}
-	}
+	};
+
+	useEffect(() => {
+		if(userId) {
+			dispatch(getUserProfile(Number(userId)));
+		}
+	}, []);
 
 	return (
 		<>

@@ -73,12 +73,21 @@ export class ChannelGateway {
 		@MessageBody() data: any,
 		@ConnectedSocket() client: Socket,
 	) {
+		if (data.channelId == undefined || data.email == undefined) {
+			return;
+		}
 		const preview = await this.channelService.getPreview(
 			data.channelId,
 			data.email,
 		);
 		client.join(preview.name);
 		client.emit('get selected channel', preview);
+		const user = await this.userService.getUserByEmail(data.email);
+		const members = await this.channelService.getMembers(
+			user.id,
+			data.channelId,
+		);
+		client.emit('get members', members);
 	}
 
 	@SubscribeMessage('get blocked')
@@ -459,7 +468,7 @@ export class ChannelGateway {
 		);
 		if (channel) {
 			const members = await this.channelService.getMembers(
-				channelData.userId,
+				client.data.id,
 				channel.id,
 			);
 			client.emit('get members', members);
@@ -480,7 +489,7 @@ export class ChannelGateway {
 		);
 		if (channel) {
 			const members = await this.channelService.getMembers(
-				channelData.userId,
+				client.data.id,
 				channel.id,
 			);
 			client.emit('get members', members);
@@ -501,7 +510,7 @@ export class ChannelGateway {
 		);
 		if (channel) {
 			const members = await this.channelService.getMembers(
-				channelData.userId,
+				client.data.id,
 				channel.id,
 			);
 			client.emit('get members', members);
@@ -522,7 +531,7 @@ export class ChannelGateway {
 		);
 		if (channel) {
 			const members = await this.channelService.getMembers(
-				channelData.userId,
+				client.data.id,
 				channel.id,
 			);
 			client.emit('get members', members);
@@ -543,7 +552,7 @@ export class ChannelGateway {
 		);
 		if (channel) {
 			const members = await this.channelService.getMembers(
-				channelData.userId,
+				client.data.id,
 				channel.id,
 			);
 			client.emit('get members', members);
@@ -553,11 +562,64 @@ export class ChannelGateway {
 		}
 	}
 
-	@SubscribeMessage('mute user')
-	async muteUser(@MessageBody() data: any) /*FIXME!!!!*/ {
-		//mute in channel
+	@SubscribeMessage('mute member')
+	async muteUser(
+		@MessageBody()
+		muteData: {
+			finishAt: string;
+			userId: number;
+			channelId: number;
+		},
+		@ConnectedSocket() client: Socket,
+	) {
+		console.log('mute event');
+		if (new Date(muteData.finishAt) < new Date('now')) {
+			client.emit(
+				'exception',
+				`Cannot mute before ${new Date('now').toDateString()}`,
+			);
+		}
+
+		const channel = await this.channelService.muteMember(
+			muteData,
+			client.data.id,
+		);
+		if (channel) {
+			const members = await this.channelService.getMembers(
+				client.data.id,
+				channel.id,
+			);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot mute this member');
+		}
 	}
-	//async handleMuteUser(@MessageBody() data: mute) {
-	//  await this.chatservice.new__mute(data);
-	//}
+
+	@SubscribeMessage('unmute member')
+	async unmuteUser(
+		@MessageBody()
+			muteData: {
+				userId: number;
+				channelId: number;
+			},
+		@ConnectedSocket() client: Socket,
+	) {
+		console.log('mute event');
+
+		const channel = await this.channelService.unmuteMember(
+			muteData,
+			client.data.id,
+		);
+		if (channel) {
+			const members = await this.channelService.getMembers(
+				client.data.id,
+				channel.id,
+			);
+			client.emit('get members', members);
+			this.server.in(channel.name).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot unmute this member');
+		}
+	}
 }

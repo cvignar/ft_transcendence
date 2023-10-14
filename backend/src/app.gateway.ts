@@ -254,4 +254,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		const friends = await this.userService.getFriends(userId);
 		client.emit('get friends', friends);
 	}
+
+	@SubscribeMessage('get leaderboard')
+	async	getLeaderboard(@ConnectedSocket() client: Socket) {
+		const leaderboard = await this.userService.getUsersOrderedByRank();
+		client.emit('get leaderboard', leaderboard);
+	}
 }

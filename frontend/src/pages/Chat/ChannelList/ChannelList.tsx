@@ -12,7 +12,7 @@ import { AppDispatch, RootState } from '../../../store/store';
 import { channelActions } from '../../../store/channels.slice';
 import { FocusEvent } from 'react';
 
-export function ChannelList({ channels, setChannel, isActive, setActive }: ChannelListProps) {
+export function ChannelList({ channels, setChannel }: ChannelListProps) {
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const channelState = useSelector((s: RootState) => s.channel);
@@ -34,7 +34,6 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 					key={c.id}
 					onClick={() => {
 						setChannel(c);
-						setActive(c.id);
 						dispatch(channelActions.getSelectedChannel(c.id));
 						dispatch(channelActions.getMessages(c.id));
 					}}>
@@ -43,7 +42,7 @@ export function ChannelList({ channels, setChannel, isActive, setActive }: Chann
 					/>
 				</CardNavLink>
 			))
-		}
+			}
 		</div>
 	);
 }

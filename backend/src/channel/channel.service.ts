@@ -584,8 +584,10 @@ export class ChannelService {
 				channel.owners[0].email === email
 					? channel.owners[1].id
 					: channel.owners[0].id;
-		} else {
+		} else if (channel.owners.length == 1) {
 			ownerId = channel.owners[0].id;
+		} else {
+			ownerId = -1;
 		}
 
 		const preview: ChannelPreview.Response = {
@@ -598,8 +600,8 @@ export class ChannelService {
 				channel.type === 'protected'
 					? ''
 					: messageCount > 0
-					? channel.messages[0].msg
-					: '',
+						? channel.messages[0].msg
+						: '',
 			ownerEmail:
 				channel.owners.length > 0 ? channel.owners[0].email : '',
 			ownerId: ownerId,
@@ -777,12 +779,7 @@ export class ChannelService {
 				select: { id: true },
 			});
 			if (mute) {
-				await this.prismaService.channel.update({
-					where: { id: channelData.channelId },
-					data: {
-						muted: { disconnect: { id: mute?.id } },
-					},
-				});
+				await this.unmuteMember(channelData, adminId);
 			}
 			const updatedChannel = await this.prismaService.channel.update({
 				where: { id: channelData.channelId },
@@ -794,6 +791,135 @@ export class ChannelService {
 				},
 			});
 			return updatedChannel;
+		}
+		return undefined;
+	}
+
+	async muteMember(
+		muteData: { finishAt: string; userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: muteData.channelId },
+			select: {
+				owners: {
+					where: { id: muteData.userId },
+				},
+				admins: {
+					where: { id: adminId },
+				},
+				members: {
+					where: { id: muteData.userId },
+				},
+			},
+		});
+		if (
+			channel &&
+			channel.owners.length === 0 &&
+			channel.admins.length > 0 &&
+			channel.members.length > 0
+		) {
+			const mute = await this.prismaService.mute.findFirst({
+				where: {
+					AND: [
+						{ userId: muteData.userId },
+						{ cid: muteData.channelId },
+					],
+				},
+				select: { id: true },
+			});
+			if (!mute) {
+				const newMute = await this.prismaService.mute.create({
+					data: {
+						finishAt: new Date(muteData.finishAt),
+						finished:
+							new Date(muteData.finishAt).getTime() <
+							new Date(Date.now()).getTime(),
+						checkAt: new Date(Date.now()),
+						muted: { connect: { id: muteData.userId } },
+						channel: { connect: { id: muteData.channelId } },
+					},
+				});
+				if (newMute && newMute.finished === false) {
+					const updatedChannel =
+						await this.prismaService.channel.update({
+							where: { id: muteData.channelId },
+							data: {
+								muted: {
+									connect: { id: newMute.id },
+								},
+							},
+						});
+					return updatedChannel;
+				}
+			}
+			return undefined;
+		}
+	}
+
+	async updateMute(id: number, channelId: number) {
+		try {
+			await this.prismaService.mute.updateMany({
+				where: {
+					AND: [
+						{ userId: id },
+						{ cid: channelId },
+						{ finished: false },
+					],
+				},
+				data: {
+					checkAt: new Date(),
+				},
+			});
+		} catch (error) {
+			throw new WsException(error);
+		}
+	}
+
+	async unmuteMember(
+		muteData: { userId: number; channelId: number },
+		adminId: number,
+	) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: muteData.channelId },
+			select: {
+				admins: {
+					where: { id: adminId },
+				},
+				members: {
+					where: { id: muteData.userId },
+				},
+				name: true,
+				id: true,
+			},
+		});
+		if (
+			channel &&
+			channel.admins.length > 0 &&
+			channel.members.length > 0
+		) {
+			const mute = await this.prismaService.mute.findFirst({
+				where: {
+					AND: [
+						{ userId: muteData.userId },
+						{ cid: muteData.channelId },
+					],
+				},
+				select: {
+					id: true,
+					cid: true,
+					userId: true,
+				},
+			});
+			if (mute) {
+				await this.prismaService.mute.update({
+					where: { id: mute.id },
+					data: {
+						finished: true,
+					},
+				});
+				return channel;
+			}
 		}
 		return undefined;
 	}
@@ -826,7 +952,8 @@ export class ChannelService {
 			let isBlocked = false;
 			let isMuted = false;
 			for (let i = 0; i < channel.muted.length; i++) {
-				if (userId === channel.muted[i].userId) {
+				if (userId === channel.muted[i].userId &&
+					channel.muted[i].finished === false) {
 					isMuted = true;
 					break;
 				}
@@ -1169,23 +1296,27 @@ export class ChannelService {
 			const user = await this.userService.getUserByEmail(
 				messageData.email,
 			);
-			const channel = await this.getChannelById(messageData.channelId);
 			let member = false;
-			for (let i = 0; i < channel.owners.length; i++) {
-				if (user.id == channel.owners[i].id) {
+			const channel = await this.getChannelById(messageData.channelId);
+			for (let i = 0; i < channel.members.length; i++) {
+				if (Number(user.id) == Number(channel.members[i].id)) {
 					member = true;
+					break;
 				}
 			}
 			if (!member) {
-				console.log('!');
-				// FIXME!!!!
 				return;
 			}
-			//if (!channel.members.includes(user)) {
-			//  return;
-			//}
+			for (let i = 0; i < channel.blocked.length; i++) {
+				if (user.id == channel.blocked[i].id) {
+					return;
+				}
+			}
 			for (let i = 0; i < channel.muted.length; i++) {
-				if (channel.muted[i].userId == user.id) {
+				if (
+					channel.muted[i].userId == user.id &&
+					channel.muted[i].finished === false
+				) {
 					return;
 				}
 			}

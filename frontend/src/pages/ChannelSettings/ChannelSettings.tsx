@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Headling from '../../components/Headling/Headling';
 import styles from './ChannelSettings.module.css';
 import Input from '../../components/Input/Input';
@@ -12,30 +12,34 @@ import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
 import { channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
+import { useParams } from 'react-router-dom';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
 	const channelState = useSelector((s: RootState) => s.channel);
 	const user = useSelector((s: RootState) => s.user);
 	const [isProtected, setIsProtected] = useState<boolean>(false);
-	const [changeUsername, setChangeUsername] = useState<boolean>(false);
+	const [passwordInput, setPasswordInput] = useState<boolean>(false);
 	const [showMmbrs, setShowMmbrs] = useState<boolean>(false);
 	const dispatch = useDispatch<AppDispatch>();
-
+	const [password, setPassword] = useState<string | null>(null);
+	const {channelId} = useParams();
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		if (e.currentTarget.type.value === 'public') {
-			setIsProtected(false);
-			setPicture('/default_channel_public.png');
-		} else if (e.currentTarget.type.value === 'protected') {
-			setIsProtected(true);
-			setPicture('/default_channel_protected.png');
-		} else if (e.currentTarget.type.value === 'private') {
-			setIsProtected(false);
-			setPicture('/default_channel_private.png');
+		if (e.currentTarget.type) {
+			if (e.currentTarget.type.value === 'public') {
+				setIsProtected(false);
+				setPicture('/default_channel_public.png');
+			} else if (e.currentTarget.type.value === 'protected') {
+				setIsProtected(true);
+				setPicture('/default_channel_protected.png');
+			} else if (e.currentTarget.type.value === 'private') {
+				setIsProtected(false);
+				setPicture('/default_channel_private.png');
+			}
 		}
 	};
 
@@ -77,7 +81,7 @@ function ChannelSettings() {
 				id: channelState.selectedChannel.id,
 				type: channelState.selectedChannel.type,
 				email: user.profile.email,
-				password: null, //FIXME!!! formData password!
+				password: password, //FIXME!!! formData password!
 				memberId: -1,
 				newPassword: null //FIXME!!! formData newPassword
 			};
@@ -85,6 +89,21 @@ function ChannelSettings() {
 			dispatch(channelActions.readChannelStatus({channelId: channelState.selectedChannel.id, email: user.profile.email}));
 		}
 		// setShowMmbrs(false);
+	};
+
+	const checkProtected = () => {
+		if (channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED) {
+			if (passwordInput === true) {
+				setPasswordInput(false);
+				joinChannel();
+			} else if (channelState.selectedChannel) {
+				setPasswordInput(true);
+			}
+		} else {
+			setPasswordInput(false);
+			setPassword(null);
+			joinChannel();
+		}
 	};
 
 	const leaveChannel = () => {
@@ -124,6 +143,16 @@ function ChannelSettings() {
 		return false;
 	};
 
+	const getPassword = (e: ChangeEvent<HTMLInputElement>) => {
+		setPassword(e.currentTarget.value);
+	};
+
+	useEffect(() => {
+		if (channelId != undefined) {
+			dispatch(channelActions.getSelectedChannel(Number(channelId)));
+		}
+	}, [channelId]);
+
 	return (
 		<>
 			<div className={styles['channel-card']}>
@@ -136,16 +165,21 @@ function ChannelSettings() {
 								<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={settingStyles['svg']}/></label>
 							</div>
 						</div>
-						<Headling onClick={() => (setChangeUsername(true))}>{channelState.selectedChannel?.name}</Headling>
-						{IAmOwner() !== true
-							? IAmMember() !== true 
-								? <Button
-									className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-									onClick={joinChannel}>Join</Button>
-								: <Button
-									className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
-									onClick={leaveChannel}>Leave</Button>
-							: <></>}
+						<Headling onClick={() => {}}>{channelState.selectedChannel?.name}</Headling>
+						<div className={styles['guard']}>
+							{IAmOwner() === false
+								? IAmMember() === false 
+									? <Button
+										className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+										onClick={checkProtected}>Join</Button>
+									: <Button
+										className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+										onClick={leaveChannel}>Leave</Button>
+								: <></>}
+							{passwordInput === true
+								? <input type='password' name='password' placeholder='password' onChange={getPassword}/>
+								: <></>}
+						</div>
 					</div>
 					{channelState.error ? <div>{channelState.error}</div> : <></>}
 					{IAmOwner() === true

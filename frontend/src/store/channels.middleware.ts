@@ -92,6 +92,9 @@ const channelsMiddleware: Middleware = (store) => {
 			socket.on(UserEvents.getFriends, (friends: any[]) => {
 				store.dispatch(userActions.setFriends(friends));
 			});
+			socket.on(UserEvents.getLeaderboard, (leaderboard: any[]) => {
+				store.dispatch(userActions.setLeaderboard(leaderboard));
+			});
 		}
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
 			console.log('create channel', action.payload);
@@ -151,6 +154,12 @@ const channelsMiddleware: Middleware = (store) => {
 		if (channelActions.kickMember.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.kickMember, action.payload);
 		}
+		if (channelActions.muteMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.muteMember, action.payload);
+		}
+		if (channelActions.unmuteMember.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.unmuteMember, action.payload);
+		}
 
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.addFriend, {
@@ -181,6 +190,9 @@ const channelsMiddleware: Middleware = (store) => {
 		}
 		if (userActions.getFriends.match(action) && isConnectionEstablished) {
 			socket.emit(UserEvents.getFriends, action.payload);
+		}
+		if (userActions.getLeaderboard.match(action) && isConnectionEstablished) {
+			socket.emit(UserEvents.getLeaderboard);
 		}
 		next(action);
 	};

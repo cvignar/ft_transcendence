@@ -6,5 +6,7 @@
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
 	"prettier.jsxSingleQuote": true,
-	"prettier.singleQuote": true
+	"prettier.singleQuote": true,
+	"terminal.integrated.fontSize": 15,
+	"editor.fontSize": 18
 }

@@ -41,6 +41,8 @@ export enum ChannelsEvent {
 	blockMember = 'block member',
 	unblockMember = 'unblock member',
 	kickMember = 'kick member',
+	muteMember = 'mute member',
+	unmuteMember = 'unmute member',
 }
 
 export interface ChannelsState {
@@ -200,7 +202,13 @@ const channelSlice = createSlice({
 		kickMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
 			return;
 		},
-	}
+		muteMember: (state, action: PayloadAction<{ finishAt: string; userId: number; channelId: number }>) => {
+			return;
+		},
+		unmuteMember: (state, action: PayloadAction<{ userId: number; channelId: number }>) => {
+			return;
+		},
+	},
 });
 
 export const channelActions = channelSlice.actions;
