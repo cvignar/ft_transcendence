@@ -64,8 +64,11 @@ export class ChannelController {
 		const server_path = '/upload/channel/'
 		if (!fs.existsSync(server_path))
 			fs.mkdirSync(server_path)
-		fs.writeFile(server_path + new_name, file.buffer, err => {if (err) {console.error(err);}});
-    this.channelService.updateAvatar(channel_id, url_path + channel_id + extension);
+		fs.writeFile(server_path + new_name, file.buffer, err => {
+      if (err) {console.error(err);}
+    });
+    const avatar_url = `http://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+    this.channelService.updateAvatar(channel_id, avatar_url);
 		return url_path + new_name;
 	}
 

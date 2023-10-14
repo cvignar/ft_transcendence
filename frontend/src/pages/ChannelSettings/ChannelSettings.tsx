@@ -32,6 +32,10 @@ function ChannelSettings() {
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
+		if (channelState.selectedChannel.picture !== '')
+		{
+			return ;
+		}
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
 			setPicture('/default_channel_public.png');
@@ -53,15 +57,12 @@ function ChannelSettings() {
 
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
-			const file_name = dispatch(uploadChannelAvatar({ channelId: channelState.selectedChannel.id, img_data: formData}));
-			const old_filename = target.files[0].name;
-			const extension = old_filename.split('.').pop();
-			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + extension;
-			// CVIGNAR: need to get the channel img url to set in the frontend
-
-			// console.log(`Filename: ${file_name}`);
-			// const old_filename = target.files[0].name;
-			// const extension = old_filename.split('.').pop()
+			dispatch(uploadChannelAvatar({ channelId: channelState.selectedChannel.id, img_data: formData}));
+			
+			// get url from backend
+			setTimeout(() => {
+				setPicture(channelState.selectedChannel.picture);
+			}, (500));
 		}
 	};
 	
@@ -154,6 +155,12 @@ function ChannelSettings() {
 			dispatch(channelActions.getSelectedChannel(Number(channelId)));
 		}
 	}, [channelId]);
+
+	useEffect(() => {
+		if (channelState.selectedChannel) {
+			setPicture(channelState.selectedChannel.picture);
+		}
+	}, [channelState.selectedChannel]);
 
 	return (
 		<>
