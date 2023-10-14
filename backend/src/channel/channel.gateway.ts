@@ -73,6 +73,9 @@ export class ChannelGateway {
 		@MessageBody() data: any,
 		@ConnectedSocket() client: Socket,
 	) {
+		if (data.channelId == undefined || data.email == undefined) {
+			return;
+		}
 		const preview = await this.channelService.getPreview(
 			data.channelId,
 			data.email,

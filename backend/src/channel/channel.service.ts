@@ -584,8 +584,10 @@ export class ChannelService {
 				channel.owners[0].email === email
 					? channel.owners[1].id
 					: channel.owners[0].id;
-		} else {
+		} else if (channel.owners.length == 1) {
 			ownerId = channel.owners[0].id;
+		} else {
+			ownerId = -1;
 		}
 
 		const preview: ChannelPreview.Response = {
@@ -598,8 +600,8 @@ export class ChannelService {
 				channel.type === 'protected'
 					? ''
 					: messageCount > 0
-					? channel.messages[0].msg
-					: '',
+						? channel.messages[0].msg
+						: '',
 			ownerEmail:
 				channel.owners.length > 0 ? channel.owners[0].email : '',
 			ownerId: ownerId,
