@@ -1,7 +1,7 @@
 PROJECT_PATH = 
 NET = ft_transcendence
 
-all: mkdir up
+all: up
 
 psls:
 	clear
@@ -15,10 +15,10 @@ psls:
 	@echo "======================================"
 	docker system df
 
-mkdir:
-	@echo "=Make dirictory data=================="
-	# mkdir -p ${PROJECT_PATH}/ft_data/db
-	# mkdir -p ${PROJECT_PATH}/ft_data/upload
+# mkdir:
+# 	@echo "=Make dirictory data=================="
+# 	# mkdir -p ${PROJECT_PATH}/ft_data/db
+# 	# mkdir -p ${PROJECT_PATH}/ft_data/upload
 
 up:
 	@echo "======================================"
@@ -80,4 +80,4 @@ clean: rm net rst psls
 
 fclean: clean rmi vol prune psls
 
-.PHONY: all psls up stop rm rmi net vol rst logs clean fclean mkdir	prune
+.PHONY: all psls up stop rm rmi net vol rst logs clean fclean prune

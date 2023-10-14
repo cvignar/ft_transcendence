@@ -93,7 +93,12 @@ export function Settings() {
 		const target = e.target as HTMLInputElement;
 		const user_id = Number(getCookie('userId'))
 		if (user_id && target.files && target.files.length) {
-			const avatar = target.files[0];
+			const avatar: File = target.files[0];
+			// console.log(avatar.size)
+			// if (avatar.size > 4194304) {
+			// 	alert('File could not be bigger than 4MB!');
+			// 	return ;
+			// }
 
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
@@ -101,15 +106,18 @@ export function Settings() {
 			console.log(`Filename: ${file_name}`);
 			const old_filename = target.files[0].name;
 			const extension = old_filename.split('.').pop()
+			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + "." + extension + '?';
 			let update_user: UpdateUser = {
 				id: user.profile?.id,
 				username: user.profile?.username, //FIXME!!! username from the form
-				avatar: `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + extension, //FIXME!!! avatar from the form
+				avatar: avatar_url, //FIXME!!! avatar from the form
 				prefferedTableSide: user.profile?.prefferedTableSide,
 				pongColorScheme: user.profile?.pongColorScheme,
 			};
+			console.log(`new user avatar url: ${avatar_url}`);
 			dispatch(updateProfile(update_user));
-			window.location.reload(false);
+			dispatch(getProfile(user_id));
+			// setTimeout(() => {window.URL.revokeObjectURL(avatar_url);}, 500);
 		}
 	}
 
@@ -165,7 +173,7 @@ export function Settings() {
 			<div className={styles['profile-card']}>
 				<div className={styles['empty']}></div>
 				<div className={styles['avatar_setting']}>
-					<img className={styles['avatar']} src={user.profile?.avatar ? user.profile.avatar : '/default_avatar.png'}/>
+					<img className={styles['avatar']} src={user.profile?.avatar ? user.profile.avatar + '?' + Date.now() : '/default_avatar.png'}/>
 					<div className={styles['middle_settings']}>
 						<input accept='image/png, image/jpeg, image/jpg' type="file" id='avatar_input' onChange={updateAvatar} hidden/>
 						<label htmlFor='avatar_input'><img src='/settings-fill.svg' alt='settings' className={styles['svg']}/></label>

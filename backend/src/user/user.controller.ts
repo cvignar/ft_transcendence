@@ -57,7 +57,8 @@ export class UserController {
 		@Body() userData: any,
 		@Req() req: Request,
 	) {
-		console.log(req.cookies);
+		// console.log(req.cookies);
+		console.log(userData);
 		return await this.userService.updateUser(userId, userData);
 	}
 
@@ -93,6 +94,9 @@ export class UserController {
 				console.error(err);
 			}
 		});
+		const avatar_url = `http://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+		this.userService.updateAvatar(user_id, avatar_url);
+		console.log(`avatar of user ( ${user_id} ) is updated: ${avatar_url}`);
 		return url_path + new_name;
 	}
 

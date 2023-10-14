@@ -11,6 +11,8 @@ import { AppGateway } from './app.gateway';
 import { GameModule } from './game/game.module';
 import { GameService } from './game/game.service';
 import { JwtAuthGuard } from './auth/jwt.guard';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
 	imports: [
