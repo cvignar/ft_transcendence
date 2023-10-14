@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Headling from '../../components/Headling/Headling';
 import styles from './ChannelSettings.module.css';
 import Input from '../../components/Input/Input';
@@ -12,6 +12,7 @@ import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
 import { channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
+import { useParams } from 'react-router-dom';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
@@ -22,6 +23,7 @@ function ChannelSettings() {
 	const [showMmbrs, setShowMmbrs] = useState<boolean>(false);
 	const dispatch = useDispatch<AppDispatch>();
 	const [password, setPassword] = useState<string | null>(null);
+	const {channelId} = useParams();
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 	};
@@ -144,6 +146,12 @@ function ChannelSettings() {
 	const getPassword = (e: ChangeEvent<HTMLInputElement>) => {
 		setPassword(e.currentTarget.value);
 	};
+
+	useEffect(() => {
+		if (channelId != undefined) {
+			dispatch(channelActions.getSelectedChannel(Number(channelId)));
+		}
+	}, [channelId]);
 
 	return (
 		<>

@@ -82,6 +82,12 @@ export class ChannelGateway {
 		);
 		client.join(preview.name);
 		client.emit('get selected channel', preview);
+		const user = await this.userService.getUserByEmail(data.email);
+		const members = await this.channelService.getMembers(
+			user.id,
+			data.channelId,
+		);
+		client.emit('get members', members);
 	}
 
 	@SubscribeMessage('get blocked')
