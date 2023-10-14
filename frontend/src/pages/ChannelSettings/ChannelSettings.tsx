@@ -10,12 +10,13 @@ import classNames from 'classnames';
 import CardNavLink from '../../components/CardNavLink/CardNavLink';
 import { getUserProfile } from '../../store/user.slice';
 import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShortInfo';
-import { channelActions } from '../../store/channels.slice';
+import { ChannelsState, channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
 import { useParams } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
 import { uploadChannelAvatar } from '../../store/channels.slice'
 import bcrypt from 'bcryptjs';
+import { updateChannel } from '../../interfaces/updateChannel.interface';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string>('/default_channel_public.png');
@@ -27,12 +28,37 @@ function ChannelSettings() {
 	const dispatch = useDispatch<AppDispatch>();
 	const [password, setPassword] = useState<string | null>(null);
 	const {channelId} = useParams();
+
 	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+		let hashed_password: string | undefined = undefined;
+		let hashed_new_password: string | undefined = undefined;
+		if (e.currentTarget.password) {
+			hashed_password = bcrypt.hash(e.currentTarget.password, user.profile?.email);
+		}
+		if (e.currentTarget.new_password) {
+			hashed_new_password = bcrypt.hash(e.currentTarget.password, user.profile?.email);
+		}
+		const updateChannel: updateChannel = {
+			id: channelState.selectedChannel.id,
+			type: e.currentTarget.type.value,
+			email: channelState.selectedChannel.ownerEmail,
+			password: hashed_password? hashed_password : null,
+			memberId: user.profile.id,
+			newPassword: hashed_new_password? hashed_new_password : null,
+
+		};
+		console.log(updateChannel);
+		// dispatch(channelActions.updateChannel(updateChannel));
+		// setTimeout(() => {
+		// 	if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
+		// 		navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
+		// 	}
+		// }, 500);
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		if (channelState.selectedChannel.picture !== '')
+		if (channelState.selectedChannel.picture !== null && channelState.selectedChannel.picture !== '')
 		{
 			return ;
 		}
@@ -74,10 +100,9 @@ function ChannelSettings() {
 	};
 
 	const joinChannel = () => {
-		const password: string | null = null;
 		let hashed_password: string | null = null;
 		if (channelState.selectedChannel && user.profile) {
-			if (password) {
+			if (channelState.selectedChannel.type === typeEnum.PROTECTED && password) {
 				hashed_password = bcrypt.hash(password, channelState.selectedChannel.ownerEmail);
 			}
 			const joinData = {
@@ -218,7 +243,15 @@ function ChannelSettings() {
 									<label htmlFor="protected">protected</label>
 								</div>
 							</fieldset>
-							{isProtected && <Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>}
+							{
+								isProtected && channelState.selectedChannel.type !== typeEnum.PROTECTED &&
+								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+							}
+							{
+								isProtected && channelState.selectedChannel.type === typeEnum.PROTECTED &&
+								<Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
+								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+							}
 							<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
 						</>
 						: <></>}
