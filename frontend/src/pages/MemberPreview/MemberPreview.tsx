@@ -40,13 +40,13 @@ function MemberPreview() {
 	};
 
 	const emitInvite = () => {
-		if (selectedUser && findStatus(statusMap) === Status.online) {
+		if (selectedUser && findStatus(statusMap) === Status.online && isBlocked() === false) {
 			socket.emit('invite partner', Number(selectedUser.id));
 		}
 	};
 
 	const emitAdd = () => {
-		if (profile && selectedUser) {
+		if (profile && selectedUser && isBlocked() === false) {
 			dispatch(userActions.addFriend({selfId: profile.id, friendId: selectedUser.id}));
 		}
 	};
@@ -91,7 +91,7 @@ function MemberPreview() {
 	};
 
 	const getDirectChannel = () => {
-		if (profile && selectedUser) {
+		if (profile && selectedUser && isBlocked() === false) {
 			dispatch(channelActions.setSelectedChannel(null));
 			dispatch(channelActions.getDirectChannel({targetId: selectedUser.id, selfEmail: profile?.email}));
 			setGoToDM(true);
@@ -157,14 +157,14 @@ function MemberPreview() {
 							: <Button className={isBlocked() === true
 													? styles['inActive']
 													: styles['btn-dark']
-												} onClick={isBlocked() === false && emitAdd}>Add to friends</Button>
+												} onClick={emitAdd}>Add to friends</Button>
 						}
 						<Button
 							className={findStatus(statusMap) !== Status.online
 								|| isBlocked() === true
 									? styles['inActive']
 									: styles['btn-dark']}
-							onClick={findStatus(statusMap) === Status.online && isBlocked() === false && emitInvite}>Invite to game</Button>
+							onClick={emitInvite}>Invite to game</Button>
 						{profile &&
 							selectedUser &&
 							findStatus(statusMap) === Status.playing &&
@@ -183,7 +183,7 @@ function MemberPreview() {
 						<Button className={isBlocked() === true
 									? styles['inActive']
 									: styles['btn-dark']}
-								onClick={isBlocked() === false && getDirectChannel}
+								onClick={getDirectChannel}
 								>Direct chat</Button>
 						{isBlocking() === true
 							? <Button className={styles['btn-dark']} onClick={emitUnblockUser}>Unblock</Button>
