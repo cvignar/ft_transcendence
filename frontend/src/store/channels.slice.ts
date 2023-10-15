@@ -47,6 +47,7 @@ export enum ChannelsEvent {
 	updateChannel = 'update channel',
 	deleteChannel = 'delete channel',
 	requestMessages = 'request messages',
+	requestPrevies = 'request previews'
 }
 
 export interface ChannelsState {

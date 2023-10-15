@@ -340,6 +340,7 @@ export class ChannelService {
 					where: { id: channelId },
 					select: {
 						messages: {
+							where: { NOT: { userId: { in: user.blocking } } },
 							orderBy: { createdAt: 'asc' },
 							select: {
 								id: true,
@@ -358,12 +359,12 @@ export class ChannelService {
 						},
 					},
 				});
-				messages = channel.messages;
-				for (const blockId of user.blocking) {
-					messages = messages.filter((message) => (message.owner.id != blockId))
-				}
-				console.log(messages);
-				return messages;
+				// messages = channel.messages;
+				// for (const blockId of user.blocking) {
+				// 	messages = messages.filter((message) => (message.owner.id != blockId))
+				// }
+				// console.log(messages);
+				return channel.messages;
 			}
 			return undefined;
 		} catch (error) {
@@ -373,6 +374,10 @@ export class ChannelService {
 
 	async getChannelsListById(email: string) {
 		try {
+			const user = await this.prismaService.user.findUnique({
+				where: { email: email },
+				select: { blocking : true },
+			})
 			const channelsList = await this.prismaService.user.findUnique({
 				where: { email: email },
 				select: {
@@ -393,7 +398,7 @@ export class ChannelService {
 								},
 							},
 							messages: {
-								where: { unsent: false },
+								where: { NOT: { userId: { in: user.blocking } } },
 								orderBy: { createdAt: 'desc' },
 								select: { msg: true },
 								take: 1,

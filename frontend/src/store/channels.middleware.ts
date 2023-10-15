@@ -43,6 +43,12 @@ const channelsMiddleware: Middleware = (store) => {
 					store.dispatch(channelActions.getMessages(channel.id));
 				}
 			});
+			socket.on(ChannelsEvent.requestPrevies, () => {
+				const profile = store.getState().user.profile;
+				if (profile) {
+					store.dispatch(channelActions.getChannels(profile.email));
+				}
+			});
 			// socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
 			// 	if (message && message.cid === store.getState().channel.selectedChannel.id) {
 			// 		store.dispatch(channelActions.recieveMessage(message));
