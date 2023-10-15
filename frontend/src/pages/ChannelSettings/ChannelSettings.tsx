@@ -16,11 +16,11 @@ import { useParams } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
 import { uploadChannelAvatar } from '../../store/channels.slice'
 // import bcrypt from 'bcryptjs';
-import { updateChannel } from '../../interfaces/updateChannel.interface';
+import { UpdateChannel } from '../../interfaces/updateChannel.interface';
 // import { salt } from '../../helpers/hashing';
 
 function ChannelSettings() {
-	const [picture, setPicture] = useState<string>('/default_channel_public.png');
+	const [picture, setPicture] = useState<string | null>(null);
 	const channelState = useSelector((s: RootState) => s.channel);
 	const user = useSelector((s: RootState) => s.user);
 	const [isProtected, setIsProtected] = useState<boolean>(false);
@@ -29,6 +29,29 @@ function ChannelSettings() {
 	const dispatch = useDispatch<AppDispatch>();
 	const [password, setPassword] = useState<string | null>(null);
 	const {channelId} = useParams();
+
+	const choosePicture = () => {
+		if (channelState.selectedChannel && channelState.selectedChannel.type) {
+			if (picture) {
+				return picture;
+			}
+			if (channelState.selectedChannel.picture) {
+				return channelState.selectedChannel.picture;
+			}
+			if (channelState.selectedChannel.type === 'public') {
+				return '/default_channel_public.png';
+			} else if (channelState.selectedChannel.type === 'private') {
+				return '/default_channel_private.png';
+			} else if (channelState.selectedChannel.type === 'protected') {
+				return '/default_channel_protected.png';
+			} else {
+				return '/default_avatar.png';
+			}
+		} else if (channelState.selectedChannel) {
+			return '/default_avatar.png';
+		}
+	};
+
 
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -40,18 +63,18 @@ function ChannelSettings() {
 		// if (e.currentTarget.new_password) {
 		// 	hashed_new_password = await bcrypt.hash(e.currentTarget.password, salt);
 		// }
-		const updateChannel: updateChannel = {
+		const updateChannel: UpdateChannel = {
 			id: channelState.selectedChannel.id,
 			type: e.currentTarget.type.value,
 			email: channelState.selectedChannel.ownerEmail,
+			memberId: -1,
 			// password: hashed_password? hashed_password : null,
 			password: e.currentTarget.password? e.currentTarget.password.value : null,
-			memberId: user.profile.id,
 			newPassword: e.currentTarget.new_password ? e.currentTarget.new_password.value : null,
 
 		};
 		console.log(updateChannel);
-		// dispatch(channelActions.updateChannel(updateChannel));
+		dispatch(channelActions.updateChannel(updateChannel));
 		// setTimeout(() => {
 		// 	if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
 		// 		navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
@@ -60,19 +83,21 @@ function ChannelSettings() {
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
-		if (channelState.selectedChannel.picture !== null && channelState.selectedChannel.picture !== '')
-		{
-			return ;
-		}
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
-			setPicture('/default_channel_public.png');
+			if (channelState.selectedChannel.picture === null || channelState.selectedChannel.picture === '') {
+				setPicture('/default_channel_public.png');
+			}
 		} else if (e.currentTarget.type.value === 'protected') {
 			setIsProtected(true);
-			setPicture('/default_channel_protected.png');
+			if (channelState.selectedChannel.picture === null || channelState.selectedChannel.picture === '') {
+				setPicture('/default_channel_protected.png');
+			}
 		} else if (e.currentTarget.type.value === 'private') {
 			setIsProtected(false);
-			setPicture('/default_channel_private.png');
+			if (channelState.selectedChannel.picture === null || channelState.selectedChannel.picture === '') {
+				setPicture('/default_channel_private.png');
+			}
 		}
 	};
 
@@ -89,7 +114,7 @@ function ChannelSettings() {
 			
 			// get url from backend
 			setTimeout(() => {
-				setPicture(channelState.selectedChannel.picture);
+				setPicture(null);
 			}, (500));
 		}
 	};
@@ -102,7 +127,7 @@ function ChannelSettings() {
 	};
 
 	const joinChannel = () => {
-		let hashed_password: string | null = null;
+		// let hashed_password: string | null = null;
 		if (channelState.selectedChannel && user.profile) {
 			// if (channelState.selectedChannel.type === typeEnum.PROTECTED && password) {
 			// 	hashed_password = bcrypt.hash(password, channelState.selectedChannel.ownerEmail);
@@ -177,17 +202,37 @@ function ChannelSettings() {
 		setPassword(e.currentTarget.value);
 	};
 
+	const deleteChannel = () => {
+		if (channelState.selectedChannel) {
+			dispatch(channelActions.deleteChannel(channelState.selectedChannel.id));
+		}
+	};
+
 	useEffect(() => {
 		if (channelId != undefined) {
+			setPicture(null);
 			dispatch(channelActions.getSelectedChannel(Number(channelId)));
 		}
 	}, [channelId]);
 
 	useEffect(() => {
-		if (channelState.selectedChannel) {
-			setPicture(channelState.selectedChannel.picture);
+		if (channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED) {
+			setIsProtected(true);
+		} else if (channelState.selectedChannel) {
+			setIsProtected(false);
 		}
 	}, [channelState.selectedChannel]);
+
+	useEffect(() => {
+		if (channelState.error) {
+			console.log(channelState.error);
+			const timerId = setTimeout(() => {
+				dispatch(channelActions.clearError());
+			}, 1000);
+			return () => clearTimeout(timerId);
+
+		}
+	}, [channelState.error]);
 
 	return (
 		<>
@@ -195,7 +240,7 @@ function ChannelSettings() {
 				<form className={settingStyles['form']} onSubmit={onSubmit} onChange={onChange}>
 					<div className={styles['join']}>
 						<div className={settingStyles['avatar_setting']}>
-							<img className={settingStyles['avatar']} src={picture}/>
+							<img className={settingStyles['avatar']} src={choosePicture()}/>
 							{IAmOwner() === true
 								? <>
 									<div className={settingStyles['middle_settings']}>
@@ -219,6 +264,9 @@ function ChannelSettings() {
 							{passwordInput === true
 								? <input type='password' name='password' placeholder='password' onChange={getPassword}/>
 								: <></>}
+							{IAmOwner() === true && <Button
+								className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+								onClick={deleteChannel}>Delete</Button>}
 						</div>
 					</div>
 					{channelState.error ? <div>{channelState.error}</div> : <></>}
@@ -229,30 +277,27 @@ function ChannelSettings() {
 									Type of your channel
 								</label>
 								<div id='type-radio' className={settingStyles['radio-set']}>
-									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC
-										? <input type="radio" id="public" name="type" value="public" defaultChecked />
-										: <input type="radio" id="public" name="type" value="public" />}
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC && <input type="radio" id="public" name="type" value="public" defaultChecked />}
+									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PUBLIC && <input type="radio" id="public" name="type" value="public" />}
 									<label htmlFor="public">public</label>
-
-									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE
-										? <input type="radio" id="private" name="type" value="private" defaultChecked />
-										: <input type="radio" id="private" name="type" value="private" />}
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE && <input type="radio" id="private" name="type" value="private" defaultChecked />}
+									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PRIVATE && <input type="radio" id="private" name="type" value="private" />}
 									<label htmlFor="private">private</label>
-
-									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED
-										? <input type="radio" id="protected" name="type" value="protected" defaultChecked />
-										: <input type="radio" id="protected" name="type" value="protected" />}
+									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED && <input type="radio" id="protected" name="type" value="protected" defaultChecked />}
+									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PROTECTED && <input type="radio" id="protected" name="type" value="protected" />}
 									<label htmlFor="protected">protected</label>
 								</div>
 							</fieldset>
 							{
-								isProtected && channelState.selectedChannel.type !== typeEnum.PROTECTED &&
+								isProtected == true && channelState.selectedChannel.type !== typeEnum.PROTECTED &&
 								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
 							}
 							{
-								isProtected && channelState.selectedChannel.type === typeEnum.PROTECTED &&
-								<><Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
-								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/></>
+								channelState.selectedChannel.type === typeEnum.PROTECTED && isProtected == true &&
+								<>
+									<Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
+									<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+								</>
 							}
 							<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
 						</>

@@ -29,7 +29,6 @@ const channelsMiddleware: Middleware = (store) => {
 			// 	socket.connect();
 			// });
 			socket.on(ChannelsEvent.updateStatus, (statusMap: any) => {
-				console.log(statusMap);
 				store.dispatch(userActions.setStatuses(statusMap));
 			});
 			socket.on(ChannelsEvent.updateSearch, (search: any) => {
@@ -50,6 +49,9 @@ const channelsMiddleware: Middleware = (store) => {
 			socket.on(ChannelsEvent.update, () => {
 				if (store.getState().user.prodile && store.getState().channel.selectedChannel) {
 					socket.emit(ChannelsEvent.readChannelStatus, { email: store.getState().user.prodile.email, channelId: store.getState().channel.selectedChannel.id });
+					socket.emit(ChannelsEvent.getPreview, store.getState().user.prodile.email, (channels: ChannelPreview[]) => {
+						store.dispatch(channelActions.setChannels({ channels }));
+					});
 				}
 			});
 			socket.on(ChannelsEvent.channelCreated, (channel: ChannelPreview) => {
@@ -159,6 +161,12 @@ const channelsMiddleware: Middleware = (store) => {
 		}
 		if (channelActions.unmuteMember.match(action) && isConnectionEstablished) {
 			socket.emit(ChannelsEvent.unmuteMember, action.payload);
+		}
+		if (channelActions.updateChannel.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.updateChannel, action.payload);
+		}
+		if (channelActions.deleteChannel.match(action) && isConnectionEstablished) {
+			socket.emit(ChannelsEvent.deleteChannel, action.payload);
 		}
 
 		if (userActions.addFriend.match(action) && isConnectionEstablished) {

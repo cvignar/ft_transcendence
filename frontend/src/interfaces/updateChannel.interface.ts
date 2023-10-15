@@ -1,6 +1,6 @@
 import { typeEnum } from '../../../contracts/enums';
 
-export interface updateChannel {
+export interface UpdateChannel {
 	id: number,
 	type: typeEnum,
 	email: string,

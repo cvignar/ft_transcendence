@@ -28,13 +28,13 @@ export function CreateChannelFrom() {
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
-			setPicture('/default_channel_public.png')
+			setPicture('/default_channel_public.png');
 		} else if (e.currentTarget.type.value === 'protected') {
 			setIsProtected(true);
-			setPicture('/default_channel_protected.png')
+			setPicture('/default_channel_protected.png');
 		} else if (e.currentTarget.type.value === 'private') {
 			setIsProtected(false);
-			setPicture('/default_channel_private.png')
+			setPicture('/default_channel_private.png');
 		}
 	};
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -58,7 +58,7 @@ export function CreateChannelFrom() {
 			};
 			dispatch(channelActions.createChannel(newChannel));
 			setTimeout(() => {
-				if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
+				if (channelState.selectedChannel && channelState.selectedChannel.id != -1 && channelState.error === '') {
 					navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
 				}
 			}, 500);
@@ -68,8 +68,13 @@ export function CreateChannelFrom() {
 	useEffect(() => {
 		if (channelState.error) {
 			console.log(channelState.error);
+			const timerId = setTimeout(() => {
+				dispatch(channelActions.clearError());
+			}, 1000);
+			return () => clearTimeout(timerId);
+
 		}
-	}, [channelState.error])
+	}, [channelState.error]);
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
