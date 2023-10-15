@@ -20,12 +20,19 @@ export function Auth2FaForm() {
 
 	useEffect(() => {
 		const accessToken = getCookie('accessToken');
+		const user_id = getCookie('userId');
 		if (accessToken) {
 			localStorage.setItem('userToken', accessToken);
-			const userId = getCookie('userId');
-			if (userId) {
-				dispatch(getProfile(parseInt(userId)));
+			if (user_id) {
+				dispatch(getProfile(parseInt(user_id)));
+				navigate('/Settings/Stats');
 			}
+		}
+		else if (user_id){
+			navigate('/Auth/2FA');
+		}
+		else {
+			navigate('/Auth');
 		}
 	}, []);
 	useEffect(() => {
@@ -43,6 +50,10 @@ export function Auth2FaForm() {
 		const target = e.target as typeof e.target & Auth2FaFormProps;
 		const {code2fa} = target;
 		dispatch(auth2fa({code: code2fa.value}));
+		const timerId = setTimeout( () => {
+			navigate('/Auth');
+		}, 1000);
+		return () => clearTimeout(timerId)
 	};
 
 	return (

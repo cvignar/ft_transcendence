@@ -58,6 +58,11 @@ export class AuthController {
 		);
 	}
 
+	@Get('logout')
+	logout() {
+		
+	}
+
 	@Get('intra42')
 	@UseGuards(Oauth42Guard)
 	auth42(): void {
@@ -124,13 +129,10 @@ export class AuthController {
 
 			res.cookie('accessToken', access_token);
 			console.log('return access_token: ', access_token);
-			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/`);
-			return {
-				access_token: access_token,
-			};
+			// res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/`);
 		}
 		else {
-			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
+			// res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
 			console.log('2fa is wrong')
 		}
 	}
