@@ -51,7 +51,12 @@ export function Auth2FaForm() {
 		const {code2fa} = target;
 		dispatch(auth2fa({code: code2fa.value}));
 		const timerId = setTimeout( () => {
-			navigate('/Auth');
+			const accessToken = getCookie('accessToken');
+			const user_id = getCookie('userId');
+			if (accessToken && user_id) {
+				dispatch(getProfile(parseInt(user_id)));
+			}
+			window.location.reload();
 		}, 1000);
 		return () => clearTimeout(timerId)
 	};
