@@ -202,6 +202,12 @@ function ChannelSettings() {
 		setPassword(e.currentTarget.value);
 	};
 
+	const deleteChannel = () => {
+		if (channelState.selectedChannel) {
+			dispatch(channelActions.deleteChannel(channelState.selectedChannel.id));
+		}
+	};
+
 	useEffect(() => {
 		if (channelId != undefined) {
 			setPicture(null);
@@ -216,6 +222,17 @@ function ChannelSettings() {
 			setIsProtected(false);
 		}
 	}, [channelState.selectedChannel]);
+
+	useEffect(() => {
+		if (channelState.error) {
+			console.log(channelState.error);
+			const timerId = setTimeout(() => {
+				dispatch(channelActions.clearError());
+			}, 1000);
+			return () => clearTimeout(timerId);
+
+		}
+	}, [channelState.error]);
 
 	return (
 		<>
@@ -247,6 +264,9 @@ function ChannelSettings() {
 							{passwordInput === true
 								? <input type='password' name='password' placeholder='password' onChange={getPassword}/>
 								: <></>}
+							{IAmOwner() === true && <Button
+								className={classNames(settingStyles['btn-dark'], styles['join-btn'])}
+								onClick={deleteChannel}>Delete</Button>}
 						</div>
 					</div>
 					{channelState.error ? <div>{channelState.error}</div> : <></>}
@@ -260,24 +280,12 @@ function ChannelSettings() {
 									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC && <input type="radio" id="public" name="type" value="public" defaultChecked />}
 									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PUBLIC && <input type="radio" id="public" name="type" value="public" />}
 									<label htmlFor="public">public</label>
-									{/* {channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PUBLIC
-										? <input type="radio" id="public" name="type" value="public" defaultChecked />
-										: <input type="radio" id="public" name="type" value="public" />}
-									<label htmlFor="public">public</label> */}
-
 									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE && <input type="radio" id="private" name="type" value="private" defaultChecked />}
 									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PRIVATE && <input type="radio" id="private" name="type" value="private" />}
 									<label htmlFor="private">private</label>
-									{/* {channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PRIVATE
-										? <input type="radio" id="private" name="type" value="private" defaultChecked />
-										: <input type="radio" id="private" name="type" value="private" />}
-									<label htmlFor="private">private</label> */}
 									{channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED && <input type="radio" id="protected" name="type" value="protected" defaultChecked />}
 									{channelState.selectedChannel && channelState.selectedChannel.type !== typeEnum.PROTECTED && <input type="radio" id="protected" name="type" value="protected" />}
 									<label htmlFor="protected">protected</label>
-									{/* {channelState.selectedChannel && channelState.selectedChannel.type === typeEnum.PROTECTED
-										? <input type="radio" id="protected" name="type" value="protected" defaultChecked />
-										: <input type="radio" id="protected" name="type" value="protected" />} */}
 								</div>
 							</fieldset>
 							{
@@ -286,8 +294,10 @@ function ChannelSettings() {
 							}
 							{
 								channelState.selectedChannel.type === typeEnum.PROTECTED && isProtected == true &&
-								<><Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
-								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/></>
+								<>
+									<Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
+									<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+								</>
 							}
 							<Button className={classNames(settingStyles['button'], styles['button'])}>Submit</Button>
 						</>

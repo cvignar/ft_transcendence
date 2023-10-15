@@ -45,6 +45,7 @@ export enum ChannelsEvent {
 	muteMember = 'mute member',
 	unmuteMember = 'unmute member',
 	updateChannel = 'update channel',
+	deleteChannel = 'delete channel',
 }
 
 export interface ChannelsState {
@@ -122,6 +123,9 @@ const channelSlice = createSlice({
 				tag: '',
 			};
 		},
+		clearError: (state) => {
+			state.error = null;
+		},
 		startConnecting: (state) => {
 			state.isEstablishingConnection = true;
 		},
@@ -136,11 +140,6 @@ const channelSlice = createSlice({
 		getChannel: (state, action: PayloadAction<number>) => {
 			return;
 		},
-		// setSelectedChannel: ((state, action: PayloadAction<{
-		// 	channel: ChannelPreview
-		// }>) => {
-		// 	state.selectedChannel = action.payload.channel;
-		// }),
 		setChannel: (
 			state,
 			action: PayloadAction<{
@@ -229,6 +228,9 @@ const channelSlice = createSlice({
 			return;
 		},
 		updateChannel: (state, action: PayloadAction<UpdateChannel>) => {
+			return;
+		},
+		deleteChannel: (state, action: PayloadAction<number>) => {
 			return;
 		},
 	},
