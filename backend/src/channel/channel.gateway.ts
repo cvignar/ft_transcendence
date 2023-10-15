@@ -80,14 +80,16 @@ export class ChannelGateway {
 			data.channelId,
 			data.email,
 		);
-		client.join(preview.name);
-		client.emit('get selected channel', preview);
-		const user = await this.userService.getUserByEmail(data.email);
-		const members = await this.channelService.getMembers(
-			user.id,
-			data.channelId,
-		);
-		client.emit('get members', members);
+		if (preview) {
+			client.join(preview.name);
+			client.emit('get selected channel', preview);
+			const user = await this.userService.getUserByEmail(data.email);
+			const members = await this.channelService.getMembers(
+				user.id,
+				data.channelId,
+			);
+			client.emit('get members', members);
+		}
 	}
 
 	@SubscribeMessage('get blocked')
@@ -664,7 +666,7 @@ export class ChannelGateway {
 			this.server.in(channelName).emit('update channel request');
 			this.server.in(channelName).socketsLeave(channelName);
 		} else {
-			client.emit('exception', 'Cannot delete this channel');
+			client.emit('exception', 'Deleted');
 		}
 	}
 }

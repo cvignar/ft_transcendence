@@ -223,16 +223,6 @@ function ChannelSettings() {
 		}
 	}, [channelState.selectedChannel]);
 
-	useEffect(() => {
-		if (channelState.error) {
-			console.log(channelState.error);
-			const timerId = setTimeout(() => {
-				dispatch(channelActions.clearError());
-			}, 1000);
-			return () => clearTimeout(timerId);
-
-		}
-	}, [channelState.error]);
 
 	return (
 		<>
@@ -269,7 +259,7 @@ function ChannelSettings() {
 								onClick={deleteChannel}>Delete</Button>}
 						</div>
 					</div>
-					{channelState.error ? <div>{channelState.error}</div> : <></>}
+					{channelState.error ? <div className={styles['error']}>{channelState.error}</div> : <></>}
 					{IAmOwner() === true
 						? <>
 							<fieldset>

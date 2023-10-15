@@ -64,6 +64,10 @@ label.radio-set {
 	margin-left: auto;
 	align-items: flex-end;
 }
+
+.error {
+	color: red;
+}
 /*.head {
 	height: 50px;
 	display: flex;
