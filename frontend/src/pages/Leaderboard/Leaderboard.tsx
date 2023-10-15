@@ -24,14 +24,15 @@ export function Leaderboard() {
 	}, [user.statuses]);
 
 	const autoMatch = () => {
-		// if (user.profile && user.leaderboard.length > 0) {
+		// if (user.profile && user.leaderboard.length > 1) {
+		// 	const filter = user.leaderboard.filter((e) => e.id != user.profile.id);
 		// 	for (const usr of user.leaderboard) {
 		// 		if (Math.abs(usr.rank - user.profile.rank) === 1) {
-		// 			socket.emit
+					
 		// 		}
 		// 	}
 		// }
-	}
+	};
 
 	return (
 		<>
