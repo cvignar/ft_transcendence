@@ -17,6 +17,7 @@ import {
 	MessagePreview,
 } from '../../../contracts/message.schema';
 import { Message } from '@prisma/client';
+import * as argon2 from 'argon2';
 //import { ExceptionWithMessage } from '@prisma/client/runtime/library';
 
 @Injectable()
@@ -166,12 +167,18 @@ export class ChannelService {
 	}
 
 	async createChannel(channelData: CreateChannel.Request) {
+		let hash;
+		if (channelData.password) {
+			hash = await argon2.hash(channelData.password);
+		} else {
+			hash = null;
+		}
 		try {
 			const channel = await this.prismaService.channel.create({
 				data: {
 					name: channelData.name,
 					type: channelData.type,
-					password: channelData.password,
+					password: hash,
 					owners: { connect: { email: channelData.email } },
 					admins: { connect: { email: channelData.email } },
 					members: {
@@ -210,8 +217,7 @@ export class ChannelService {
 				where: { id: channelData.id },
 				select: { password: true },
 			});
-			console.log('passwds: ', channel.password, channelData.password);
-			if (channel.password === channelData.password) {
+			if (await argon2.verify(channel.password, channelData.password)) {
 				const updatedChannel = await this.prismaService.channel.update({
 					where: { id: channelData.id },
 					data: {
@@ -1365,7 +1371,7 @@ export class ChannelService {
 	// }
 
 	async updateChannel(channelData: UpdateChannel.Request, ownerId: number) {
-		const channel = this.prismaService.channel.findUnique({
+		const channel = await this.prismaService.channel.findUnique({
 			where: { id: channelData.id },
 			select: {
 				id: true,
@@ -1377,12 +1383,47 @@ export class ChannelService {
 				name: true,
 			}
 		});
-		// if (channel &&
-		// 	channel.owners.length > 0) {
-		// 	if (channelData.type === typeEnum.PROTECTED) {
-
-		// 	}
-		// }
+		if (channel &&
+			channel.owners.length > 0) {
+			if (channel.type === typeEnum.PROTECTED) {
+				if (channelData.newPassword) {
+					if (channelData.password &&
+						await argon2.verify(channel.password, channelData.password)) {
+						const hash = await argon2.hash(channelData.newPassword);
+						await this.prismaService.channel.update({
+							where: { id: channelData.id },
+							data: {
+								password: hash,
+							},
+						});
+					}
+				}
+			}
+			if (channelData.type !== channel.type) {
+				if (channelData.type === typeEnum.PROTECTED) {
+					if (channelData.password) {
+						const hash = await argon2.hash(channelData.password);
+						await this.prismaService.channel.update({
+							where: { id: channelData.id },
+							data: {
+								type: channelData.type,
+								password: hash,
+							},
+						});
+					}
+				} else {
+					await this.prismaService.channel.update({
+						where: { id: channelData.id },
+						data: {
+							type: channelData.type,
+							password: null,
+						},
+					});
+				}
+			}
+			return channel.name;
+		}
+		return undefined;
 	}
 
 	async deleteChannel(channelId: number, ownerId: number) {

@@ -280,7 +280,7 @@ function ChannelSettings() {
 							</fieldset>
 							{
 								isProtected == true && channelState.selectedChannel.type !== typeEnum.PROTECTED &&
-								<Input type='password' placeholder='New password' name='new_password' className={settingStyles['input']}/>
+								<Input type='password' placeholder='Password' name='password' className={settingStyles['input']}/>
 							}
 							{
 								channelState.selectedChannel.type === typeEnum.PROTECTED && isProtected == true &&

@@ -632,25 +632,15 @@ export class ChannelGateway {
 	) {
 		console.log('update channel event');
 
-		const channel = await this.channelService.updateChannel(
+		const channelName = await this.channelService.updateChannel(
 			channelData,
-			client.data.id
+			client.data.id,
 		);
-
-		// const channel = await this.channelService.unmuteMember(
-		// 	muteData,
-		// 	client.data.id,
-		// );
-		// if (channel) {
-		// 	const members = await this.channelService.getMembers(
-		// 		client.data.id,
-		// 		channel.id,
-		// 	);
-		// 	client.emit('get members', members);
-		// 	this.server.in(channel.name).emit('update channel request');
-		// } else {
-		// 	client.emit('exception', 'Cannot unmute this member');
-		// }
+		if (channelName) {
+			this.server.in(channelName).emit('update channel request');
+		} else {
+			client.emit('exception', 'Cannot update this channel');
+		}
 	}
 
 	@SubscribeMessage('delete channel')
