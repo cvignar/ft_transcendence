@@ -50,7 +50,7 @@ export function SelfStats() {
 					? <Button className={styles['btn-dark']} onClick={showGameHistory}>Show game history</Button>
 					: <> <h3>Game History</h3>
 						{user.selectedGameHistory && user.selectedGameHistory.length > 0
-							? user.selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
+							? user.selectedGameHistory.map((game: any) => (<GameHistoryItem key={game.id} data={game}/>))
 							: <p>Empty</p>}
 					</>
 				}

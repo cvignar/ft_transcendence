@@ -29,6 +29,7 @@ function MemberPreview() {
 			if (selectedUser && Number(status[0]) === Number(selectedUser.id))
 				return status[1];
 		}
+		return '';
 	};
 
 	const myStatus = (statuses: any) => {
@@ -156,14 +157,14 @@ function MemberPreview() {
 							: <Button className={isBlocked() === true
 													? styles['inActive']
 													: styles['btn-dark']
-												} onClick={emitAdd}>Add to friends</Button>
+												} onClick={isBlocked() === false && emitAdd}>Add to friends</Button>
 						}
 						<Button
 							className={findStatus(statusMap) !== Status.online
 								|| isBlocked() === true
 									? styles['inActive']
 									: styles['btn-dark']}
-							onClick={emitInvite}>Invite to game</Button>
+							onClick={findStatus(statusMap) === Status.online && isBlocked() === false && emitInvite}>Invite to game</Button>
 						{profile &&
 							selectedUser &&
 							findStatus(statusMap) === Status.playing &&
@@ -182,7 +183,7 @@ function MemberPreview() {
 						<Button className={isBlocked() === true
 									? styles['inActive']
 									: styles['btn-dark']}
-								onClick={getDirectChannel}
+								onClick={isBlocked() === false && getDirectChannel}
 								>Direct chat</Button>
 						{isBlocking() === true
 							? <Button className={styles['btn-dark']} onClick={emitUnblockUser}>Unblock</Button>
@@ -218,7 +219,7 @@ function MemberPreview() {
 						? <Button className={styles['btn-dark']} onClick={showGameHistory}>Show game history</Button>
 						: <> <h3>Game History</h3>
 							{selectedGameHistory && selectedGameHistory.length > 0
-								? selectedGameHistory.map((game: any) => (<GameHistoryItem data={game}/>))
+								? selectedGameHistory.map((game: any) => (<GameHistoryItem key={game.id} data={game}/>))
 								: <p>Empty</p>}
 						</>
 					}

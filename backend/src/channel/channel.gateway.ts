@@ -301,7 +301,7 @@ export class ChannelGateway {
 		@MessageBody() channelId: number,
 		@ConnectedSocket() client: Socket,
 	) {
-		const data = await this.channelService.getMessages(channelId);
+		const data = await this.channelService.getMessages(channelId, client.data.id);
 		client.emit('get messages', data);
 	}
 
@@ -316,13 +316,13 @@ export class ChannelGateway {
 			const previews = await this.channelService.getPreviews(
 				messageData.email,
 			);
-			client.emit('update preview', previews);
 			const channelName = await this.channelService.getChannelNameById(
 				messageData.channelId,
 			);
-			const data = await this.channelService.getMessages(
-				messageData.channelId,
-			);
+			this.server.in(channelName).emit('update preview', previews);
+			// const data = await this.channelService.getMessages(
+			// 	messageData.channelId,
+			// );
 			// client.emit('get messages', data);
 			// this.broadcast('get messages', data, messageData.channelId);
 			this.server.in(channelName).emit('update channel request');
