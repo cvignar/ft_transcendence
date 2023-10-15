@@ -28,7 +28,7 @@ export enum ChannelsEvent {
 	getMessages = 'get messages',
 	getRole = 'get role',
 	sendMessage = 'new message',
-	recieveMessage = 'broadcast',
+	// recieveMessage = 'broadcast',
 	createChannel = 'create channel',
 	getSelectedChannel = 'get selected channel',
 	updateStatus = 'update-status',
@@ -46,6 +46,7 @@ export enum ChannelsEvent {
 	unmuteMember = 'unmute member',
 	updateChannel = 'update channel',
 	deleteChannel = 'delete channel',
+	requestMessages = 'request messages',
 }
 
 export interface ChannelsState {

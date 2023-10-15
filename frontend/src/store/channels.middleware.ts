@@ -37,11 +37,17 @@ const channelsMiddleware: Middleware = (store) => {
 			socket.on(ChannelsEvent.getMessages, (messages: Message[]) => {
 				store.dispatch(channelActions.setMessages(messages));
 			});
-			socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
-				if (message && message.cid === store.getState().channel.selectedChannel.id) {
-					store.dispatch(channelActions.recieveMessage(message));
+			socket.on(ChannelsEvent.requestMessages, () => {
+				const channel = store.getState().channel.selectedChannel;
+				if (channel) {
+					store.dispatch(channelActions.getMessages(channel.id));
 				}
 			});
+			// socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
+			// 	if (message && message.cid === store.getState().channel.selectedChannel.id) {
+			// 		store.dispatch(channelActions.recieveMessage(message));
+			// 	}
+			// });
 			socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
 				store.dispatch(channelActions.setChannels({ channels: channels }));
 			});

@@ -312,15 +312,16 @@ export class ChannelGateway {
 	) {
 		const message = await this.channelService.createMessage(messageData);
 		if (message) {
-			this.broadcast('broadcast', message, messageData.channelId);
+			// this.broadcast('broadcast', message, messageData.channelId);
 			const previews = await this.channelService.getPreviews(
 				messageData.email,
 			);
 			const channelName = await this.channelService.getChannelNameById(
-				messageData.channelId,
+					messageData.channelId,
 			);
 			this.server.in(channelName).emit('update preview', previews);
-			// const data = await this.channelService.getMessages(
+			this.server.in(channelName).emit('request messages');
+					// const data = await this.channelService.getMessages(
 			// 	messageData.channelId,
 			// );
 			// client.emit('get messages', data);
