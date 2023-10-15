@@ -118,6 +118,7 @@ export class GameService {
 				const user1 = await this.userService.getUserById(game.player1);
 				const user2 = await this.userService.getUserById(game.player2);
 				gamePreview = {
+					id: game.id,
 					date: game.startTime,
 					duraction: game.duration,
 					player1: user1.username,

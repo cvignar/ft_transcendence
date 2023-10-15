@@ -38,7 +38,9 @@ const channelsMiddleware: Middleware = (store) => {
 				store.dispatch(channelActions.setMessages(messages));
 			});
 			socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
-				store.dispatch(channelActions.recieveMessage(message));
+				if (message && message.cid === store.getState().channel.selectedChannel.id) {
+					store.dispatch(channelActions.recieveMessage(message));
+				}
 			});
 			socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
 				store.dispatch(channelActions.setChannels({ channels: channels }));
@@ -52,6 +54,13 @@ const channelsMiddleware: Middleware = (store) => {
 					socket.emit(ChannelsEvent.getPreview, store.getState().user.prodile.email, (channels: ChannelPreview[]) => {
 						store.dispatch(channelActions.setChannels({ channels }));
 					});
+					if (store.getState().channel.selectedChannel) {
+						store.dispatch(
+							channelActions.getMessages(
+								store.getState().channel.selectedChannel.id
+							)
+						);
+					}
 				}
 			});
 			socket.on(ChannelsEvent.channelCreated, (channel: ChannelPreview) => {

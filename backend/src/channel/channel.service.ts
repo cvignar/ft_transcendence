@@ -215,9 +215,19 @@ export class ChannelService {
 		try {
 			const channel = await this.prismaService.channel.findUnique({
 				where: { id: channelData.id },
-				select: { password: true },
+				select: {
+					password: true,
+					type: true
+				},
 			});
-			if (await argon2.verify(channel.password, channelData.password)) {
+			if (channel) {
+				if (channel.type === typeEnum.PROTECTED) {
+					if (channel.password) {
+						if (!channelData.password || !(await argon2.verify(channel.password, channelData.password))) {
+							return undefined;
+						}
+					}
+				}
 				const updatedChannel = await this.prismaService.channel.update({
 					where: { id: channelData.id },
 					data: {
@@ -230,7 +240,7 @@ export class ChannelService {
 			return undefined;
 		} catch (error) {
 			console.error(`addMember error: ${error}`);
-			throw new WsException(error);
+			throw new WsException(error.message);
 		}
 	}
 
@@ -314,36 +324,50 @@ export class ChannelService {
 			throw new WsException(error.message);
 		}
 	}
+					// owners: { connect: ids.map((id) => ({ id: id })) },
 
-	async getMessages(channelId: number): Promise<MessagePreview.Response[]> {
+	async getMessages(channelId: number, viewerId: number): Promise<MessagePreview.Response[]> {
+		const user = await this.prismaService.user.findUnique({
+			where: { id: viewerId },
+			select: {
+				blocking: true,
+			},
+		});
 		try {
-			const channel = await this.prismaService.channel.findUnique({
-				where: { id: channelId },
-				select: {
-					messages: {
-						orderBy: { createdAt: 'asc' },
-						select: {
-							id: true,
-							msg: true,
-							createdAt: true,
-							cid: true,
-							owner: {
-								select: {
-									id: true,
-									email: true,
-									username: true,
-									avatar: true,
+			let messages = [];
+			if (user) {
+				const channel = await this.prismaService.channel.findUnique({
+					where: { id: channelId },
+					select: {
+						messages: {
+							orderBy: { createdAt: 'asc' },
+							select: {
+								id: true,
+								msg: true,
+								createdAt: true,
+								cid: true,
+								owner: {
+									select: {
+										id: true,
+										email: true,
+										username: true,
+										avatar: true,
+									},
 								},
 							},
 						},
 					},
-				},
-			});
-			//console.log(channel.messages);
-			return channel.messages;
+				});
+				messages = channel.messages;
+				for (const blockId of user.blocking) {
+					messages = messages.filter((message) => (message.owner.id != blockId))
+				}
+				console.log(messages);
+				return messages;
+			}
+			return undefined;
 		} catch (error) {
-			console.log(`inviteMember error: ${error}`);
-			// throw new WsException(error.message)
+			console.log(`getMessages error: ${error}`);
 		}
 	}
 
