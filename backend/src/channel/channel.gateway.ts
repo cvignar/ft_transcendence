@@ -80,14 +80,16 @@ export class ChannelGateway {
 			data.channelId,
 			data.email,
 		);
-		client.join(preview.name);
-		client.emit('get selected channel', preview);
-		const user = await this.userService.getUserByEmail(data.email);
-		const members = await this.channelService.getMembers(
-			user.id,
-			data.channelId,
-		);
-		client.emit('get members', members);
+		if (preview) {
+			client.join(preview.name);
+			client.emit('get selected channel', preview);
+			const user = await this.userService.getUserByEmail(data.email);
+			const members = await this.channelService.getMembers(
+				user.id,
+				data.channelId,
+			);
+			client.emit('get members', members);
+		}
 	}
 
 	@SubscribeMessage('get blocked')
@@ -437,25 +439,25 @@ export class ChannelGateway {
 	//  client.emit('invitation tags', invitationTags);
 	//}
 
-	@SubscribeMessage('delete msg')
-	async handleDeleteMsg(
-		@MessageBody() messageData: MessagePreview.Response,
-		@ConnectedSocket() client: Socket,
-	) {
-		const channelName = await this.channelService.getChannelNameById(
-			messageData.channelId,
-		);
-		await this.channelService.deleteMessage(messageData);
-		const fetch = await this.channelService.getMessages(
-			messageData.channelId,
-		);
-		client.emit('get messages', fetch);
-		const previews = await this.channelService.getPreviews(
-			messageData.email,
-		);
-		client.emit('update preview', previews);
-		this.server.in(channelName).emit('update channel request');
-	}
+	// @SubscribeMessage('delete msg')
+	// async handleDeleteMsg(
+	// 	@MessageBody() messageData: MessagePreview.Response,
+	// 	@ConnectedSocket() client: Socket,
+	// ) {
+	// 	const channelName = await this.channelService.getChannelNameById(
+	// 		messageData.channelId,
+	// 	);
+	// 	await this.channelService.deleteMessage(messageData);
+	// 	const fetch = await this.channelService.getMessages(
+	// 		messageData.channelId,
+	// 	);
+	// 	client.emit('get messages', fetch);
+	// 	const previews = await this.channelService.getPreviews(
+	// 		messageData.email,
+	// 	);
+	// 	client.emit('update preview', previews);
+	// 	this.server.in(channelName).emit('update channel request');
+	// }
 
 	@SubscribeMessage('make admin')
 	async makeAdmin(
@@ -620,6 +622,51 @@ export class ChannelGateway {
 			this.server.in(channel.name).emit('update channel request');
 		} else {
 			client.emit('exception', 'Cannot unmute this member');
+		}
+	}
+
+	@SubscribeMessage('update channel')
+	async updateChannel(
+		@MessageBody() channelData: UpdateChannel.Request,
+		@ConnectedSocket() client: Socket,
+	) {
+		console.log('update channel event');
+
+		const channel = await this.channelService.updateChannel(
+			channelData,
+			client.data.id
+		);
+
+		// const channel = await this.channelService.unmuteMember(
+		// 	muteData,
+		// 	client.data.id,
+		// );
+		// if (channel) {
+		// 	const members = await this.channelService.getMembers(
+		// 		client.data.id,
+		// 		channel.id,
+		// 	);
+		// 	client.emit('get members', members);
+		// 	this.server.in(channel.name).emit('update channel request');
+		// } else {
+		// 	client.emit('exception', 'Cannot unmute this member');
+		// }
+	}
+
+	@SubscribeMessage('delete channel')
+	async deleteChannel(
+		@MessageBody() channelId: number,
+		@ConnectedSocket() client: Socket,
+	) {
+		const channelName = await this.channelService.deleteChannel(
+			channelId,
+			client.data.id,
+		);
+		if (channelName) {
+			this.server.in(channelName).emit('update channel request');
+			this.server.in(channelName).socketsLeave(channelName);
+		} else {
+			client.emit('exception', 'Deleted');
 		}
 	}
 }

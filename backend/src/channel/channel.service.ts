@@ -233,9 +233,9 @@ export class ChannelService {
 			const memberId =
 				channelData.memberId == -1
 					? await (
-							await this.userService.getUserByEmail(
-								channelData.email,
-							)
+						await this.userService.getUserByEmail(
+							channelData.email,
+						)
 					  ).id
 					: channelData.memberId;
 			await this.prismaService.channel.update({
@@ -546,8 +546,6 @@ export class ChannelService {
 								: messageCount > 0
 								? channelsList.invited[i].messages[0].msg
 								: '',
-						//ownerEmail: channelsList.invited[i].ownerEmail,
-						//ownerId: channelsList.invited[i].ownerId,
 						ownerEmail: channelsList.invited[i].owners[0].email,
 						ownerId: channelsList.invited[i].owners[0].id,
 					};
@@ -574,6 +572,9 @@ export class ChannelService {
 		email: string,
 	): Promise<ChannelPreview.Response> {
 		let messageCount = 0;
+		if (!channel) {
+			return ;
+		}
 		if (channel.messages) {
 			messageCount = channel.messages.length;
 		}
@@ -1351,15 +1352,91 @@ export class ChannelService {
 		}
 	}
 
-	async deleteMessage(messageData: MessagePreview.Response) {
-		try {
-			await this.prismaService.message.update({
-				where: { id: messageData.id },
-				data: { unsent: true },
+	// async deleteMessage(messageData: MessagePreview.Response) {
+	// 	try {
+	// 		await this.prismaService.message.update({
+	// 			where: { id: messageData.id },
+	// 			data: { unsent: true },
+	// 		});
+	// 	} catch (e) {
+	// 		console.log('deleteMessage error: ', e);
+	// 		throw new WsException(e);
+	// 	}
+	// }
+
+	async updateChannel(channelData: UpdateChannel.Request, ownerId: number) {
+		const channel = this.prismaService.channel.findUnique({
+			where: { id: channelData.id },
+			select: {
+				id: true,
+				owners: {
+					where: { id: ownerId },
+				},
+				type: true,
+				password: true,
+				name: true,
+			}
+		});
+		// if (channel &&
+		// 	channel.owners.length > 0) {
+		// 	if (channelData.type === typeEnum.PROTECTED) {
+
+		// 	}
+		// }
+	}
+
+	async deleteChannel(channelId: number, ownerId: number) {
+		const channel = await this.prismaService.channel.findUnique({
+			where: { id: channelId },
+			select: {
+				id: true,
+				name: true,
+				owners: {
+					where: { id: ownerId },
+				},
+				admins: true,
+				messages: true,
+				muted: true,
+			}
+		});
+		if (channel && channel.owners.length > 0) {
+			for (const message of channel.messages) {
+				await this.prismaService.message.delete({
+					where: {
+						id: message.id,
+					},
+				});
+			}
+			// await this.prismaService.message.deleteMany({
+			// 	where: { cid: channel.id },
+			// });
+			// await this.prismaService.user.updateMany({
+			// 	where: {
+			// 		OR: [
+			// 			{
+
+			// 			}
+			// 		]
+			// 	}
+			// });
+			// await this.prismaService.mute.deleteMany({
+			// 	where: { cid: channel.id },
+			// });
+			// await this.prismaService.channel.update({
+			// 	where: { id: channel.id },
+			// 	data: {
+			// 		owners: { deleteMany: {} },
+			// 		admins: { deleteMany: {} },
+			// 		members: { deleteMany: {} },
+			// 		inviteds: { deleteMany: {} },
+			// 		// messages: { deleteMany: {} }
+			// 	},
+			// });
+			const deletedChannel = await this.prismaService.channel.delete({
+				where: { id: channel.id },
 			});
-		} catch (e) {
-			console.log('deleteMessage error: ', e);
-			throw new WsException(e);
+			return channel.name;
 		}
+		return undefined;
 	}
 }

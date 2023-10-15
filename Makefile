@@ -15,10 +15,10 @@ psls:
 	@echo "======================================"
 	docker system df
 
-# mkdir:
-# 	@echo "=Make dirictory data=================="
-# 	# mkdir -p ${PROJECT_PATH}/ft_data/db
-# 	# mkdir -p ${PROJECT_PATH}/ft_data/upload
+mkdir:
+	@echo "=Make dirictory data=================="
+	# mkdir -p ${PROJECT_PATH}/ft_data/db
+	# mkdir -p ${PROJECT_PATH}/ft_data/upload
 
 up:
 	@echo "======================================"

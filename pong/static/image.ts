@@ -44,7 +44,7 @@ export class Score {
 				this.windowLeft.textContent = this.leftPlayer;
 			} else {
 				this.windowLeft.style.fontWeight = 'normal';
-				// this.windowLeft.textContent = 'auto';
+				this.windowLeft.textContent = 'auto';
 			}
 		}
 		if (this.windowRight) {
@@ -53,7 +53,7 @@ export class Score {
 				this.windowRight.textContent = this.rightPlayer;
 			} else {
 				this.windowRight.style.fontWeight = 'normal';
-				// this.windowRight.textContent = 'auto';
+				this.windowRight.textContent = 'auto';
 			}
 		}
 	}

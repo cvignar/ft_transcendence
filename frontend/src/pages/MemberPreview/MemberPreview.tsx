@@ -138,7 +138,7 @@ function MemberPreview() {
 		if(userId) {
 			dispatch(getUserProfile(Number(userId)));
 		}
-	}, []);
+	}, [userId]);
 
 	return (
 		<>

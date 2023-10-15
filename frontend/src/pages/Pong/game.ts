@@ -13,7 +13,6 @@ export function game(socket: any, user: any) {
 	const score = new Score();
 
 	// Player
-	console.log(user);
 	socket.emit("new player", { name: user.profile.username, id: user.profile.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme });
 	socket.on("player not created", function () {
 		let nickname: string | null = "";
@@ -119,7 +118,7 @@ export function game(socket: any, user: any) {
 		if (score.mode == GameMode.STOPPING) {
 			controls.stop();
 		}
-		sounds.play(browserState); // This blok from pong launched
+		sounds.play(browserState);
 		controls.colorizeButtons(browserState);
 		image.render(browserState, score.get(browserState));
 	});
@@ -130,7 +129,4 @@ export function game(socket: any, user: any) {
 		score.clear();
 		image.clear();
 	});
-	// socket.on('disconnect', function() {
-	// 	clearInterval(renderTimer);
-	// });
 }

@@ -16,6 +16,7 @@ import { getUserProfile } from '../../../store/user.slice';
 
 export function SearchList({ setChannel, isActive, setActive }: SearchListProps) {
 	const dispatch = useDispatch<AppDispatch>();
+	const user = useSelector((s: RootState) => s.user)
 	const search = useSelector((s: RootState) => s.channel.search);
 	const [filteredSearch, setFilteredSearch] = useState<any[]>([]);
 	let sortedSearch;
@@ -66,7 +67,7 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 			{filteredSearch?.map((c: any) => (
 				c.tag.includes('user')
 				? <CardNavLink
-					to={`/Search/user/${c.id}`}
+					to={user.profile && user.profile.id === c.id ? '/Settings/Stats' : `/Search/user/${c.id}`}
 					className={classNames(styles['preview-button'])}
 					key={c.key}
 					onClick={() => {

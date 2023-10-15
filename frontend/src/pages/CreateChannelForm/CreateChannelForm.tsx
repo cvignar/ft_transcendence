@@ -12,8 +12,9 @@ import { Pong } from '../Pong/pong';
 import styles from './CreateChannelForm.module.css';
 import { CreateChannel } from '../../interfaces/createChannel.interface';
 import { getCookie } from 'typescript-cookie';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs';
 import { uploadChannelAvatar } from '../../store/channels.slice';
+// import { salt } from '../../helpers/hashing';
 
 export function CreateChannelFrom() {
 	const navigate = useNavigate();
@@ -27,51 +28,60 @@ export function CreateChannelFrom() {
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
 		if (e.currentTarget.type.value === 'public') {
 			setIsProtected(false);
-			setPicture('/default_channel_public.png')
+			setPicture('/default_channel_public.png');
 		} else if (e.currentTarget.type.value === 'protected') {
 			setIsProtected(true);
-			setPicture('/default_channel_protected.png')
+			setPicture('/default_channel_protected.png');
 		} else if (e.currentTarget.type.value === 'private') {
 			setIsProtected(false);
-			setPicture('/default_channel_private.png')
+			setPicture('/default_channel_private.png');
 		}
 	};
-	const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		let hashed_password: string | undefined = undefined;
-		if (e.currentTarget.password) {
-			hashed_password = bcrypt.hash(e.currentTarget.password, user.profile?.email);
-		}
-		const newChannel: CreateChannel = {
-			name: e.currentTarget.name.value,
-			type: e.currentTarget.type.value,
-			password: e.currentTarget.password ? hashed_password : undefined,
-			email: user.profile?.email,
-			members: [{
-				id: user.profile?.id,
-				name: user.profile?.username
-			}],
-		};
-		dispatch(channelActions.createChannel(newChannel));
-		setTimeout(() => {
-			if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
-				navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
+		// let hashed_password: string | undefined = undefined;
+		if (e.currentTarget != null) {
+			if (e.currentTarget.password != null && user.profile && isProtected) {
+				// hashed_password = await bcrypt.hash(e.currentTarget.password.value, salt);
+				// console.log(e.currentTarget, user.profile.email, hashed_password);
 			}
-		}, 500);
+			const newChannel: CreateChannel = {
+				name: e.currentTarget.name.value,
+				type: e.currentTarget.type.value,
+				password: e.currentTarget.password ? e.currentTarget.password.value : undefined,
+				// password: e.currentTarget.password ? hashed_password : undefined,
+				email: user.profile?.email,
+				members: [{
+					id: user.profile?.id,
+					name: user.profile?.username
+				}],
+			};
+			dispatch(channelActions.createChannel(newChannel));
+			setTimeout(() => {
+				if (channelState.selectedChannel && channelState.selectedChannel.id != -1 && channelState.error === '') {
+					navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
+				}
+			}, 500);
+		}
 	};
 
 	useEffect(() => {
 		if (channelState.error) {
 			console.log(channelState.error);
+			const timerId = setTimeout(() => {
+				dispatch(channelActions.clearError());
+			}, 1000);
+			return () => clearTimeout(timerId);
+
 		}
-	}, [channelState.error])
+	}, [channelState.error]);
 
 	return <>
 		<form className={styles['form']} onChange={onChange} onSubmit={onSubmit}>
 			<Headling>Create a new channel</Headling>
-			{/* <div className={styles['avatar_setting']}> */}
+			<div className={styles['avatar_setting']}>
 				<img className={styles['avatar']} src={picture}/>
-			{/* </div> */}
+			</div>
 			{channelState.error ? <div>{channelState.error}</div> : <></>}
 			<Input className={styles['input']} type='text' name='name' placeholder='Channel name' autoComplete='off'/>
 			<fieldset>

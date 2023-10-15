@@ -35,13 +35,14 @@ export class Result {
 	private duration: number = 0;
 	private isActual = false;
 	constructor() {}
-	setIsActual(isActual: boolean) {
+	setIsActual(isActual: boolean): Result {
 		this.isActual = isActual;
+		return this;
 	}
 	getIsActual(): boolean {
 		return this.isActual;
 	}
-	set(pong: Pong) {
+	set(pong: Pong): Result {
 		if (pong.mode == GameMode.PARTNER_GAME) {
 			this.player1 = pong.getLeftPlayer()?.id;
 			this.player2 = pong.getRightPlayer()?.id;
@@ -57,8 +58,9 @@ export class Result {
 				}
 			}
 		}
+		return this;
 	}
-	makeRestoredKey(userId: number) {
+	makeRestoredKey(userId: number): Result {
 		this.player1 = userId;
 		this.player2 = -1;
 		this.score1 = 0;
@@ -67,6 +69,13 @@ export class Result {
 		this.endTime = 0;
 		this.duration = 0;
 		this.isActual = true;
+		return this;
+	}
+	makeInterruptedKey(pong: Pong): Result {
+		this.set(pong);
+		this.score1 = Options.maxWins;
+		this.score2 = Options.maxWins;
+		return this;
 	}
 	get(): {
 			player1: number | undefined,
@@ -169,7 +178,7 @@ export class GamesSet {
 				if (player) {
 					const pong = this.getPong(player.socketId)
 					if (pong) {
-						if (pong.mode == GameMode.PARTNER_GAME && pong.status == GameStatus.PAUSED) {
+						if (pong.isPartnerGameInProgressPaused()) {
 							player.disconnectTime = 0;
 							player.timeOutOf = false;
 							const priorSocketId = player.socketId;
@@ -187,26 +196,31 @@ export class GamesSet {
 		}
 		return undefined;
 	}
+	newPlayerFrom(player: Player): Player | undefined {
+		const user = {
+			name: player.name,
+			id: player.id,
+			side: player.side,
+			scheme: player.scheme,
+		};
+		return this.newPlayer(player.socketId, user);
+	}
 	deletePlayer(socketId: string): Player | undefined | null {
 		const player = this.players.get(socketId);
 		if (player) {
 			const pong = this.getPong(socketId);
 			if (pong) {
 				// Partner game is interrupted
-				if (pong.mode == GameMode.PARTNER_GAME &&
-					pong.leftScore < Options.maxWins &&
-					pong.rightScore < Options.maxWins)
-				{
+				if (pong.isPartnerGameInProgress()) {
 					// The player just disconnected
 					if (player.disconnectTime == 0) {
 						player.disconnectTime = Date.now();
 						pong.status = GameStatus.PAUSED;
 						return null;
 					}
-					// Generating the signal that the partner game is interrupted
-					pong.leftScore = Options.maxWins;
-					pong.rightScore = Options.maxWins;
-					pong.gameResult.set(pong);
+					// Generating the signal to backend that the partner game is interrupted
+					const interruptedKey = new Result;
+					this.setResult(interruptedKey.makeInterruptedKey(pong));
 				}
 				pong.mode = GameMode.STOPPING;
 			}
@@ -269,21 +283,12 @@ export class GamesSet {
 		}
 		return partnersList;
 	}
-	getOpposerSocketId(socketId: string): string | undefined {
+	getOpposerSocketIdOnStart(socketId: string): string | undefined {
 		let player = this.getPlayer(socketId);
 		if (player) {
 			let pong = this.getPong(socketId);
-			if (pong && pong.atGameStart)
-			{
-				if (pong && pong.partner && pong.partner == player) {
-					if (pong.owner) {
-						return pong.owner.socketId;
-					}
-				} else if (pong && pong.owner && pong.owner == player) {
-					if (pong.partner) {
-						return pong.partner.socketId;
-					}
-				}
+			if (pong && pong.atGameStart) {
+				return pong.getOpposerSocketId(socketId);
 			}
 		}
 		return undefined;

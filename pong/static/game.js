@@ -110,11 +110,11 @@ socket.on('pong launched', function(cmd) {
 	}
 });
 socket.on('state', function(state) {
-		browserState.copy(state);
+	browserState.copy(state);
 	if (score.mode == GameMode.STOPPING) {
 		controls.stop();
 	}
-	sounds.play(browserState);// This blok from pong launched
+	sounds.play(browserState);
 	controls.colorizeButtons(browserState);
 	image.render(browserState, score.get(browserState));
 });
@@ -123,10 +123,5 @@ socket.on('pong deleted', function() {
 	controls.gameIsOn = false;
 	controls.normalizeButtons();
 	score.clear();
-	// clearInterval(renderTimer);
 	image.clear();
 });
-
-// socket.on('disconnect', function() {
-// 	clearInterval(renderTimer);
-// });

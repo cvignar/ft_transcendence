@@ -41,13 +41,13 @@ export function Leaderboard() {
 					<Button className={styles['btn-dark']} onClick={autoMatch}>Automatch</Button>
 				</div>
 				{user.leaderboard && user.leaderboard.length > 0
-					? user.leaderboard.map((user) => (
+					? user.leaderboard.map((usr) => (
 						<CardNavLink
-							to={`/Leaderboard/user/${user.id}`}
-							key={user.id}
+							to={user.profile && user.profile.id === usr.id ? '/Settings/Stats' : `/Leaderboard/user/${usr.id}`}
+							key={usr.id}
 							className={classNames(styles[''])}
 						>
-							<LeaderboardItem data={user}/>
+							<LeaderboardItem data={usr}/>
 						</CardNavLink>
 					))
 					: <></>}

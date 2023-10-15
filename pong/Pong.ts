@@ -73,6 +73,7 @@ export class Pong extends PongOptions {
 	serveCounter: number = 0;
 	newGame: boolean = true;
 	atGameStart: boolean = false;
+	gameIsOn: boolean = false;
 	pathStartTime: number = Date.now();
 	pathStart: geometry.Vec = new geometry.Vec(0, 0);
 	ballSpeed: geometry.Vec = new geometry.Vec(0, 0);
@@ -168,6 +169,7 @@ export class Pong extends PongOptions {
 					this.ball.visibility = false;
 					this.newGame = true;
 					this.status = GameStatus.INACTIVE;
+					this.gameIsOn = false;
 				} else {
 					this.servePreparation(false);
 					this.setSound(Sound.SERVE);
@@ -274,6 +276,7 @@ export class Pong extends PongOptions {
 			this.gameStartTime = Date.now()
 			this.pathStartTime = Date.now();
 			this.gameResult.set(this);
+			this.gameIsOn = true;
 			this.atGameStart = false;
 		}
 		this.ball.visibility = true;
@@ -517,5 +520,33 @@ export class Pong extends PongOptions {
 		const left = this.getLeftPlayer();
 		const right = this.getRightPlayer();
 		return [ left ? left.name : 'auto', right ? right.name : 'auto' ]
+	}
+	isPartnerGameInProgress(): boolean {
+		if (this.mode == GameMode.PARTNER_GAME &&
+			this.gameIsOn)
+		{
+			return true;
+		}
+		return false;
+	}
+	isPartnerGameInProgressPaused(): boolean {
+		if (this.isPartnerGameInProgress() &&
+			this.status == GameStatus.PAUSED)
+		{
+			return true;
+		}
+		return false;
+	}
+	getOpposerSocketId(playerSocketId: string): string | undefined {
+		if (this.partner && this.partner.socketId == playerSocketId) {
+			if (this.owner) {
+				return this.owner.socketId;
+			}
+		} else if (this.owner && this.owner.socketId == playerSocketId) {
+			if (this.partner) {
+				return this.partner.socketId;
+			}
+		}
+		return undefined;
 	}
 }

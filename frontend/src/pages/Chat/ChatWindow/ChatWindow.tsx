@@ -57,13 +57,12 @@ function ChatWindow() {
 		setMessage(event.target.value);
 	};
 
-	// useEffect(() => {
-	// 	if (channel.selectedChannel.id) {
-	// 		console.log('getMessages: ', channel.selectedChannel.id);
-	// 		console.log(channel.selectedChannel.id);
-	// 		dispatch(channelActions.getMessages(channel.selectedChannel?.id));
-	// 	}
-	// }, [channel]);
+	useEffect(() => {
+		if (channelId) {
+			dispatch(channelActions.getSelectedChannel(Number(channelId)));
+			dispatch(channelActions.getMessages(Number(channelId)));
+		}
+	}, [channelId]);
 
 	return (
 		<div className={styles['window']}>
