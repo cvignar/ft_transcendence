@@ -35,7 +35,7 @@ export function Layout() {
 		if (error) {
 			const timerId = setTimeout(() => {
 				dispatch(channelActions.clearError());
-			});
+			}, 1500);
 			return () => clearTimeout(timerId);
 		}
 	}, error);
