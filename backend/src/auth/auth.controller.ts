@@ -79,7 +79,7 @@ export class AuthController {
 	async callback(@Req() req: any, @Res({ passthrough: true }) res: Response) {
 		const user: User = await this.userService.getUserById(req.user.id);
 		if (!user) {
-			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
+			res.redirect(`https://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
 			throw new UnauthorizedException();
 		}
 		if (!user.twoFA) {
@@ -88,12 +88,12 @@ export class AuthController {
 			this.userService.updateJWTAccess(user.id, token);
 			res.cookie('accessToken', token);
 			res.cookie('userId', user.id);
-			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
+			res.redirect(`https://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth`);
 		}
 		else {
 			res.cookie('userId', user.id);
 			res.cookie('twoFA', true);
-			res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
+			res.redirect(`https://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
 		}
 	}
 
@@ -134,10 +134,10 @@ export class AuthController {
 
 			res.cookie('accessToken', access_token);
 			console.log('return access_token: ', access_token);
-			// res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/`);
+			// res.redirect(`https://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/`);
 		}
 		else {
-			// res.redirect(`http://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
+			// res.redirect(`https://${process.env.HOST_NAME}:${process.env.HOST_PORT}/Auth/2FA`);
 			console.log('2fa is wrong')
 		}
 	}

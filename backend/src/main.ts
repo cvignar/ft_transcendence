@@ -2,6 +2,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
+import * as fs from 'fs';
 //import {Z} from 'nestjs-zod';
 import {
 	SwaggerModule,
@@ -12,7 +13,13 @@ import { ZodValidationPipe } from 'nestjs-zod';
 import { NextFunction, Request, Response } from 'express';
 
 async function bootstrap() {
-	const app = await NestFactory.create<NestExpressApplication>(AppModule);
+	const httpsOptions = {
+		key: fs.readFileSync('/ssl/ft_transcendence.key'),
+		cert: fs.readFileSync('/ssl/ft_transcendence.crt'),
+	}
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+		httpsOptions,
+	});
 
 	const config = new DocumentBuilder()
 		.setTitle('ft_transcendence')
@@ -32,13 +39,13 @@ async function bootstrap() {
 	app.useGlobalPipes(new ZodValidationPipe());
 
 	const whitelist = [
-		`http://${process.env.FRONT_HOST}`,
-		`http://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}`,
-		`http://${process.env.PONG_HOST}`,
-		`http://${process.env.PONG_HOST}:${process.env.PONG_PORT}`,
-		`http://${process.env.HOST_NAME}`,
-		`http://${process.env.HOST_NAME}:${process.env.FRONT_PORT}`,
-		`http://${process.env.HOST_NAME}:${process.env.PONG_PORT}`,
+		`https://${process.env.FRONT_HOST}`,
+		`https://${process.env.FRONT_HOST}:${process.env.FRONT_PORT}`,
+		`https://${process.env.PONG_HOST}`,
+		`https://${process.env.PONG_HOST}:${process.env.PONG_PORT}`,
+		`https://${process.env.HOST_NAME}`,
+		`https://${process.env.HOST_NAME}:${process.env.FRONT_PORT}`,
+		`https://${process.env.HOST_NAME}:${process.env.PONG_PORT}`,
 	];
 
 	const corsOptions = {
@@ -67,9 +74,6 @@ async function bootstrap() {
 	},
 	cookieParser());
 
-	//const { httpAdapter } = app.get(HttpAdapterHost);
-	//app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
-	//app.get(PrismaService);
 	await app.listen(3000);
 }
 bootstrap();

@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 
-export const	socket: Socket = io(`ws://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
+export const	socket: Socket = io(`wss://${import.meta.env.VITE_PONG_HOST}:${import.meta.env.VITE_PONG_PORT}`, { transports : ['websocket'] });
 
 export function Pong() {
 	const user = useSelector((s: RootState) => s.user);

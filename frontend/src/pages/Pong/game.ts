@@ -4,7 +4,7 @@ import { Score, Image, Sounds } from "../../../../pong/static/image";
 import { ControlOptions } from "../../../../pong/static/options";
 
 export function game(socket: any, user: any) {
-	const pong_path = "http://" + import.meta.env.VITE_PONG_HOST + ":" + import.meta.env.VITE_PONG_PORT + "/";
+	const pong_path = "https://" + import.meta.env.VITE_PONG_HOST + ":" + import.meta.env.VITE_PONG_PORT + "/";
 	const browserState = new ServerMsg();
 	const image = new Image("canvas");
 	const controls = new Controls(socket, image);

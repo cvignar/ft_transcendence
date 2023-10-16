@@ -67,7 +67,7 @@ export class ChannelController {
 		fs.writeFile(server_path + new_name, file.buffer, err => {
       if (err) {console.error(err);}
     });
-    const avatar_url = `http://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+    const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
     this.channelService.updateAvatar(channel_id, avatar_url);
 		return url_path + new_name;
 	}

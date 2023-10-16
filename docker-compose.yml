@@ -21,8 +21,6 @@ services:
     container_name: db
     env_file: .env
     restart: always
-    ports:
-      - "${DB_OUT_PORT}:${DB_PORT}"
     volumes:
       - db_vol:/var/lib/postgresql/data/${DB_NAME}
     networks:

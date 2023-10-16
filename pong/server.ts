@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 config();
-import http from 'http';
+import https from 'https';
 import * as socketIO from 'socket.io';
 import express from 'express';
 import { GameCmd, GameCommand, GameMode, GameScheme, GameStatus, Side } from './static/common.js';
@@ -9,9 +9,13 @@ import { routes } from './routes.js';
 import { GamesSet, Result} from './GamesSet.js';
 import {io as ioc, Socket} from 'socket.io-client'
 import { ControlOptions, Options } from './static/options.js';
+import fs from 'fs';
 const port = process.env.PONG_PORT ? parseInt(process.env.PONG_PORT) : 0;
 const app = express();
-const server = new http.Server(app);
+const server = new https.Server({
+	key: fs.readFileSync('/ssl/ft_transcendence.key'),
+	cert: fs.readFileSync('/ssl/ft_transcendence.crt'),
+}, app);
 const io = new socketIO.Server(server);
 const games = new GamesSet();
 let access_token: any = undefined;
@@ -299,7 +303,7 @@ async function tokenRequest() {
 	};
 	const headers = new Headers();
 	headers.append("Content-Type", "application/json");
-	const request = new Request(`http://${process.env.BACK_HOST}:${process.env.BACK_PORT}/auth/login`, {
+	const request = new Request(`https://${process.env.HOST_NAME}:${process.env.BACK_PORT}/auth/login`, {
 		method: "POST",
 		headers: headers,
 		body: JSON.stringify(pongAuth),
@@ -307,7 +311,8 @@ async function tokenRequest() {
 	try {
 		access_token = await (await fetch(request)).json();
 	} catch (e) {
-		gebugPrinting("cannot get new token, ", ``);
+
+		gebugPrinting("cannot get new token, ", e);
 	}
 	if (access_token) {
 		gebugPrinting("access_token: ", access_token.jwtAccess);
@@ -334,7 +339,7 @@ setInterval(async function() {
 						}
 					}
 				};
-				socketToBackend = ioc(`ws://${process.env.BACK_HOST}:${process.env.BACK_PORT}`, sockOpt);
+				socketToBackend = ioc(`wss://${process.env.HOST_NAME}:${process.env.BACK_PORT}`, sockOpt);
 			}
 			if (socketToBackend.connected) {
 				const result = games.getNextResultFromQueue();

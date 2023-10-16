@@ -95,7 +95,7 @@ export function Settings() {
 			console.log(`Filename: ${file_name}`);
 			const old_filename = target.files[0].name;
 			const extension = old_filename.split('.').pop()
-			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + "." + extension + '?';
+			const avatar_url = `https://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + "." + extension + '?';
 			let update_user: UpdateUser = {
 				id: user.profile?.id,
 				username: user.profile?.username,
