@@ -1287,36 +1287,45 @@ export class ChannelService {
 			if (!user) {
 				return;
 			}
-			let member = false;
-			const channel = await this.getChannelById(messageData.channelId);
-			for (let i = 0; i < channel.members.length; i++) {
-				if (Number(user.id) == Number(channel.members[i].id)) {
-					member = true;
-					break;
-				}
-			}
-			if (!member) {
-				return;
-			}
-			for (let i = 0; i < channel.blocked.length; i++) {
-				if (user.id == channel.blocked[i].id) {
-					return;
-				}
-			}
-			for (let i = 0; i < channel.muted.length; i++) {
-				if (channel.muted[i].userId == user.id) {
-					const mute = channel.muted[i];
-					if (
-						mute.finishAt.getTime() <= new Date(Date.now()).getTime()
-					) {
-						await this.prismaService.mute.delete({
-							where: { id: mute.id },
-						});
-					} else {
-						return;
+			const channel = await this.prismaService.channel.findUnique({
+				where: { id: messageData.channelId },
+				select: {
+					members: {
+						where: {
+							email: messageData.email,
+						}
+					},
+					blocked: {
+						where: {
+							email: messageData.email,
+						}
+					},
+					muted: {
+						where: {
+							AND: [
+								{
+									userId: user.id,
+									cid: messageData.channelId,
+								}
+							]
+						}
 					}
 				}
-			}
+			});
+			if (channel &&
+				channel.members.length > 0 &&
+				channel.blocked.length == 0) {
+					if (channel.muted.length != 0) {
+						for (const mute of channel.muted) {
+							if (mute.finishAt.getTime() < new Date(Date.now()).getTime()) {
+								this.updateMute(mute.userId, mute.cid);
+								continue;
+							} else {
+								return ;
+							}
+						}
+					}
+				}
 			const message = await this.prismaService.message.create({
 				data: {
 					msg: messageData.message,
