@@ -72,20 +72,22 @@ export class UserController {
 		)
 		file: Express.Multer.File,
 	) {
-		const extension = path.extname(file.originalname);
-		const new_name = user_id + extension;
-		const url_path = '/user/avatars/';
-		const server_path = '/upload/user/';
-		if (!fs.existsSync(server_path))
-			fs.mkdirSync(server_path)
-		fs.writeFile(server_path + new_name, file.buffer, (err) => {
-			if (err) {
-				console.error(err);
+		try {
+			const extension = path.extname(file.originalname);
+			const new_name = user_id + extension;
+			const url_path = '/user/avatars/';
+			const server_path = '/upload/user/';
+			if (!fs.existsSync(server_path)) {
+				fs.mkdirSync(server_path);
 			}
-		});
-		const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
-		this.userService.updateAvatar(user_id, avatar_url);
-		return url_path + new_name;
+			fs.writeFile(server_path + new_name, file.buffer, (err) => {
+			});
+			const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+			this.userService.updateAvatar(user_id, avatar_url);
+			return url_path + new_name;
+		} catch (e) {
+			return;
+		}
 	}
 
 	/**

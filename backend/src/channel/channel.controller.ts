@@ -52,18 +52,21 @@ export class ChannelController {
 		) file: Express.Multer.File,
 	)
 	{
-		const extension = path.extname(file.originalname);
-		const new_name = channel_id + extension;
-		const url_path = '/channel/avatars/';
-		const server_path = '/upload/channel/'
-		if (!fs.existsSync(server_path))
-			fs.mkdirSync(server_path)
-		fs.writeFile(server_path + new_name, file.buffer, err => {
-      if (err) {console.error(err);}
-    });
-    const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
-    this.channelService.updateAvatar(channel_id, avatar_url);
-		return url_path + new_name;
+		try {
+			const extension = path.extname(file.originalname);
+			const new_name = channel_id + extension;
+			const url_path = '/channel/avatars/';
+			const server_path = '/upload/channel/'
+			if (!fs.existsSync(server_path))
+				fs.mkdirSync(server_path)
+			fs.writeFile(server_path + new_name, file.buffer, err => {
+			});
+			const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
+			this.channelService.updateAvatar(channel_id, avatar_url);
+			return url_path + new_name;
+		} catch (e) {
+			return;
+		}
 	}
 
   @Get('/avatars/:imgName')
