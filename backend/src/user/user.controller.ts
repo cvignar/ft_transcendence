@@ -98,8 +98,11 @@ export class UserController {
 
 	@Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
-		const imgPath = null;
-		return res.sendFile(img_name, {root: '/upload/user'})
+		try {
+			return res.sendFile(img_name, {root: '/upload/user'})
+		} catch(e) {
+			return ;
+		}
 	}
 
 	@Get('enable2fa')

@@ -335,7 +335,7 @@ export class ChannelService {
 			}
 			return undefined;
 		} catch (error) {
-			console.log(`getMessages error: ${error.message}`);
+			return undefined;
 		}
 	}
 
