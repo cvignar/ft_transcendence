@@ -163,6 +163,12 @@ export class Pong extends PongOptions {
 					this.leftScore >= Pong.maxWins ||
 					this.rightScore >= Pong.maxWins
 				) {
+					if (this.leftScore > Pong.maxWins) {
+						this.leftScore = Pong.maxWins
+					}
+					if (this.rightScore > Pong.maxWins) {
+						this.rightScore = Pong.maxWins
+					}
 					this.setSound(Sound.APPLAUSE);
 					this.gameEndTime = Date.now();
 					this.gameResult.set(this);

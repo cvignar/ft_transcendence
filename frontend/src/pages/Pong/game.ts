@@ -23,7 +23,6 @@ export function game(socket: any, user: any) {
 	});
 	socket.on('player created', function(scheme: GameScheme) {
 		if (scheme) {
-			console.log('scheme: ', scheme);//FIXME
 			image.changeScheme(scheme);
 		}
 	});

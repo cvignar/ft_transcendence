@@ -4,7 +4,7 @@ export class Options {
 	static width: number = 800;
 	static maxWins: number = 6;
 	static serveNum: number = 2;
-	static debug: boolean = true;
+	static debug: boolean = false;
 	static height: number = Math.round(this.width / 4) * 3;
 	static header: string =
 		'Pong ' + this.width.toString() + ':' + this.height.toString();
@@ -80,5 +80,4 @@ export class ImageOptions extends Options {
 	static msg_fontSize: number = 12 * this.line_width;
 	static msg_yPos: number = this.height / 5 * 2;
 	static msg_xPos: number = this.width / 2;
-
 }

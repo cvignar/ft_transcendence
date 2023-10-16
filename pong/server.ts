@@ -58,7 +58,13 @@ io.on("connection", (socket) => {
 			socket.emit("player created", user?.scheme);
 			const pong = games.getPong(socket.id);
 			if (pong) {
-				pong.status = GameStatus.PLAYING;
+				if (pong.leftScore >= Options.maxWins ||
+					pong.rightScore >= Options.maxWins)
+				{
+					pong.status = GameStatus.INACTIVE;
+				} else {
+					pong.status = GameStatus.PLAYING;
+				}
 				if (user && user.id > 0) {
 					const result: Result = new Result();
 					games.setResult(result.makeRestoredKey(user.id));
