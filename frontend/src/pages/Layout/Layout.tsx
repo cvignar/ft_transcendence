@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 export function Layout() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	const {error} = useSelector((s: RootState) => s.channel.error);
+	const error = useSelector((s: RootState) => s.channel.error);
 
 	const logout = () => {
 		dispatch(logoutAPI(Number(getCookie('userId'))));
