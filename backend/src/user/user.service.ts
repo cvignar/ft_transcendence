@@ -101,7 +101,7 @@ export class UserService {
 			}
 			return false;
 		} catch (e) {
-			console.log('IsFriend error: ', e);
+			console.log('IsFriend error: ', e.message);
 		}
 	}
 
@@ -116,7 +116,7 @@ export class UserService {
 				return false;
 			}
 		} catch (e) {
-			console.log('IsFriend error: ', e);
+			console.log('IsAdding error: ', e.message);
 		}
 	}
 
@@ -163,7 +163,6 @@ export class UserService {
 
 	async removeAdding(user1Id: number, user2Id: number) {
 		if (user1Id == user2Id || !(await this.isAdding(user1Id, user2Id))) {
-			console.log("removeFriend?");
 			throw new ForbiddenException('Cannot remove this friend');
 		}
 		let user1 = await this.prismaService.user.findUnique({
@@ -292,8 +291,7 @@ export class UserService {
 			});
 			return users;
 		} catch (e) {
-			console.log('getUsers error:', e);
-			throw new ForbiddenException('getUsers error: ' + e);
+			throw new ForbiddenException('getUsers error: ' + e.message);
 		}
 	}
 
@@ -315,8 +313,7 @@ export class UserService {
 			});
 			return users;
 		} catch (e) {
-			console.log('getUsers error:', e);
-			throw new ForbiddenException('getUsers error: ' + e);
+			throw new ForbiddenException('getUsers error: ' + e.message);
 		}
 	}
 
@@ -421,7 +418,7 @@ export class UserService {
 			return updateUser;
 		} catch (error)
 		{
-			console.log(`update avatar error: ${error}`);
+			console.log(`update avatar error: ${error.message}`);
 		}
 	}
 
@@ -433,7 +430,7 @@ export class UserService {
 			});
 			return updateUser;
 		} catch (error) {
-			console.log(`updateJWTAcces error: ${error}`);
+			console.log(`updateJWTAcces error: ${error.message}`);
 		}
 	}
 
@@ -453,14 +450,12 @@ export class UserService {
 	}
 
 	async enable2fa (user_id: string): Promise<string | null> {
-		console.log(`start enable 2fa for user_id: ${user_id}`);
 		var randomstring = require('randomstring');
 		const tmp = randomstring.generate({
 			lenght: 32,
 			charset:['alphabetic'],
 			capitalization: 'uppercase',
 		});
-		console.log(`new secret is: ${tmp}`)
 		try {
 			const user = await this.prismaService.user.update({
 				where: { id: Number(user_id)},
@@ -480,7 +475,7 @@ export class UserService {
 			const uri: string = totp.toString();
 			return uri;
 		} catch (error) {
-			console.log(`create 2fa error: ${error}`);
+			console.log(`create 2fa error: ${error.message}`);
 		}
 		return null;
 	}
@@ -495,7 +490,7 @@ export class UserService {
 				},
 			});
 		} catch (error) {
-			console.log(`create 2fa error: ${error}`);
+			console.log(`create 2fa error: ${error.message}`);
 		}
 	}
 

@@ -118,7 +118,6 @@ export function ChannelShortInfo ({ appearence = 'list', props }: ChannelShortIn
 
 	const muteChange = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.currentTarget) {
-			console.log(e.currentTarget.value);
 			setMuteLimit(e.currentTarget.value);
 		}
 	};

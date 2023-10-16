@@ -19,12 +19,8 @@ import { SearchList } from './SearchList/SearchList';
 
 export function SearchPage() {
 	const dispatch = useDispatch<AppDispatch>();
-	// const {email} = useSelector((s: RootState) => s.user);
 	const channelState = useSelector((s: RootState) => s.channel);
-	const [isActive, setActive] = useState<number>(-1);
-
-	// const [selectedChannel, setSelectedChannel] = useState<ChannelPreview>(INITIAL_CHANNEL);
-	
+	const [isActive, setActive] = useState<number>(-1);	
 
 	return (
 		<>

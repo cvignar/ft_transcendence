@@ -38,7 +38,6 @@
 	align-items: center;
 
 	text-align: center;
-	/*font-family: Open Sans;*/
 	font-size: 14px;
 	font-style: normal;
 	font-weight: 600;
@@ -55,6 +54,4 @@
 	color: var(--white-color);
 	background: var(--error-color);
 	padding: 20px;
-	/*border-radius: 10px;*/
-
 }

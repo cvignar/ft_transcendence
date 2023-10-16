@@ -28,7 +28,6 @@ export enum ChannelsEvent {
 	getMessages = 'get messages',
 	getRole = 'get role',
 	sendMessage = 'new message',
-	// recieveMessage = 'broadcast',
 	createChannel = 'create channel',
 	getSelectedChannel = 'get selected channel',
 	updateStatus = 'update-status',
@@ -87,14 +86,11 @@ const initialState: ChannelsState = {
 
 export const uploadChannelAvatar = createAsyncThunk("/uploadChannelAvatar", async (input_data: {channelId: number, img_data: FormData}) => {
 	try {
-		// console.log("id:", getCookie('userId'));
 		const { data } = await axios.post<any>(`${BACK_PREFIX}/channel/uploadAvatar/${input_data.channelId}`, input_data.img_data, {
 			headers: {
 				'Content-Type': 'multipart/form-data'
 			}
 		});
-
-		// console.log(`DATA: ${data.path}`)
 		return data;
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -168,7 +164,6 @@ const channelSlice = createSlice({
 			return;
 		},
 		setMessages: (state, action: PayloadAction<Message[]>) => {
-			console.log('state messages: ', action.payload);
 			state.messages = action.payload;
 		},
 		recieveMessage: (state, action: PayloadAction<Message>) => {
@@ -242,13 +237,11 @@ const channelSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder.addCase(uploadChannelAvatar.fulfilled, (state, action) => {
-			console.log(isAction);
 			state.selectedChannel.picture = action.payload;
 			return;
 		});
 		builder.addCase(uploadChannelAvatar.rejected, (state, action) => {
 			state.error = action.error.message;
-			console.log(action.error);
 		});
 	},
 });
@@ -256,76 +249,3 @@ const channelSlice = createSlice({
 export const channelActions = channelSlice.actions;
 
 export default channelSlice.reducer;
-
-//export const CART_PERSISTENT_STATE = 'cartData';
-//export interface ChatState {
-//	items: ChannelPreview[];
-
-//}
-
-//const initialState: ChatState = loadState<ChatState>(CART_PERSISTENT_STATE) ?? {
-//	items: []
-//};
-
-//export const socketMiddleware = (socket: Socket) => (params: any) => (next: ) => (action) => {
-//	const { dispatch, getState } = params;
-//	const { type } = action;
-
-//	switch (type) {
-//	case 'socket/connect':
-//		socket.connect('wss://example.com');
-
-//		socket.on('open', () => {});
-//		socket.on('message', (data) => {});
-//		socket.on('close', () => {});
-//		break;
-
-//	case 'socket/disconnect':
-//		socket.disconnect();
-//		break;
-
-//	default:
-//		break;
-//	}
-
-//	return next(action);
-//};
-
-//export const getChannels = createAsyncThunk('channel/show',
-//	async () => {
-//		try {
-//			//console.log(params);
-//			//const { data } = await axios.get(`${BACK_PREFIX}/channel/show`);
-//			//console.log(data);
-//			//return data;
-//		} catch (e) {
-//			if (e instanceof AxiosError) {
-//				throw new Error(e.response?.data.message);
-//			}
-//		}
-//	}
-//);
-
-//export const channelSlice = createSlice({
-//	name: 'channel',
-//	initialState,
-//	reducers: {
-
-//	},
-//	extraReducers: (builder) => {
-//		builder.addCase(getChannels.fulfilled, (state, action) => {
-//			if (!action.payload) {
-//				return;
-//			}
-//			action.payload.map(i => state.items.push(i));
-//			state = action.payload;
-//		});
-//		builder.addCase(getChannels.rejected, () => {
-//			//state.authErrorMessage = action.error.message;
-//		});
-
-//	}
-//});
-
-//export default channelSlice.reducer;
-//export const channelActions = channelSlice.actions;

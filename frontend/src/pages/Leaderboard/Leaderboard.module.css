@@ -12,7 +12,6 @@
 	height: 100%;
 	font-size: 14px;
 	overflow: scroll;
-	/*border: 1px solid red;*/
 }
 
 .header {
@@ -24,7 +23,6 @@
 }
 
 .btn-dark {
-	/* font-size: 12px; */
 	background: var(--white-hover-color);
 	margin-left: auto;
 }

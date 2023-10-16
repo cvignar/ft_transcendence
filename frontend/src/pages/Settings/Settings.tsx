@@ -52,9 +52,6 @@ export function Settings() {
 		});
 
 		let username = user.profile?.username;
-		console.log(e.currentTarget.side.value);
-		console.log(e.currentTarget.scheme.value);
-		console.log(e.currentTarget.twoFAbox.checked);
 		if (e.currentTarget.username && e.currentTarget.username.value != username) {
 			username = e.currentTarget.username.value;
 		}
@@ -92,7 +89,6 @@ export function Settings() {
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
 			const file_name = dispatch(uploadAvatar(formData));
-			console.log(`Filename: ${file_name}`);
 			const old_filename = target.files[0].name;
 			const extension = old_filename.split('.').pop()
 			const avatar_url = `https://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + "." + extension + '?';
@@ -103,7 +99,6 @@ export function Settings() {
 				prefferedTableSide: user.profile?.prefferedTableSide,
 				pongColorScheme: user.profile?.pongColorScheme,
 			};
-			console.log(`new user avatar url: ${avatar_url}`);
 			dispatch(updateProfile(update_user));
 			dispatch(getProfile(user_id));
 		}
@@ -130,7 +125,6 @@ export function Settings() {
 					previousUserData.twoFA === user.profile?.twoFA) {
 				setError('name exists');
 		}
-		console.log(previousUserData.username, user.profile?.username);
 	}, [user.profile]);
 
 	useEffect(() => {

@@ -3,7 +3,6 @@
 	flex-direction: column;
 	width: 80%;
 	margin-left: 10px;
-	/*gap: 10px;*/
 }
 
 .row {
@@ -17,7 +16,6 @@
 
 .btn-dark {
 	background: var(--white-color);
-	/* color: var(--text÷); */
 }
 
 .btn-dark:hover {

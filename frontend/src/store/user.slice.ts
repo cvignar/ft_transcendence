@@ -36,7 +36,6 @@ export enum UserEvents {
 export interface UserState {
 	token: string | null;
 	email?: string;
-	//id42: string | null;
 	authErrorMessage?: string;
 	username?: string;
 	userId: number | null;
@@ -48,7 +47,6 @@ export interface UserState {
 	qrUri: string | undefined;
 	friends: any[];
 	leaderboard: any[];
-	//registerError?: string;
 }
 
 const initialState: UserState = {
@@ -92,12 +90,9 @@ export const logoutAPI = createAsyncThunk("auth/logout", async (userId: number) 
 export const auth2fa = createAsyncThunk("auth/2fa", async (params: {code: string | null}) => {
 	try {
 		const { data } = await axios.post<any>(`${uri2fa}`, params);
-		console.log(data);
 		return { data: data };
 	} catch (e) {
-		console.log(e);
 		if (e instanceof AxiosError) {
-			
 			throw new Error(e.response?.data.message);
 		}
 	}
@@ -106,10 +101,8 @@ export const auth2fa = createAsyncThunk("auth/2fa", async (params: {code: string
 export const enable2fa = createAsyncThunk("user/enable2fa", async () => {
 	try {
 		const { data } = await axios.get<any>(`${uriEnable2fa}`);
-		console.log(data);
 		return { data: data };
 	} catch (e) {
-		console.log(e);
 		if (e instanceof AxiosError) {
 			throw new Error(e.response?.data.message);
 		}
@@ -119,10 +112,8 @@ export const enable2fa = createAsyncThunk("user/enable2fa", async () => {
 export const disable2fa = createAsyncThunk("user/disable2fa", async () => {
 	try {
 		const { data } = await axios.get<any>(`${uriDisable2fa}`);
-		console.log(data);
 		return { data: data };
 	} catch (e) {
-		console.log(e);
 		if (e instanceof AxiosError) {
 			throw new Error(e.response?.data.message);
 		}
@@ -134,7 +125,6 @@ export const getProfile = createAsyncThunk("/getProfile", async (id: number | nu
 		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${getCookie('userId')}`, {
 			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
 		});
-		console.log(data);
 		return { profile: data };
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -148,7 +138,6 @@ export const getUserProfile = createAsyncThunk("/getUserProfile", async (id: num
 		const { data } = await axios.get<any>(`${BACK_PREFIX}/user/getProfile/${id}`, {
 			headers: { Authorization: `Bearer ${getCookie("accessToken")}` },
 		});
-		console.log(data);
 		return { profile: data };
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -159,7 +148,6 @@ export const getUserProfile = createAsyncThunk("/getUserProfile", async (id: num
 
 export const updateProfile = createAsyncThunk("/updateProfile", async (params: UpdateUser) => {
 	try {
-		console.log("id:", params.id);
 		const { data } = await axios.post<any>(`${BACK_PREFIX}/user/updateProfile/${params.id}`, params);
 		return data;
 	} catch (e) {
@@ -228,7 +216,6 @@ export const userSlice = createSlice({
 		},
 		updateProfile: (state, action: PayloadAction<Profile>) => {
 			if (action.payload) {
-				console.log(action.payload);
 				state.profile = action.payload;
 			}
 		},
@@ -252,7 +239,6 @@ export const userSlice = createSlice({
 		},
 		setFriends: (state, action: PayloadAction<any[]>) => {
 			state.friends = action.payload;
-			console.log(action.payload);
 		},
 		getLeaderboard: (state) => {
 			return;

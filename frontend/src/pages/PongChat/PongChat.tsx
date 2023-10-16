@@ -33,7 +33,6 @@ export function PongChat() {
 	};
 
 	const afterOpenModal = () => {
-		// references are now sync'd and can be accessed.
 		subtitle.style.color = '#f00';
 	};
 
@@ -52,17 +51,6 @@ export function PongChat() {
 		}, 10);
 		return () => clearTimeout(timerId);
 	}, [dispatch]);
-
-	useEffect(() => {
-		const timerId = setTimeout(() => {
-			// if (channelState.isEstablishingConnection) {
-				// dispatch(channelActions.getChannels());
-			// }
-		}, 10);
-		return () => clearTimeout(timerId);
-	}, [channelState.isConnected, channelState.state, dispatch]);
-
-
 
 	return (
 		<>

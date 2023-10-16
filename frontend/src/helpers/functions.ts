@@ -3,7 +3,6 @@ export function msToTime(s: number | undefined) {
 	if (!s) {
 		return;
 	}
-	// Pad to 2 or 3 digits, default is 2
 	function pad(n: number, z: number = 2) {
 		return ('00' + n).slice(-z);
 	}

@@ -36,8 +36,6 @@ function ChatWindow() {
 	const [message, setMessage] = useState<string>('');
 	const email = useSelector((s: RootState) => s.user.email);
 	const [value, setValue] = useState<string>('');
-	// const messages: Message[] = useSelector((s: RootState) => s.channel.messages);
-	// const {selectedChannel} = useSelector((s: RootState) => s.channel);
 	const channel = useSelector((s: RootState) => s.channel);
 
 	const sendMessage = (event: React.KeyboardEvent) => {
@@ -91,7 +89,6 @@ function ChatWindow() {
 					onChange={onChange}
 					onKeyDown={sendMessage}
 					value={value}/>}
-			{/*: <Input name="messageInput" placeholder='Enter your message...' className={styles['text-area']} onChange={onChange} onKeyDown={onSendMessage} value={value.messageInput}/>}*/}
 		</div>
 	);
 }

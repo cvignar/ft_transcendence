@@ -13,8 +13,5 @@ export const GoToSettings = ({ children }: { children: ReactNode }) => {
 	if (access_token && user.profile) {
 		return <Navigate to='/Settings/Stats' replace />;
 	}
-	// else if (access_token && user_id) {
-	// 	return <Navigate to='/Auth' replace />;
-	// }	
 	return <>{children}</>;
 };

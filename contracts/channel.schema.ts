@@ -39,7 +39,6 @@ export const whiteSpaceResExp = new RegExp('/\s/');
 
 const CreateChannelSchema = zod.object({
 	name: zod.string(),
-		// .regex(whiteSpaceResExp, { message: 'Channel name must be not empty' }),
 	type: zod.nativeEnum(typeEnum),
 	password: zod.password().optional().nullable(),
 	email: zod.string().email(),

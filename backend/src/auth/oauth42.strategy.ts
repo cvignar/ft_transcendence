@@ -27,11 +27,11 @@ export class Oauth42Strategy extends PassportStrategy(Strategy, 'intra42') {
 		profile: Profile,
 		done: VerifyCallback,
 	): Promise<User | undefined> {
-		console.log(access_token);
-		console.log(refreshToken);
-		console.log(profile.username);
-		console.log(profile.id);
-		console.log(profile.emails[0].value);
+		// console.log(access_token);
+		// console.log(refreshToken);
+		// console.log(profile.username);
+		// console.log(profile.id);
+		// console.log(profile.emails[0].value);
 		const user = await this.authService.validateIntraUser(
 			profile.id,
 			profile.username,

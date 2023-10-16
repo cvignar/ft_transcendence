@@ -23,7 +23,6 @@ import { User } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/jwt.guard';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -31,10 +30,7 @@ import * as path from 'path'
 // @UseGuards(JwtAuthGuard)
 export class UserController {
 	constructor(private readonly userService: UserService) {}
-	// @UsePipes(ZodValidationPipe)
-	//@ApiTags('user')
 	@Post('create')
-	//@ApiOperation({ summary: 'Create user' })
 	async createUser(
 		@Body()
 		userData: CreateUser.Request,
@@ -47,7 +43,6 @@ export class UserController {
 		@Param('id', ParseIntPipe) id: number,
 		@Req() req: Request,
 	) {
-		console.log(req.cookies);
 		return await this.userService.getProfile(id);
 	}
 
@@ -57,8 +52,6 @@ export class UserController {
 		@Body() userData: any,
 		@Req() req: Request,
 	) {
-		// console.log(req.cookies);
-		console.log(userData);
 		return await this.userService.updateUser(userId, userData);
 	}
 
@@ -79,12 +72,8 @@ export class UserController {
 		)
 		file: Express.Multer.File,
 	) {
-		// console.log(file);
-
 		const extension = path.extname(file.originalname);
 		const new_name = user_id + extension;
-		
-		// const file_extension = path.extname(file.originalname);
 		const url_path = '/user/avatars/';
 		const server_path = '/upload/user/';
 		if (!fs.existsSync(server_path))
@@ -96,7 +85,6 @@ export class UserController {
 		});
 		const avatar_url = `https://${process.env.VITE_BACK_HOST}:${process.env.BACK_PORT}${url_path}${new_name}`;
 		this.userService.updateAvatar(user_id, avatar_url);
-		console.log(`avatar of user ( ${user_id} ) is updated: ${avatar_url}`);
 		return url_path + new_name;
 	}
 
@@ -111,7 +99,6 @@ export class UserController {
 	@Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
-		// console.log(`get ImagesFile: ${img_name}`);
 		return res.sendFile(img_name, {root: '/upload/user'})
 	}
 

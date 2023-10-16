@@ -14,10 +14,8 @@ import { ChannelsState, channelActions } from '../../store/channels.slice';
 import { typeEnum } from '../../../../contracts/enums';
 import { useParams } from 'react-router-dom';
 import { getCookie } from 'typescript-cookie';
-import { uploadChannelAvatar } from '../../store/channels.slice'
-// import bcrypt from 'bcryptjs';
+import { uploadChannelAvatar } from '../../store/channels.slice';
 import { UpdateChannel } from '../../interfaces/updateChannel.interface';
-// import { salt } from '../../helpers/hashing';
 
 function ChannelSettings() {
 	const [picture, setPicture] = useState<string | null>(null);
@@ -55,31 +53,16 @@ function ChannelSettings() {
 
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// let hashed_password: string | undefined = undefined;
-		// let hashed_new_password: string | undefined = undefined;
-		// if (e.currentTarget.password) {
-		// 	hashed_password = await bcrypt.hash(e.currentTarget.password, salt);
-		// }
-		// if (e.currentTarget.new_password) {
-		// 	hashed_new_password = await bcrypt.hash(e.currentTarget.password, salt);
-		// }
 		const updateChannel: UpdateChannel = {
 			id: channelState.selectedChannel.id,
 			type: e.currentTarget.type.value,
 			email: channelState.selectedChannel.ownerEmail,
 			memberId: -1,
-			// password: hashed_password? hashed_password : null,
 			password: e.currentTarget.password? e.currentTarget.password.value : null,
 			newPassword: e.currentTarget.new_password ? e.currentTarget.new_password.value : null,
 
 		};
-		console.log(updateChannel);
 		dispatch(channelActions.updateChannel(updateChannel));
-		// setTimeout(() => {
-		// 	if (channelState.selectedChannel && channelState.selectedChannel.id != -1) {
-		// 		navigate(`/Chat/channel/${channelState.selectedChannel.id}`);
-		// 	}
-		// }, 500);
 	};
 
 	const onChange = (e: FormEvent<HTMLFormElement>) => { //FIXME!
@@ -112,7 +95,6 @@ function ChannelSettings() {
 			formData.append('avatar', avatar, );
 			dispatch(uploadChannelAvatar({ channelId: channelState.selectedChannel.id, img_data: formData}));
 			
-			// get url from backend
 			setTimeout(() => {
 				setPicture(null);
 			}, (500));
@@ -127,23 +109,18 @@ function ChannelSettings() {
 	};
 
 	const joinChannel = () => {
-		// let hashed_password: string | null = null;
 		if (channelState.selectedChannel && user.profile) {
-			// if (channelState.selectedChannel.type === typeEnum.PROTECTED && password) {
-			// 	hashed_password = bcrypt.hash(password, channelState.selectedChannel.ownerEmail);
-			// }
 			const joinData = {
 				id: channelState.selectedChannel.id,
 				type: channelState.selectedChannel.type,
 				email: user.profile.email,
-				password: password ? password : null, //FIXME!!! formData password!
+				password: password ? password : null,
 				memberId: -1,
-				newPassword: null //FIXME!!! formData newPassword
+				newPassword: null
 			};
 			dispatch(channelActions.joinChannel(joinData));
 			dispatch(channelActions.readChannelStatus({channelId: channelState.selectedChannel.id, email: user.profile.email}));
 		}
-		// setShowMmbrs(false);
 	};
 
 	const checkProtected = () => {

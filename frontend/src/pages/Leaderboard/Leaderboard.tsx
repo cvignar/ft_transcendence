@@ -35,7 +35,6 @@ export function Leaderboard() {
 	};
 
 	const autoMatch = () => {
-		console.log('automatch');
 		if (user.profile && user.leaderboard.length > 1 && user.statuses) {
 			const filter = user.leaderboard.filter((e) => (user.profile.id != e.id && getStatus(user.statuses, e.id) === Status.online));
 			const map = new Map<number, any>();
@@ -46,7 +45,6 @@ export function Leaderboard() {
 
 				}
 				filter.forEach((value, index) => {map.set(index, value);});
-				console.log(filter, map);
 				const partner = map.get(Math.round(Math.random() * map.size));
 				if (partner) {
 					socket.emit('invite partner', Number(partner.id));

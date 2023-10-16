@@ -12,9 +12,7 @@ import { Pong } from '../Pong/pong';
 import styles from './CreateChannelForm.module.css';
 import { CreateChannel } from '../../interfaces/createChannel.interface';
 import { getCookie } from 'typescript-cookie';
-// import bcrypt from 'bcryptjs';
 import { uploadChannelAvatar } from '../../store/channels.slice';
-// import { salt } from '../../helpers/hashing';
 
 export function CreateChannelFrom() {
 	const navigate = useNavigate();
@@ -39,17 +37,13 @@ export function CreateChannelFrom() {
 	};
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// let hashed_password: string | undefined = undefined;
 		if (e.currentTarget != null) {
 			if (e.currentTarget.password != null && user.profile && isProtected) {
-				// hashed_password = await bcrypt.hash(e.currentTarget.password.value, salt);
-				// console.log(e.currentTarget, user.profile.email, hashed_password);
 			}
 			const newChannel: CreateChannel = {
 				name: e.currentTarget.name.value,
 				type: e.currentTarget.type.value,
 				password: e.currentTarget.password ? e.currentTarget.password.value : undefined,
-				// password: e.currentTarget.password ? hashed_password : undefined,
 				email: user.profile?.email,
 				members: [{
 					id: user.profile?.id,
@@ -67,7 +61,6 @@ export function CreateChannelFrom() {
 
 	useEffect(() => {
 		if (channelState.error) {
-			console.log(channelState.error);
 			const timerId = setTimeout(() => {
 				dispatch(channelActions.clearError());
 			}, 1000);

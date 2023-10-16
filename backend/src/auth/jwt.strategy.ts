@@ -22,11 +22,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 	async validate(payload: any) {
 		const user = await this.userService.getUserById(payload.sub);
 		if (!user) {
-			console.log('no user found');
+			// console.log('no user found');
 			throw new UnauthorizedException('Access denied');
 		}
 		if (payload?.only2FA == true) {
-			console.log('2FA required');
+			// console.log('2FA required');
 			throw new UnauthorizedException('2FA required');
 		}
 		return { name: payload.username, id: payload.sub };

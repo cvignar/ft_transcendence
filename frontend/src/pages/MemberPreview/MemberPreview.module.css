@@ -4,7 +4,6 @@
 	align-items: flex-start;
 	gap: 10px;
 	width: 100%;
-	/*border: 1px solid red;*/
 	height: 100%;
 	font-size: 14px;
 	margin-left: 10px;
@@ -21,14 +20,12 @@
 	border-radius: 50%;
 	width: 70px;
 	height: 70px;
-	/*flex-shrink: 2;*/
 }
 
 .stats {
 	display: flex;
 	flex-direction: column;
 	width: 80%;
-	/*gap: 10px;*/
 }
 
 .row {
@@ -54,7 +51,6 @@
 
 .btn-dark {
 	background: var(--white-color);
-	/* color: var(--text÷); */
 }
 
 
@@ -83,70 +79,3 @@ h3, p {
 	margin-top: 5px;
 	margin-bottom: 0px;
 }
-/*.head {
-	height: 50px;
-	display: flex;
-	flex-direction: row;
-	margin: 7px;
-	border: none;
-	align-items: center;
-}
-
-hr {
-	margin: 0;
-	border: 1px solid var(--separator-color);
-}
-
-.chat-area {
-	height: 100%;
-	margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-	height: 100%;
-	overflow: scroll;
-	justify-content: flex-start;
-
-	transform: rotate(180deg);
-
-}
-
-.rotate {
-	display: flex;
-	flex-direction: column;
-  	transform: rotate(180deg);
-}
-
-.messages {
-	display: flex;
-	flex-direction: column;
-	overflow: scroll;
-	margin-bottom: auto;
-}
-
-.text-area {
-	resize: none;
-	font: inherit;
-	color: var(--text-color);
-	border: 1px solid #FFF;
-	background-color: #FFF;
-}
-
-.see-members {
-	border: none;
-	background: var(--white-hover-color);
-	display: flex;
-	align-items: center;
-	border-radius: 3px;
-	padding: 3px;
-	height: fit-content;
-	margin-left: auto;
-}
-
-.see-members:hover {
-	background: var(--white-color);
-}
-
-.svg {
-	filter: var(--separator-color-filter);
-}*/
