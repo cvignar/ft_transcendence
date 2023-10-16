@@ -109,9 +109,13 @@ const channelSlice = createSlice({
 	reducers: {
 		logout: (state) => {
 			state.channels = [];
+			state.messages = [];
+			state.search = [];
 			state.isConnected = false;
 			state.isEstablishingConnection = false;
-			state.messages = [];
+			state.state = 0;
+			state.error = null;
+			state.members = [];
 			state.selectedChannel = {
 				id: -1,
 				type: typeEnum.PUBLIC,

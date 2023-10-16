@@ -534,6 +534,7 @@ export class UserService {
 
 	async getUsersOrderedByRank() {
 		const users = await this.prismaService.user.findMany({
+			where: { NOT: { email: process.env.PONG_EMAIL } },
 			select: {
 				id: true,
 				email: true,

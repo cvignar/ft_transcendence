@@ -29,7 +29,6 @@ store.subscribe(() => {
 	saveState(store.getState().user.selectedUser, 'selectedUser');
 	saveState(store.getState().channel.selectedChannel, 'selectedChannel');
 	saveState(store.getState().channel.messages, 'messages');
-	//saveState(store.getState().channel);
 });
 
 export type RootState = ReturnType<typeof store.getState>;

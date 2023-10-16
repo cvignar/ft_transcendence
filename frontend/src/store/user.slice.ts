@@ -183,8 +183,17 @@ export const userSlice = createSlice({
 			setCookie('userId', '');
 			state.email = '';
 			state.token = null;
-			state.username = '';
+			state.username = null;
 			state.profile = null;
+			state.authErrorMessage = null;
+			state.userId = null;
+			state.profileError = null;
+			state.selectedUser = null;
+			state.statuses = null;
+			state.selectedGameHistory = null;
+			state.qrUri = undefined;
+			state.friends = [];
+			state.leaderboard = [];
 		},
 		clearAuthError: (state) => {
 			state.authErrorMessage = undefined;
