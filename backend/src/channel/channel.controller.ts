@@ -68,8 +68,12 @@ export class ChannelController {
 
   @Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
-		const imgPath = null;
-		// console.log(`get ImagesFile: ${img_name}`);
-		return res.sendFile(img_name, {root: '/upload/channel'})
+		try {
+			const imgPath = null;
+			// console.log(`get ImagesFile: ${img_name}`);
+			return res.sendFile(img_name, {root: '/upload/channel'})
+		} catch (e) {
+			return;
+		}
 	}
 }

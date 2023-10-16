@@ -341,6 +341,9 @@ export class ChannelService {
 
 	async getChannelsListById(email: string) {
 		try {
+			if (!email) {
+				return undefined;
+			}
 			const user = await this.prismaService.user.findUnique({
 				where: { email: email },
 				select: { blocking: true },
