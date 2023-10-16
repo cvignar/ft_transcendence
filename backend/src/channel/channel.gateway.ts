@@ -518,7 +518,7 @@ export class ChannelGateway {
 		},
 		@ConnectedSocket() client: Socket,
 	) {
-		if (new Date(muteData.finishAt) < new Date('now')) {
+		if (new Date(muteData.finishAt).getTime() < new Date(Date.now()).getTime()) {
 			client.emit(
 				'exception',
 				`Cannot mute before ${new Date('now').toDateString()}`,

@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import { Status } from '../../../helpers/enums';
 
-export function LeaderboardItem({data}: leaderboardItemProps) {
+export function LeaderboardItem({data, appearence = 'leaderboard'}: leaderboardItemProps) {
 	const statuses = useSelector((s: RootState) => s.user.statuses);
 
 	const getStatus = (userId: number) => {
@@ -24,8 +24,8 @@ export function LeaderboardItem({data}: leaderboardItemProps) {
 					<img className={styles['avatar']} src={data.avatar ? data.avatar : '/default_avatar.png'}/>
 				</div>
 				<div className={styles['col']}>
-					{data.rank && <div>Rank {data.rank}</div>}
-					{data.gamesPlayed && <div>Games {data.gamesPlayed}</div>}
+					{appearence === 'leaderboard' && <div>Rank {data.rank}</div>}
+					{appearence === 'leaderboard' && <div>Games {data.gamesPlayed}</div>}
 				</div>
 				<div className={classNames(styles['col'], styles['col-right'])}>
 					<div className={classNames(

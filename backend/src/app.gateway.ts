@@ -176,8 +176,10 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 		try {
 			const blockers = await this.userService.unblockUser(data.selfId, data.friendId);
 			const client1 = this.clientSocket.get(data.friendId);
-			client.emit('update profile', blockers[0]);
-			client1.emit('update profile', blockers[1]);
+			if (blockers) {
+				client.emit('update profile', blockers[0]);
+				client1.emit('update profile', blockers[1]);
+			}
 		} catch (e) {
 			client.emit('exception', 'Failed to block friend');
 		}

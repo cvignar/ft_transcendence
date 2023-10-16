@@ -343,39 +343,49 @@ export class ChannelService {
 		try {
 			const user = await this.prismaService.user.findUnique({
 				where: { email: email },
-				select: { blocking : true },
-			})
-			const channelsList = await this.prismaService.user.findUnique({
-				where: { email: email },
-				select: {
-					member: {
-						select: {
-							id: true,
-							type: true,
-							name: true,
-							password: true,
-							updatedAt: true,
-							picture: true,
-							owners: {
-								select: {
-									id: true,
-									email: true,
-									username: true,
-									avatar: true,
+				select: { blocking: true },
+			});
+			if (user) {
+
+				const channelsList = await this.prismaService.user.findUnique({
+					where: { email: email },
+					select: {
+						member: {
+							select: {
+								id: true,
+								type: true,
+								name: true,
+								password: true,
+								updatedAt: true,
+								picture: true,
+								owners: {
+									select: {
+										id: true,
+										email: true,
+										username: true,
+										avatar: true,
+									},
+								},
+								messages: {
+									where: {
+										NOT: {
+											userId: {
+												in: user.blocking,
+											},
+										},
+									},
+									orderBy: { createdAt: 'desc' },
+									select: { msg: true },
+									take: 1,
 								},
 							},
-							messages: {
-								where: { NOT: { userId: { in: user.blocking } } },
-								orderBy: { createdAt: 'desc' },
-								select: { msg: true },
-								take: 1,
-							},
+							orderBy: { updatedAt: 'desc' },
 						},
-						orderBy: { updatedAt: 'desc' },
 					},
-				},
-			});
-			return channelsList;
+				});
+				return channelsList;
+			}
+			return undefined;
 		} catch (e) {
 			throw new WsException(e.message);
 		}
@@ -801,7 +811,10 @@ export class ChannelService {
 						{ cid: muteData.channelId },
 					],
 				},
-				select: { id: true },
+				select: {
+					id: true,
+					finishAt: true,
+				},
 			});
 			if (!mute) {
 				const newMute = await this.prismaService.mute.create({
@@ -827,6 +840,16 @@ export class ChannelService {
 						});
 					return updatedChannel;
 				}
+			} else {
+				await this.prismaService.mute.update({
+					where: { id: mute.id },
+					data: {
+						finished:
+							mute.finishAt.getTime() <
+							new Date(Date.now()).getTime(),
+						checkAt: new Date(Date.now()),
+					},
+				});
 			}
 			return undefined;
 		}
@@ -843,7 +866,7 @@ export class ChannelService {
 					],
 				},
 				data: {
-					checkAt: new Date(),
+					checkAt: new Date(Date.now()),
 				},
 			});
 		} catch (error) {
@@ -1261,6 +1284,9 @@ export class ChannelService {
 			const user = await this.userService.getUserByEmail(
 				messageData.email,
 			);
+			if (!user) {
+				return;
+			}
 			let member = false;
 			const channel = await this.getChannelById(messageData.channelId);
 			for (let i = 0; i < channel.members.length; i++) {
@@ -1278,11 +1304,17 @@ export class ChannelService {
 				}
 			}
 			for (let i = 0; i < channel.muted.length; i++) {
-				if (
-					channel.muted[i].userId == user.id &&
-					channel.muted[i].finished === false
-				) {
-					return;
+				if (channel.muted[i].userId == user.id) {
+					const mute = channel.muted[i];
+					if (
+						mute.finishAt.getTime() <= new Date(Date.now()).getTime()
+					) {
+						await this.prismaService.mute.delete({
+							where: { id: mute.id },
+						});
+					} else {
+						return;
+					}
 				}
 			}
 			const message = await this.prismaService.message.create({

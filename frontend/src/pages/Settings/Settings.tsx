@@ -130,7 +130,7 @@ export function Settings() {
 	useEffect(() => {
 		if (user.qrUri) {
 			QRCode.toCanvas(document.getElementById('qrcode'), user.qrUri, function (error: any) {
-				if (error) console.error(error)
+				if (error) console.error(error);
 				console.log('success!');
 			});
 		}
@@ -221,7 +221,7 @@ export function Settings() {
 								onClick={() => {
 									dispatch(getUserProfile(friend.id));
 								}}>
-								<LeaderboardItem data={friend}/>
+								<LeaderboardItem appearence='friend' data={friend}/>
 							</CardNavLink>
 						))
 						: <></>}

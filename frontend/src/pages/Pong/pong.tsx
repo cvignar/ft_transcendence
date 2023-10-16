@@ -18,7 +18,7 @@ export function Pong() {
 
 	return (
 		<div className={styles['pong-page']}>
-			<div id="PARTNERS" className={styles['choose']}>Choose Your Partner: </div>
+			<div id="PARTNERS" className={styles['choose']}>Choose Your Partner who is in Training or Auto game: </div>
 			<hr/>
 			<button id="LEFT" className={classNames(styles['button'], styles['left_player'])}>|</button>
 			<button id="RIGHT" className={classNames(styles['button'], styles['right_player'])}>|</button>

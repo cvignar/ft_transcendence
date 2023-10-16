@@ -209,7 +209,7 @@ export class UserService {
 					id: userId1,
 				},
 			});
-			if (user.blocking.includes(userId2)) {
+			if (user && user.blocking.includes(userId2)) {
 				return true;
 			}
 			return false;
@@ -246,6 +246,9 @@ export class UserService {
 				id: userId,
 			},
 		});
+		if (!user1) {
+			return undefined;
+		}
 		const index1 = user1.blocking.indexOf(blockId);
 		if (index1 != -1) {
 			user1.blocking.splice(index1, 1);
@@ -263,6 +266,9 @@ export class UserService {
 				id: blockId,
 			},
 		});
+		if (!user2) {
+			return undefined;
+		}
 		const index2 = user2.blocked.indexOf(userId);
 		if (index2 != -1) {
 			user2.blocked.splice(index2, 1);
