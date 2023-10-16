@@ -17,6 +17,7 @@ import { ChannelShortInfo } from '../../components/ChannelShortInfo/ChannelShort
 import CardNavLink from '../../components/CardNavLink/CardNavLink';
 import classNames from 'classnames';
 import { Outlet } from 'react-router';
+import { LeaderboardItem } from '../Leaderboard/LeaderboardItem/LeaderboardItem';
 
 interface PreviousUserData {
 	username: string | undefined,
@@ -59,16 +60,11 @@ export function Settings() {
 		}
 		const updateData: UpdateUser = {
 			id: user.profile?.id,
-			username: username, //FIXME!!! username from the form
-			avatar: user.profile?.avatar, //FIXME!!! avatar from the form
+			username: username,
+			avatar: user.profile?.avatar,
 			prefferedTableSide: parseInt(e.currentTarget.side.value),
 			pongColorScheme: parseInt(e.currentTarget.scheme.value)
 		};
-		// if (e.currentTarget.enable.checked === true) {
-		// 	dispatch(enable2fa());
-		// } else {
-		// 	dispatch(disable2fa());
-		// }
 		if (e.currentTarget.twoFAbox.checked === true && twoFA === false) {
 			dispatch(enable2fa());
 			setTwoFA(true);
@@ -77,7 +73,6 @@ export function Settings() {
 			setTwoFA(false);
 			dispatch(disable2fa());
 		}
-		// console.log('new player', user.profile);
 		if (updateData.username && /\S/.test(updateData.username) === true && 
 			(updateData.username != user.profile?.username ||
 			updateData.prefferedTableSide !== user.profile?.prefferedTableSide ||
@@ -94,12 +89,6 @@ export function Settings() {
 		const user_id = Number(getCookie('userId'))
 		if (user_id && target.files && target.files.length) {
 			const avatar: File = target.files[0];
-			// console.log(avatar.size)
-			// if (avatar.size > 4194304) {
-			// 	alert('File could not be bigger than 4MB!');
-			// 	return ;
-			// }
-
 			const formData = new FormData();
 			formData.append('avatar', avatar, );
 			const file_name = dispatch(uploadAvatar(formData));
@@ -109,15 +98,14 @@ export function Settings() {
 			const avatar_url = `http://${import.meta.env.VITE_BACK_HOST}:${import.meta.env.VITE_BACK_PORT}/user/avatars/` + user_id + "." + extension + '?';
 			let update_user: UpdateUser = {
 				id: user.profile?.id,
-				username: user.profile?.username, //FIXME!!! username from the form
-				avatar: avatar_url, //FIXME!!! avatar from the form
+				username: user.profile?.username,
+				avatar: avatar_url,
 				prefferedTableSide: user.profile?.prefferedTableSide,
 				pongColorScheme: user.profile?.pongColorScheme,
 			};
 			console.log(`new user avatar url: ${avatar_url}`);
 			dispatch(updateProfile(update_user));
 			dispatch(getProfile(user_id));
-			// setTimeout(() => {window.URL.revokeObjectURL(avatar_url);}, 500);
 		}
 	}
 
@@ -145,12 +133,6 @@ export function Settings() {
 		console.log(previousUserData.username, user.profile?.username);
 	}, [user.profile]);
 
-	// useEffect(() => {
-	// 	if (user.profile) {
-	// 		dispatch(userActions.getGameHistory(user.profile.id));
-	// 	}
-	// }, [dispatch]);
-
 	useEffect(() => {
 		if (user.qrUri) {
 			QRCode.toCanvas(document.getElementById('qrcode'), user.qrUri, function (error: any) {
@@ -164,9 +146,6 @@ export function Settings() {
 		if (error !== '') {
 			setTimeout(() => (setError('')), 2000);
 		}
-		// if (user.profile) {
-		// 	dispatch(userActions.getFriends(user.profile.id));
-		// }
 	}, [user.profile, error]);
 	return (
 		<>
@@ -246,10 +225,9 @@ export function Settings() {
 								className={classNames(styles['preview-button'])}
 								key={friend.id}
 								onClick={() => {
-									// setActive(friend.id);
 									dispatch(getUserProfile(friend.id));
 								}}>
-								<ChannelShortInfo appearence='list' props={friend}/>
+								<LeaderboardItem data={friend}/>
 							</CardNavLink>
 						))
 						: <></>}

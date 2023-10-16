@@ -25,8 +25,8 @@ export function LeaderboardItem({data}: leaderboardItemProps) {
 					<img className={styles['avatar']} src={data.avatar ? data.avatar : '/default_avatar.png'}/>
 				</div>
 				<div className={styles['col']}>
-					<div>Rank {data.rank}</div>
-					<div>Games {data.gamesPlayed}</div>
+					{data.rank && <div>Rank {data.rank}</div>}
+					{data.gamesPlayed && <div>Games {data.gamesPlayed}</div>}
 				</div>
 				<div className={classNames(styles['col'], styles['col-right'])}>
 					<div className={classNames(

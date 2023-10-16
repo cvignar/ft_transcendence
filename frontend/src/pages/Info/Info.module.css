@@ -18,8 +18,9 @@
 }
 
 .text {
-	/* display: flex; */
 	margin-top: 10px;
+	font-size: 14px;
+    line-height: 18px;
 }
 
 .row {
@@ -29,7 +30,6 @@
 }
 
 .img {
-	/* display: flex; */
 	float: left;
 	margin-right: 10px;
 	height: 190px;
@@ -38,4 +38,6 @@
 
 .link {
 	color: var(--text-color);
+	font-size: 14px;
+    line-height: 18px;
 }
