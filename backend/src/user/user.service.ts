@@ -19,6 +19,17 @@ export class UserService {
 		});
 	}
 
+	async logout(userId) {
+		await this.prismaService.user.updateMany({
+			where: {
+				id: userId,
+			},
+			data: {
+				jwtAccess: null,
+			}
+		});
+	}
+
 	async getUserByEmail(userEmail: string): Promise<User> {
 		const user = await this.prismaService.user.findUnique({
 			where: { email: userEmail },
@@ -192,30 +203,6 @@ export class UserService {
 		return [user1, user2];
 	}
 
-	// async isBlocked(userId1: number, userId2: number) {
-	// 	try {
-	// 		const user = await this.prismaService.user.findUnique({
-	// 			where: {
-	// 				id: userId1,
-	// 			},
-	// 		});
-	// 		if (user.blocks.includes(userId2)) {
-	// 			return true;
-	// 		}
-	// 		const user2 = await this.prismaService.user.findUnique({
-	// 			where: {
-	// 				id: userId2,
-	// 			},
-	// 		});
-	// 		if (user2.blocks.includes(userId1)) {
-	// 			return true;
-	// 		}
-	// 		return false;
-	// 	} catch (e) {
-	// 		throw new ForbiddenException('isBlocked error: ' + e);
-	// 	}
-	// }
-
 	async isBlocking(userId1: number, userId2: number) {
 		try {
 			const user = await this.prismaService.user.findUnique({
@@ -226,14 +213,6 @@ export class UserService {
 			if (user.blocking.includes(userId2)) {
 				return true;
 			}
-			// const user2 = await this.prismaService.user.findUnique({
-			// 	where: {
-			// 		id: userId2,
-			// 	},
-			// });
-			// if (user2.blocking.includes(userId1)) {
-			// 	return true;
-			// }
 			return false;
 		} catch (e) {
 			throw new ForbiddenException('isBlocking error: ' + e);

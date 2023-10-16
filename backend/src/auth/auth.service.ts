@@ -3,6 +3,7 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import * as argon2 from 'argon2';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -27,13 +28,7 @@ export class AuthService {
 			throw new UnauthorizedException('Wrong login');
 		}
 		const payload = { sub: user.id, username: user.username };
-		// return {
-		// 	access_token: await this.jwtService.signAsync(payload),
-		// 	id: user.id,
-		// };
-
 		const access_token = this.jwtService.sign(payload);
-
 		return await this.userService.updateJWTAccess(user.id, access_token);
 	}
 
@@ -44,7 +39,6 @@ export class AuthService {
 	): Promise<any> {
 		const user = await this.userService.getUserByEmail(email);
 		if (user) {
-			// return user;
 			const payload = { sub: user.id, username: user.username };
 			const token = await this.jwtService.signAsync(payload);
 			return this.userService.updateJWTAccess(user.id, token);

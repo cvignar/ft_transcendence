@@ -21,6 +21,7 @@ const uri = `${back_prefix}/auth/intra42`;
 const uri2fa = `${back_prefix}/auth/2fa`;
 const uriEnable2fa = `${back_prefix}/user/enable2fa`;
 const uriDisable2fa = `${back_prefix}/user/disable2fa`;
+const uriLogout = `${back_prefix}/auth/logout`;
 
 export enum UserEvents {
 	updateProfile = 'update profile',
@@ -67,7 +68,19 @@ const initialState: UserState = {
 export const auth = createAsyncThunk("auth/login", async () => {
 	try {
 		const { data } = await axios.get<AuthResponse>(`${uri}`);
-		console.log(data);
+		return { data: data };
+	} catch (e) {
+		if (e instanceof AxiosError) {
+			throw new Error(e.response?.data.message);
+		}
+	}
+});
+
+export const logoutAPI = createAsyncThunk("auth/logout", async (userId: number) => {
+	try {
+		const { data } = await axios.post<any>(`${uriLogout}`, {
+			userId: userId
+		});
 		return { data: data };
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -158,14 +171,11 @@ export const updateProfile = createAsyncThunk("/updateProfile", async (params: U
 
 export const uploadAvatar = createAsyncThunk("/uploadAvatar", async (img_data: FormData) => {
 	try {
-		// console.log("id:", getCookie('userId'));
 		const { data } = await axios.post<any>(`${BACK_PREFIX}/user/uploadAvatar/${getCookie('userId')}`, img_data, {
 			headers: {
 				'Content-Type': 'multipart/form-data'
 			}
 		});
-
-		// console.log(`DATA: ${data.path}`)
 		return data;
 	} catch (e) {
 		if (e instanceof AxiosError) {
@@ -329,6 +339,12 @@ export const userSlice = createSlice({
 		builder.addCase(uploadAvatar.rejected, (state, action) => {
 			state.profileError = action.error.message;
 			console.log(action.error);
+		});
+		builder.addCase(logoutAPI.fulfilled, (state, action) => {
+			return ;
+		});
+		builder.addCase(logoutAPI.rejected, (state, action) => {
+			return ;
 		});
 	},
 });

@@ -5,6 +5,7 @@ import {
 	Post,
 	HttpCode,
 	HttpStatus,
+	ParseIntPipe,
 	UseGuards,
 	Get,
 	Request,
@@ -41,7 +42,6 @@ export class AuthController {
 		private readonly configService: ConfigService,
 	) {}
 
-	//@HttpCode(HttpStatus.OK)
 	@Post('login')
 	signIn(
 		@Body()
@@ -58,9 +58,14 @@ export class AuthController {
 		);
 	}
 
-	@Get('logout')
-	logout() {
-		
+	@Post('logout')
+	logout(
+		@Body('userId', ParseIntPipe) userId: number
+	) {
+		if (!userId) {
+			throw new UnauthorizedException();
+		}
+		return this.userService.logout(userId);
 	}
 
 	@Get('intra42')

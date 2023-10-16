@@ -4,7 +4,7 @@ import { NavLink, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import { channelActions } from '../../store/channels.slice';
 import { AppDispatch } from '../../store/store';
-import { userActions } from '../../store/user.slice';
+import { logoutAPI, userActions } from '../../store/user.slice';
 import { Pong } from '../Pong/pong';
 import styles from './Layout.module.css';
 import { getCookie, removeCookie } from 'typescript-cookie';
@@ -13,19 +13,14 @@ import { useEffect } from 'react';
 export function Layout() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
-	//const profile = useSelector((s: RootState) => s.user.profile);
-	//const items = useSelector((s: RootState) => s.cart.items);
 
-	//useEffect(() => {
-	//	dispatch(getProfile());
-	//}, [dispatch]);
 	const logout = () => {
-		dispatch(userActions.logout());
+		dispatch(logoutAPI(Number(getCookie('userId'))));
 		dispatch(channelActions.logout());
+		dispatch(userActions.logout());
 		removeCookie('accessToken');
 		removeCookie('userId');
 		window.location.reload();
-		//navigate('/Auth');
 	};
 
 	useEffect(() => {
@@ -37,29 +32,6 @@ export function Layout() {
 
 	return <div className={styles['layout']}>
 		<div className={styles['sidebar']}>
-			{/*<div className={styles['user']}>
-				<img className={classNames(styles['avatar'], styles['svg'])} src='/avatar.png' alt='User avatar'/>
-				<div className={styles['name']}>{profile?.name}</div>
-				<div className={styles['email']}>{profile?.email}</div>
-			</div>
-			<div className={styles['menu']}>
-				<NavLink to='/' className={({isActive}) => classNames(styles['link'], {
-					[styles['active']]: isActive
-				})}>
-					<img src='/menu.svg' alt='menu button' className={classNames(styles['svg'])}/>
-					Menu</NavLink>
-				<NavLink to='/cart' className={({isActive}) => classNames(styles['link'], {
-					[styles['active']]: isActive
-				})}>
-					<img src='/cart.svg' alt='cart button' className={classNames(styles['svg'])}/>
-					Cart {
-						items.length > 0
-							? <span className={styles['cart-count']}>{items.reduce((acc, item) => acc += item.count, 0)}</span>
-							: <></>
-					}
-				</NavLink>
-
-			</div>*/}
 			<NavLink to='/Chat' className={({isActive}) => classNames(styles['link'], {
 				[styles['active']]: isActive
 			})}>
