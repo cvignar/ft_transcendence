@@ -1,0 +1,50 @@
+.list {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+	overflow: scroll;
+}
+.preview-button {
+	height: 55px;
+	display: flex;
+	align-items: top;
+}
+
+.no-link {
+	text-decoration: none;
+	color: var(--text-color);
+}
+
+.control-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.add-channel {
+	display: flex;
+	align-items: center;
+	border: none;
+	background: var(--white-color);
+	border-radius: 3px;
+	padding: 0;
+}
+
+.add-channel:hover {
+	background: var(--white-hover-color);
+}
+
+.search {
+	display: flex;
+	justify-content: flex-start;
+}
+
+.btn {
+	display: flex;
+	justify-content: flex-end;
+	width: 10%;
+}

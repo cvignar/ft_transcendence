@@ -1,0 +1,39 @@
+
+.info {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch
+}
+
+.header {
+	font-size: 16px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: normal;
+}
+
+.message {
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	line-height: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 34px;
+
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius:50%;
+
+	width: 50px;
+	height: 50px;
+}
+
+.header-message {
+	display: flex;
+	flex-direction: column;
+	margin-left: 10px;
+}

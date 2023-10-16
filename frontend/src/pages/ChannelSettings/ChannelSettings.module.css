@@ -1,0 +1,66 @@
+.channel-card {
+	background: var(--white-hover-color);
+	border-top-left-radius: 7px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	max-height: 100%;
+	overflow-y: scroll;
+}
+
+.join {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 95%;
+}
+
+.join-btn {
+	width: 60px;
+	background: var(--white-color);
+}
+
+.join-btn:hover {
+	color: var(--white-hover-color);
+	background: var(--text-secondary-color);
+}
+
+.headling {
+	font-weight: bold;
+	margin: 0px;
+}
+
+.preview-button {
+	display: flex;
+	background: var(--white-hover-color);
+}
+
+.preview-button:hover {
+	background: var(--white-color);
+}
+
+.members {
+	display: flex;
+	flex-direction: column;
+	margin-left: 5px;
+	width: 100%;
+}
+
+label.radio-set {
+	font-weight: bold;
+}
+
+.button {
+	width: 50%;
+}
+
+.guard {
+	display: flex;
+	flex-direction: column;
+	margin-left: auto;
+	align-items: flex-end;
+}
+
+.error {
+	color: red;
+}

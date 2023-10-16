@@ -1,0 +1,58 @@
+:root {
+  --font: 'Open Sans', sans-serif;
+
+  --svg-filter: var(--separator-color-filter);
+
+  --primary-color: #2bd7d7;
+  --primary-color-filter:  invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);
+  
+  --secondary-color: #9effff;
+  --secondary-color-filter:  invert(72%) sepia(37%) saturate(796%) hue-rotate(127deg) brightness(94%) contrast(93%);
+
+  --primary-hover-color: #39b1b1;
+  --primary-hover-color-filter:  invert(76%) sepia(16%) saturate(1546%) hue-rotate(128deg) brightness(78%) contrast(86%);
+
+  --white-color:  #e4dbc3;
+  --white-color-filter:  invert(92%) sepia(4%) saturate(1892%) hue-rotate(358deg) brightness(94%) contrast(80%);
+
+  --white-hover-color: #FFF6E0;
+  --white-hover-color-filter:invert(96%) sepia(8%) saturate(1352%) hue-rotate(311deg) brightness(107%) contrast(102%);
+
+  --text-color: #272829;
+  --text-color-filter: invert(12%) sepia(5%) saturate(292%) hue-rotate(169deg) brightness(101%) contrast(90%);
+
+  --text-secondary-color: #4a4c4e;
+  --text-secondary-color-filter: invert(31%) sepia(6%) saturate(252%) hue-rotate(169deg) brightness(91%) contrast(93%);
+
+  --separator-color: #635d4e;
+  --separator-color-filter: invert(39%) sepia(5%) saturate(1339%) hue-rotate(5deg) brightness(90%) contrast(93%);
+
+  --error-color: #ff816b;
+  --error-color-filter: invert(74%) sepia(47%) saturate(5111%) hue-rotate(316deg) brightness(98%) contrast(119%);
+
+  --star-color-filter: invert(84%) sepia(61%) saturate(2773%) hue-rotate(334deg) brightness(103%) contrast(101%);
+
+  --m-r: 10px; 
+}
+
+html {
+    scrollbar-width: none;
+    overflow: -moz-scrollbars-none;
+    overflow: hidden;
+}
+
+body {
+  scrollbar-width: none;
+  font-family: var(--font);
+  color: var(--text-color);
+  background: var(--white-color);
+  margin: 0;
+}
+
+::-webkit-scrollbar{
+    display: none;
+}
+
+a.mail-link {
+  text-decoration: underline;
+}

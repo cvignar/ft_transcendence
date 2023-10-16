@@ -1,0 +1,73 @@
+.avatar_setting {
+	position: relative;
+	background: none;
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+}
+
+.empty {
+	margin-top: 30px;
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+	opacity: 1;
+	display: block;
+	transition: .5s ease;
+	backface-visibility: hidden;
+}
+
+.middle_settings {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.avatar_setting:hover .avatar {
+	opacity: 0.3;
+}
+
+.avatar_setting:hover .middle_settings {
+	opacity: 1;
+}
+
+
+.input {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 3px;
+	border: none;
+	background: var(--white-color);
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin-left: 3px;
+	margin-right: 3px;
+	width: 100%;
+}
+
+.radio-set {
+	font-size: 14px;
+}
+
+.button {
+	background: var(--white-color);
+}
+
+.button:hover {
+	color: var(--white-hover-color);
+	background: var(--text-secondary-color);
+}

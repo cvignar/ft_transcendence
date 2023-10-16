@@ -1,0 +1,90 @@
+.page {
+	display: flex;
+	align-items: top;
+	justify-content: center;
+}
+
+.left-panel {
+}
+
+.head {
+	margin: 16px;
+}
+
+.right-panel {
+	min-width: max-content;
+}
+
+.channel-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.control-row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 5px
+}
+
+.add-channel {
+	display: flex;
+	width: fit-content;
+	height: fit-content;
+	border: none;
+	background: var(--white-hover-color);
+	border-radius: 5px;
+	margin-left: auto;
+	padding: 2px;
+}
+
+.add-channel:hover {
+	background: var(--primary-color);
+}
+
+.svg {
+	filter: var(--text-color-filter);
+	width: 23px;
+}
+
+
+.settings-input {
+	background: var(--white-hover-color);
+	border: none;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 5px
+}
+
+.remove-button {
+	display: flex;
+	border-radius: 50%;
+	border: none;
+	background: none;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	margin: 0;
+    position: absolute;
+    cursor: pointer;
+    top: 1%;
+    left: 90%;
+
+}
+
+.remove-button:hover {
+	background: var(--primary-color);
+}
+
+.remove-svg {
+	filter: var(--text-color-filter);
+	width: 16px;
+}
+
+fieldset {
+	border: 1px solid var(--separator-color);
+}

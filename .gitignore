@@ -1,4 +1,12 @@
+.env
+.DS_Store
+.vscode
+Icon?
+package-lock.json
 node_modules
 dist
-Icon?
-.DS_Store
+core.*
+.eslintrc.js
+.prettierrc
+nest-cli.json
+ssl

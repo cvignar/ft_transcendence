@@ -1,0 +1,26 @@
+.input {
+	font-size: 14px;
+	font-style: normal;
+	font-weight: 400;
+	color: var(--text-color);
+	border: none;
+	border-bottom: 1px solid var(--separator-color);
+	background-color: var(--white-hover-color);
+	box-shadow: 15px 20px 45px 0px rgba(233, 233, 233, 0.25);
+	border-radius: 3px;
+	padding: 4px 11px 4px 0px;
+	text-align: center;
+	width: 100%;
+}
+
+.input-wrapper {
+	position: relative;
+}
+
+.icon {
+	position: absolute;
+	left: 63%;
+	top: 5px;
+	width: 17px;
+	filter: var(--text-secondary-color-filter);
+}

@@ -1,0 +1,22 @@
+.button {
+	font-family: inherit;
+	font-style: normal;
+	font-weight: 600;
+	cursor: pointer;
+	transition: backgound 0.25s;
+	border: none;
+	color: var(--text-color);
+	border-radius: 29px;
+	height: fit-content;
+}
+
+.small {
+	font-size: 12px;
+}
+
+.big {
+	font-size: 12px;
+	text-transform: uppercase;
+	padding: 15px 30px;
+	box-shadow: 0px 10px 40px 0px rgba(122, 129, 190, 0.16);
+}

@@ -1,0 +1,60 @@
+.message-card {
+	font-size: 12px;
+	display: flex;
+	flex-direction: row;
+	margin-bottom: 5px;
+	margin-left: 3px;
+}
+
+.message {
+	font-style: normal;
+	font-weight: 400;
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	word-break: break-all;
+	flex-direction: column;
+}
+
+.msg-owner {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	font-size: 12px;
+	width: 100%;
+}
+
+.self {
+	border-radius: var(--m-r) var(--m-r) 0px var(--m-r);
+	background: #FFF;
+	margin-left: auto;
+}
+
+.other {
+	border-radius: 0px var(--m-r) var(--m-r) var(--m-r);
+	background: var(--white-color);
+	margin-right: auto;
+	margin-left: 3px;
+	align-items: flex-start;
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius:50%;
+	width: 25px;
+	height: 25px;
+}
+
+.avatar:hover {
+	cursor: pointer;
+}
+
+.svg {
+	filter: var(--white-hover-color-filter);
+	width: 15px;
+}
+
+.svg:hover {
+	cursor: pointer;
+}

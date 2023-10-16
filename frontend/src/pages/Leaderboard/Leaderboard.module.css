@@ -1,0 +1,33 @@
+.leaderboard {
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+}
+
+.other {
+	background: var(--white-hover-color);
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+	font-size: 14px;
+	overflow: scroll;
+}
+
+.header {
+	display: flex;
+	flex-direction: row;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	width: 80%;
+}
+
+.btn-dark {
+	background: var(--white-hover-color);
+	margin-left: auto;
+}
+
+.btn-dark:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
+}

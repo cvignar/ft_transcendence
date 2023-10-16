@@ -1,0 +1,25 @@
+.card-button {
+	border-radius: 3px;
+	background: var(--white-color);
+	color: var(--text-color);
+	padding: 0px;
+	border: none;
+	text-align: start;
+}
+
+.card-button:hover {
+	background: var(--white-hover-color);
+}
+
+.active {
+	background: var(--white-hover-color);
+}
+
+.no-link {
+	text-decoration: none;
+	color: var(--text-color);
+}
+
+.active {
+	background: var(--white-hover-color);
+}

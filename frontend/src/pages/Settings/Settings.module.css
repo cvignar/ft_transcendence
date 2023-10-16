@@ -1,0 +1,174 @@
+.avatar_setting {
+	position: relative;
+	background-color: white;
+	border-radius: 50%;
+	width: 70px;
+	height: 70px;
+}
+
+.empty {
+	margin-top: 30px;
+}
+
+.avatar {
+	object-position: top center;
+	object-fit: cover;
+	border-radius:50%;
+	width: 70px;
+	height: 70px;
+	opacity: 1;
+	display: block;
+	transition: .5s ease;
+	backface-visibility: hidden;
+}
+
+.middle_settings {
+  transition: .5s ease;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.avatar_setting:hover .avatar {
+	opacity: 0.3;
+}
+
+.avatar_setting:hover .middle_settings {
+	opacity: 1;
+}
+
+.profile-card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: 50%;
+	height: 100%;
+	font-size: 14px;
+	overflow: scroll;
+}
+
+.submit {
+	background: var(--white-hover-color);
+	width: 50%;
+}
+
+.submit:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
+}
+
+.profile-form {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+fieldset {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	border: none;
+	gap: 10px;
+	padding: 0;
+}
+
+legend {
+	display: flex;
+}
+
+.radio-set {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 10px;
+	font-weight: normal;
+}
+
+.other {
+	background: var(--white-hover-color);
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	height: 100%;
+	font-size: 14px;
+	overflow: scroll;
+}
+
+.done {
+	filter: var(--primary-color-filter);
+}
+
+.label-head {
+	font-weight: bold;
+}
+
+.btn-dark {
+	background: var(--white-color);
+}
+
+.btn-dark:hover {
+	background: var(--text-secondary-color);
+	color: var(--white-hover-color);
+}
+
+.done-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	background: var(--white-color);
+	border-radius: 50%;
+	width: 25px;
+	height: 25px;
+}
+
+.done-button:hover {
+	background: var(--white-hover-color);
+}
+
+.stats {
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+	margin-left: 10px;
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	height: 30px;
+	border-bottom: 1px solid var(--white-color);
+}
+
+.auth-row {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+p {
+	padding-right: 10px;
+}
+
+.error {
+	color: red;
+	font-size: 90%;	
+}
+
+.username-input {
+	height: 24px;
+	border: none;
+	background: var(--white-hover-color);
+}
+
+.preview-button {
+	width: 100%;
+}
+

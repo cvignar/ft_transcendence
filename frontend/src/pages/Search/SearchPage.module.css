@@ -1,0 +1,57 @@
+.body {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	max-height: 679px;
+}
+
+.pong {
+	display: flex;
+}
+
+.chat {
+	min-width: 400px;
+	max-width: 800px;
+	width: 800px;
+	display: flex;
+	flex-direction: row;
+	margin-left: 10px;
+	max-height: 677px;
+}
+
+.other {
+	background: var(--white-hover-color);
+	display: flex;
+	width: 50%;
+	height: 100%;
+}
+
+.pong-ratings {
+	display: flex;
+	flex-direction: column;
+	max-height: -webkit-fill-available;
+}
+
+.add-channel {
+	display: flex;
+	width: fit-content;
+	height: fit-content;
+	border: none;
+	background: var(--white-hover-color);
+	border-radius: 5px;
+	margin-left: auto;
+	padding: 2px;
+}
+
+.add-channel:hover {
+	background: var(--primary-color);
+}
+
+.search-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.head {
+	margin: 16px;
+}

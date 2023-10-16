@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id			Int			@id @default(autoincrement())
+  id42    Int
+
+	createdAt	DateTime	@default(now())
+	updatedAt	DateTime	@updatedAt
+
+	email		String		@unique
+	username	String?		@unique  
+	hash		String
+	avatar		String?
+
+	hashedRtoken	String?
+	twoFAsecret		String?
+	twoFA			Boolean?	@default(false)
+	jwtAccess		String? 	@default("")
+
+  prefferedTableSide  Int @default(3)
+  pongColorScheme Int @default(1)
+	gamesWon		Int     @default(0)
+	gamesLost		Int     @default(0)
+	gamesPlayed		Int     @default(0)
+	gameHistory		Int[]
+	
+
+	winRate			Float?
+	playTime		Int		@default(0)
+	score			Int		@default(1200)
+	rank			Int?
+
+	friends		Int[]
+	adding		Int[]	
+	added		Int[]		
+
+	blocks		Int[] //FIXME!!!! remove field!
+	blocking	Int[] // who are blocked by this user
+	blocked		Int[] // who blocked this user
+
+  owner       Channel[] @relation("owner")
+  admin       Channel[] @relation("admin")
+  member      Channel[] @relation("member")
+  invited     Channel[] @relation("invite")
+  chanBlocked Channel[] @relation("blocked") // channels where the user is blocked
+
+  Muted       Mute[]	@relation("muteUser")
+
+  messages    Message[]
+
+	@@unique([id, email])
+	@@map("users")
+}
+
+model Channel {
+  id          Int       @id  @default(autoincrement())
+
+  name        String    @default(uuid())
+  picture     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  type        String
+  password    String?
+
+  owners      User[]      @relation("owner")
+  admins      User[]      @relation("admin")
+  members     User[]      @relation("member")
+  inviteds    User[]      @relation("invite")
+  blocked     User[]      @relation("blocked")
+
+  muted       Mute[]	@relation("muted")
+
+  messages    Message[]
+
+	@@unique([id])
+}
+
+model Message {
+  id          Int     @id  @default(autoincrement())
+
+  msg         String
+  history     String[]
+
+  unsent      Boolean   @default(false)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  owner       User      @relation(fields: [userId], references: [id])
+  userId      Int
+  channel     Channel   @relation(fields: [cid], references: [id])
+  cid         Int
+	@@unique([id])
+}
+
+model Game {
+	id	Int			@id @default(autoincrement())
+
+	player1	Int
+	player2 Int
+	score1	Int
+	score2	Int
+
+	startTime	DateTime
+	endTime		DateTime
+	duration	Int?
+	@@unique([id])
+}
+
+model Mute {
+  id          Int       @id   @default(autoincrement())
+  finishAt    DateTime
+  checkAt     DateTime  @default(now())
+  finished    Boolean   @default(false)
+  muted       User      @relation("muteUser", fields: [userId], references: [id])
+  userId      Int
+  channel     Channel   @relation("muted", fields: [cid], references: [id])
+  cid         Int
+	@@unique([id])
+}
