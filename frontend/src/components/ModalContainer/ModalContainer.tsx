@@ -18,7 +18,6 @@ function ModalContainer({children, modalIsOpen, setIsOpen}: ModalContainerProps)
 	let subtitle;
 
 	const afterOpenModal = () => {
-	// references are now sync'd and can be accessed.
 		subtitle.style.color = '#f00';
 	};
 

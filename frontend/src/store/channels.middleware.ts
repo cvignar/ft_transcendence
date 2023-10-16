@@ -11,23 +11,13 @@ import { Profile } from '../interfaces/user.interface';
 const channelsMiddleware: Middleware = (store) => {
 	let socket: Socket;
 	return (next) => (action) => {
-		console.log(action);
-
 		let isConnectionEstablished = socket && socket.connected ? true : false;
 		if (channelActions.startConnecting.match(action) && !isConnectionEstablished) {
 			socket = io(BACK_SOCKET_PREFIX, sockOpt);
 			socket.on('connect', () => {
 				store.dispatch(channelActions.connectionEstablished());
 				store.dispatch(channelActions.getChannels(store.getState().user.profile.email));
-
-				//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
-				//	store.dispatch(channelActions.getChannels({ channels }));
-				//});
 			});
-			// socket.on('disconnect', (reason) => {
-			// 	console.log(reason);
-			// 	socket.connect();
-			// });
 			socket.on(ChannelsEvent.updateStatus, (statusMap: any) => {
 				store.dispatch(userActions.setStatuses(statusMap));
 			});
@@ -49,11 +39,6 @@ const channelsMiddleware: Middleware = (store) => {
 					store.dispatch(channelActions.getChannels(profile.email));
 				}
 			});
-			// socket.on(ChannelsEvent.recieveMessage, (message: Message) => {
-			// 	if (message && message.cid === store.getState().channel.selectedChannel.id) {
-			// 		store.dispatch(channelActions.recieveMessage(message));
-			// 	}
-			// });
 			socket.on(ChannelsEvent.updatePreview, (channels: ChannelPreview[]) => {
 				store.dispatch(channelActions.setChannels({ channels: channels }));
 			});
@@ -78,21 +63,10 @@ const channelsMiddleware: Middleware = (store) => {
 			socket.on(ChannelsEvent.channelCreated, (channel: ChannelPreview) => {
 				store.dispatch(channelActions.setSelectedChannel(channel));
 			});
-			// socket.on(ChannelsEvent.update, () => {
-			// store.dispatch(channelActions.updateState());
-			//socket.emit(ChannelsEvent.getPreview, store.getState().user.email, (channels: ChannelPreview[]) => {
-			//	store.dispatch(channelActions.getChannels({ channels }));
-			//});
-			// });
 			socket.on(ChannelsEvent.getError, (error: any) => {
-				const err: any[] = [];
-				console.log(error);
-				if (error.errors) {
-					for (const e of error.errors) {
-						err.push(e.message);
-					}
-					store.dispatch(channelActions.setError(err));
-				} else {
+				if (error.errors && error.errors[0]) {
+					store.dispatch(channelActions.setError(error.errors[0].message));
+				} else if (typeof error === 'string') {
 					store.dispatch(channelActions.setError(error));
 				}
 			});
@@ -120,7 +94,6 @@ const channelsMiddleware: Middleware = (store) => {
 			});
 		}
 		if (channelActions.createChannel.match(action) && isConnectionEstablished) {
-			console.log('create channel', action.payload);
 			socket.emit(ChannelsEvent.createChannel, action.payload);
 		}
 		if (channelActions.getChannels.match(action) && isConnectionEstablished) {

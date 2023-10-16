@@ -1,8 +1,4 @@
 .window{
-	/*width: 400px;*/
-	/*border: 1px solid black;*/
-	/*min-height: 80vh;*/
-	/*min-width: -webkit-fill-available;*/
 	background: var(--white-hover-color);
 	border-top-left-radius: 7px;
 	width: 100%;
@@ -30,7 +26,6 @@ hr {
 	margin: 0;
     display: flex;
     flex-direction: column;
-    /*align-items: stretch;*/
 	height: 100%;
 	overflow: scroll;
 	justify-content: flex-start;

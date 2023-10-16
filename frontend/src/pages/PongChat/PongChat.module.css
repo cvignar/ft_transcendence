@@ -17,7 +17,6 @@
 	flex-direction: row;
 	margin-left: 10px;
 	max-height: 677px;
-	/*border: 1px solid red;*/
 }
 
 .other {
@@ -25,7 +24,6 @@
 	display: flex;
 	width: 50%;
 	height: 100%;
-	/*border: 1px solid red;*/
 }
 
 .pong-ratings {

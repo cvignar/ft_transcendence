@@ -29,12 +29,6 @@ export class ChannelService {
 
 	async showChannels() {
 		const channels = await this.prismaService.channel.findMany();
-		//let count = 0;
-		//for (const [index, channel] of channels.entries()) {
-		//  console.log(`channel ${index}: ${channel.name}`);
-		//  count = index + 1;
-		//}
-		//console.log(`total ${count} channels`);
 		return channels;
 	}
 
@@ -86,8 +80,7 @@ export class ChannelService {
 			});
 			return channel.name;
 		} catch (error) {
-			console.error('getChannelNameById error:', error);
-			// throw new WsException(error.message);
+			console.error('getChannelNameById error:', error.message);
 		}
 	}
 
@@ -161,7 +154,6 @@ export class ChannelService {
 			});
 			return channel.id;
 		} catch (error) {
-			console.log(`createDirectChannel error: ${error}`);
 			throw new WsException(error.message);
 		}
 	}
@@ -191,21 +183,6 @@ export class ChannelService {
 			return channel.id;
 		} catch (e) {
 			throw new WsException('Cannot create a channel');
-		}
-	}
-
-	async inviteUser(channelData: UpdateChannel.Request) {
-		try {
-			const channel = await this.prismaService.channel.update({
-				where: { id: channelData.id },
-				data: {
-					inviteds: { connect: { id: channelData.memberId } },
-				},
-			});
-			return channel.id;
-		} catch (error) {
-			console.error(`inviteUser error; ${error}`);
-			// throw new WsException(error.message);
 		}
 	}
 
@@ -268,7 +245,6 @@ export class ChannelService {
 				await this.prismaService.message.deleteMany({
 					where: { channelId: channelData.id },
 				});
-				/* update user! */
 				const deletedChannel = await this.prismaService.channel.delete({
 					where: { id: channelData.id },
 				});
@@ -276,7 +252,6 @@ export class ChannelService {
 			}
 		} catch (error) {
 			console.error(`disconnectMember error: ${error}`);
-			// throw new WsException(error.message);
 		}
 	}
 
@@ -288,7 +263,7 @@ export class ChannelService {
 			});
 			return channel.picture;
 		} catch (error) {
-			console.log(`update avatar error: ${error}`);
+			console.log(`update avatar error: ${error.message}`);
 		}
 	}
 
@@ -300,8 +275,7 @@ export class ChannelService {
 			});
 			return channel.id;
 		} catch (error) {
-			console.log(`inviteMember error: ${error}`);
-			// throw new WsException(error.message)
+			console.log(`inviteMember error: ${error.message}`);
 		}
 	}
 
@@ -320,11 +294,9 @@ export class ChannelService {
 			});
 			return channel.owners[0];
 		} catch (error) {
-			console.log(`getDirectChannelTarget error: ${error}`);
 			throw new WsException(error.message);
 		}
 	}
-					// owners: { connect: ids.map((id) => ({ id: id })) },
 
 	async getMessages(channelId: number, viewerId: number): Promise<MessagePreview.Response[]> {
 		const user = await this.prismaService.user.findUnique({
@@ -359,16 +331,11 @@ export class ChannelService {
 						},
 					},
 				});
-				// messages = channel.messages;
-				// for (const blockId of user.blocking) {
-				// 	messages = messages.filter((message) => (message.owner.id != blockId))
-				// }
-				// console.log(messages);
 				return channel.messages;
 			}
 			return undefined;
 		} catch (error) {
-			console.log(`getMessages error: ${error}`);
+			console.log(`getMessages error: ${error.message}`);
 		}
 	}
 
@@ -410,38 +377,9 @@ export class ChannelService {
 			});
 			return channelsList;
 		} catch (e) {
-			console.log(e.message);
-			//throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
-
-	//async getChannelsListById(email: string) {
-	//  try {
-	//    const channelsList = await this.prismaService.user.findUnique({
-	//      where: { email: email },
-	//      select: {
-	//        owner: {
-	//          where: { type: typeEnum.DIRECT },
-	//          select: {
-	//            id: true,
-	//            name: true,
-	//            picture: true,
-
-	//            type: true,
-	//          },
-	//        },
-	//        //owner: true,
-	//        admin: true,
-	//        member: true,
-	//        invited: true,
-	//      },
-	//    });
-	//    return channelsList;
-	//  } catch (e) {
-	//    console.log(e.message);
-	//    throw new WsException(e);
-	//  }
-	//}
 
 	async extractPreviews(channelsList: any, email: string) {
 		const previews: ChannelPreview.Response[] = [];
@@ -450,7 +388,6 @@ export class ChannelService {
 				for (let i = 0; i < channelsList.owner.length; i++) {
 					let name = '';
 					let avatar = '';
-					console.log(channelsList.owner[i]);
 					let ownerId = -1;
 					if (channelsList.owner[i].owners.length > 1) {
 						ownerId =
@@ -458,9 +395,6 @@ export class ChannelService {
 								? channelsList.owner[i].owners[0].id
 								: channelsList.owner[i].owners[1].id;
 					}
-					console.log(
-						`channel type: ${channelsList.owner[i].type}, channel name: ${channelsList.member[i].name}`,
-					);
 					if (channelsList.owner[i].type === typeEnum.DIRECT) {
 						if (channelsList.owner[i].owners[0].email == email) {
 							name = channelsList.owner[i].owners[1].username;
@@ -495,9 +429,6 @@ export class ChannelService {
 				for (let i = 0; i < channelsList.admin.length; i++) {
 					let name = '';
 					let avatar = '';
-					console.log(
-						`channel type: ${channelsList.admin[i].type}, channel name: ${channelsList.member[i].name}`,
-					);
 					if (channelsList.admin[i].type === typeEnum.DIRECT) {
 						if (channelsList.admin[i].owners[0].email == email) {
 							name = channelsList.admin[i].owners[1].username;
@@ -532,9 +463,6 @@ export class ChannelService {
 				for (let i = 0; i < channelsList.member.length; i++) {
 					let name = '';
 					let avatar = '';
-					console.log(
-						`channel type: ${channelsList.member[i].type}, channel name: ${channelsList.member[i].name}`,
-					);
 					if (channelsList.member[i].type === typeEnum.DIRECT) {
 						if (channelsList.member[i].owners[0].email == email) {
 							name = channelsList.member[i].owners[1].username;
@@ -595,10 +523,9 @@ export class ChannelService {
 		try {
 			const channelsList = await this.getChannelsListById(email);
 			const previews = await this.extractPreviews(channelsList, email);
-			//console.log(previews);
 			return previews;
 		} catch (e) {
-			console.log(e);
+			console.log(e.message);
 		}
 	}
 
@@ -1039,8 +966,7 @@ export class ChannelService {
 			};
 			return roles;
 		} catch (e) {
-			console.log('get role error: ', e.message);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
 
@@ -1079,8 +1005,7 @@ export class ChannelService {
 			}
 			return admins;
 		} catch (e) {
-			console.log('get members error: ', e.message);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
 
@@ -1119,8 +1044,7 @@ export class ChannelService {
 			}
 			return owners;
 		} catch (e) {
-			console.log('get members error: ', e.message);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
 
@@ -1164,7 +1088,6 @@ export class ChannelService {
 			}
 			return members;
 		} catch (e) {
-			console.log('get members error: ', e.message);
 			throw new WsException(e);
 		}
 	}
@@ -1207,7 +1130,6 @@ export class ChannelService {
 			});
 			return channels;
 		} catch (e) {
-			console.log('getBlockeds error: ', e);
 			throw new WsException(e);
 		}
 	}
@@ -1237,7 +1159,6 @@ export class ChannelService {
 				});
 			}
 		} catch (error) {
-			console.log('blockChannel error:', error);
 			throw new WsException(error.message);
 		}
 	}
@@ -1249,7 +1170,6 @@ export class ChannelService {
 			});
 			return channels;
 		} catch (e) {
-			console.log('getChannelsByType error:', e);
 			throw new WsException(e.message);
 		}
 	}
@@ -1266,7 +1186,6 @@ export class ChannelService {
 			});
 			return channels;
 		} catch (e) {
-			console.log('getChannelsByType error:', e);
 			throw new WsException(e.message);
 		}
 	}
@@ -1310,8 +1229,7 @@ export class ChannelService {
 			}
 			return searchPreviews;
 		} catch (e) {
-			console.log('get__searchSuggest error:', e);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
 
@@ -1335,8 +1253,7 @@ export class ChannelService {
 				},
 			});
 		} catch (e) {
-			console.log('getMessagePrevie error: ', e);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
 	async createMessage(messageData: CreateMessage.Request) {
@@ -1382,22 +1299,9 @@ export class ChannelService {
 			});
 			return await this.getMessagePreview(message.id);
 		} catch (e) {
-			console.log('createMessage error: ', e);
-			throw new WsException(e);
+			throw new WsException(e.message);
 		}
 	}
-
-	// async deleteMessage(messageData: MessagePreview.Response) {
-	// 	try {
-	// 		await this.prismaService.message.update({
-	// 			where: { id: messageData.id },
-	// 			data: { unsent: true },
-	// 		});
-	// 	} catch (e) {
-	// 		console.log('deleteMessage error: ', e);
-	// 		throw new WsException(e);
-	// 	}
-	// }
 
 	async updateChannel(channelData: UpdateChannel.Request, ownerId: number) {
 		const channel = await this.prismaService.channel.findUnique({
@@ -1477,31 +1381,6 @@ export class ChannelService {
 					},
 				});
 			}
-			// await this.prismaService.message.deleteMany({
-			// 	where: { cid: channel.id },
-			// });
-			// await this.prismaService.user.updateMany({
-			// 	where: {
-			// 		OR: [
-			// 			{
-
-			// 			}
-			// 		]
-			// 	}
-			// });
-			// await this.prismaService.mute.deleteMany({
-			// 	where: { cid: channel.id },
-			// });
-			// await this.prismaService.channel.update({
-			// 	where: { id: channel.id },
-			// 	data: {
-			// 		owners: { deleteMany: {} },
-			// 		admins: { deleteMany: {} },
-			// 		members: { deleteMany: {} },
-			// 		inviteds: { deleteMany: {} },
-			// 		// messages: { deleteMany: {} }
-			// 	},
-			// });
 			const deletedChannel = await this.prismaService.channel.delete({
 				where: { id: channel.id },
 			});

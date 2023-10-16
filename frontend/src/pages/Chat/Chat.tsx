@@ -52,7 +52,6 @@ export default function Chat() {
 	};
 
 	const afterOpenModal = () => {
-		// references are now sync'd and can be accessed.
 		subtitle.style.color = '#f00';
 	};
 
@@ -62,16 +61,7 @@ export default function Chat() {
 
 	const onSubmit = (event: FormEvent) => {};
 
-	useEffect(() => {
-		const timerId = setTimeout(() => {
-			if (token) {
-				// dispatch(channelActions.startConnecting());
-			}
-		}, 0);
-		return () => clearTimeout(timerId);
-	}, [dispatch, token]);
-
-	const onChange = (e: FormEvent) => { //FIXME!
+	const onChange = (e: FormEvent) => {
 		if (e.target.name === 'type') {
 			if (e.target.value === 'protected') {
 				setIsProtected(true);

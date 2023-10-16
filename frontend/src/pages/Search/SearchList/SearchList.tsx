@@ -39,14 +39,6 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 		sortedSearch = Array.from(search, x => x).sort(compareNames);
 		setFilteredSearch([...sortedSearch]);
 	}, [search]);
-	
-
-	useEffect(() => {
-		if (search?.length > 0) {
-			// console.log('array: ', search);
-			// console.log('must be sorted array: ', search.sort(compareNames));
-		}
-	}, [search]);
 
 	const onChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const name = e.currentTarget.value;
@@ -81,7 +73,6 @@ export function SearchList({ setChannel, isActive, setActive }: SearchListProps)
 					className={classNames(styles['preview-button'])}
 					key={c.key}
 					onClick={() => {
-						// channelActions.setSelectedChannel(c);
 						setActive(c.key);
 						dispatch(channelActions.getSelectedChannel(c.id));
 						dispatch(channelActions.getMessages(c.id));

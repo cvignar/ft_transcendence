@@ -63,10 +63,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 				oldClient.disconnect();
 			}
 			this.clientSocket.set(UserId, client);
-			console.log('connect userId', UserId, client.id);
 			await this.channelGateway.handleJoinSocket(UserId, client);
 		} catch (e) {
-			console.log(e);
 			return false;
 		}
 	}
@@ -74,7 +72,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async handleDisconnect(client: Socket) {
 		if (client.data.id != undefined) {
 			if (client.handshake.headers.iampong && client.handshake.headers.iampong === process.env.PONG_SECRET) {
-				console.log('IAmPong verificated');
 				this.userStatusMap.forEach((value, key, map) => {
 					if (value === Status.playing) {
 						map.set(key, Status.online);
@@ -85,9 +82,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			const serializedMap = [...this.userStatusMap.entries()];
 			this.server.emit('update-status', serializedMap);
 			this.clientSocket.delete(client.data.id);
-			console.log('disconnect userId', client.data.id, client.id);
 		}
-		//if (IN A GAME) //FIXME!!!
 		client.removeAllListeners();
 	}
 
@@ -132,9 +127,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async addFriend(
 		@MessageBody() data: {selfId: number, friendId: number},
 	) {
-		console.log('add friend event, ids: ', data.selfId, data.friendId);
 		if (await this.userService.isAdding(data.selfId, data.friendId)) {
-			console.log(this.userService.isAdding(data.selfId, data.friendId));
 			return;
 		}
 		const client = this.clientSocket.get(data.selfId);
@@ -152,7 +145,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	async removeFriend(
 		@MessageBody() data: {selfId: number, friendId: number},
 	) {
-		console.log('remove friend event, ids: ', data.selfId, data.friendId);
 		const client = this.clientSocket.get(data.selfId);
 		try {
 			await this.userService.removeFriend(data.selfId, data.friendId);
@@ -167,7 +159,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('block user')
 	async blockUser(@MessageBody() data: {selfId: number, friendId: number}) {
-		console.log('BLOCK user event, ids: ', data.selfId, data.friendId);
 		const client = this.clientSocket.get(data.selfId);
 		try {
 			const blockers = await this.userService.blockUser(data.selfId, data.friendId);
@@ -181,7 +172,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
 	@SubscribeMessage('unblock user')
 	async unblockUser(@MessageBody() data: {selfId: number, friendId: number}) {
-		console.log('unblock user event, ids: ', data.selfId, data.friendId);
 		const client = this.clientSocket.get(data.selfId);
 		try {
 			const blockers = await this.userService.unblockUser(data.selfId, data.friendId);
@@ -220,7 +210,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 			// game is finished
 			else {
 				if (gameData.player1 > 0 && gameData.player2 > 0) {
-					console.log(gameData);
 					await this.gameService.saveGame(gameData);
 				}
 				if (gameData.player1 > 0) {

@@ -76,8 +76,7 @@ export class GameService {
 			});
 			this.userService.updateRanks();
 		} catch (e) {
-			console.log(e);
-			throw new ForbiddenException('saveGame error: ', e);
+			throw new ForbiddenException('saveGame error: ', e.message);
 		}
 	}
 

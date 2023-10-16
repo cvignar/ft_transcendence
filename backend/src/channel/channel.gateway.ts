@@ -42,7 +42,6 @@ export class ChannelGateway {
 
 	async handleJoinSocket(id: number, @ConnectedSocket() client: Socket) {
 		const channels = await this.channelService.getChannelsByUserId(id);
-		// await client.join('all');
 		if (channels)
 			for (const channel of channels) {
 				await client.join(channel);
@@ -106,7 +105,6 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('create channel event', channelData.name);
 		if (
 			!channelData.name ||
 			channelData.name.length < 1 ||
@@ -136,9 +134,7 @@ export class ChannelGateway {
 		@ConnectedSocket() client: Socket,
 	) {
 		const channelId = await this.channelService.joinChannel(channelData);
-		console.log(channelData);
 		if (channelId == undefined) {
-			console.log('channelId to join: ', channelId);
 			client.emit('exception', 'Cannot join channel');
 		} else {
 			const channelName = await this.channelService.getChannelNameById(
@@ -280,20 +276,16 @@ export class ChannelGateway {
 		@MessageBody() channelData: CreateDirectChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('new dm event');
 		const channelId =
 			await this.channelService.getDirectChannel(channelData);
 		const preview = await this.channelService.getPreview(
 			channelId,
 			channelData.email,
 		);
-		console.log(preview);
 		const channelName =
 			await this.channelService.getChannelNameById(channelId);
 		await client.join(channelName);
-		// client.emit('add preview', preview);
 		client.emit('get direct channel', channelId);
-		// return channelId;
 	}
 
 	@SubscribeMessage('get messages')
@@ -407,49 +399,9 @@ export class ChannelGateway {
 		@MessageBody() email: string,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('Search request!');
 		const search = await this.channelService.getSearchPreviews(email);
 		client.emit('update search', search);
 	}
-
-	//@SubscribeMessage('get user tags')
-	//async handleUserTags(
-	//  @MessageBody() email: string,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const userTags = await this.channelService.get__userTags(email);
-	//  client.emit('user tags', userTags);
-	//}
-
-	//@SubscribeMessage('get invitation tags')
-	//async handleInvitationTags(
-	//  @MessageBody() channelId: number,
-	//  @ConnectedSocket() client: Socket,
-	//) {
-	//  const invitationTags =
-	//    await this.channelService.get__invitationTags(channelId);
-	//  client.emit('invitation tags', invitationTags);
-	//}
-
-	// @SubscribeMessage('delete msg')
-	// async handleDeleteMsg(
-	// 	@MessageBody() messageData: MessagePreview.Response,
-	// 	@ConnectedSocket() client: Socket,
-	// ) {
-	// 	const channelName = await this.channelService.getChannelNameById(
-	// 		messageData.channelId,
-	// 	);
-	// 	await this.channelService.deleteMessage(messageData);
-	// 	const fetch = await this.channelService.getMessages(
-	// 		messageData.channelId,
-	// 	);
-	// 	client.emit('get messages', fetch);
-	// 	const previews = await this.channelService.getPreviews(
-	// 		messageData.email,
-	// 	);
-	// 	client.emit('update preview', previews);
-	// 	this.server.in(channelName).emit('update channel request');
-	// }
 
 	@SubscribeMessage('make admin')
 	async makeAdmin(
@@ -566,7 +518,6 @@ export class ChannelGateway {
 		},
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('mute event');
 		if (new Date(muteData.finishAt) < new Date('now')) {
 			client.emit(
 				'exception',
@@ -599,7 +550,6 @@ export class ChannelGateway {
 			},
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('mute event');
 
 		const channel = await this.channelService.unmuteMember(
 			muteData,
@@ -622,8 +572,6 @@ export class ChannelGateway {
 		@MessageBody() channelData: UpdateChannel.Request,
 		@ConnectedSocket() client: Socket,
 	) {
-		console.log('update channel event');
-
 		const channelName = await this.channelService.updateChannel(
 			channelData,
 			client.data.id,

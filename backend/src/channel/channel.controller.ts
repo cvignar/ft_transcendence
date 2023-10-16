@@ -12,15 +12,12 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
 	ParseIntPipe,
-  //   Put,
-  //   Delete,
 } from '@nestjs/common';
 import { ChannelService } from './channel.service';
 import { Channel as ChannelModel } from '@prisma/client';
 import { CreateChannel } from 'contracts/channel.schema';
 import { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -55,11 +52,8 @@ export class ChannelController {
 		) file: Express.Multer.File,
 	)
 	{
-		// console.log(file);
 		const extension = path.extname(file.originalname);
 		const new_name = channel_id + extension;
-		
-		// const file_extension = path.extname(file.originalname);
 		const url_path = '/channel/avatars/';
 		const server_path = '/upload/channel/'
 		if (!fs.existsSync(server_path))
@@ -75,21 +69,7 @@ export class ChannelController {
   @Get('/avatars/:imgName')
 	async getAvatar(@Param('imgName') img_name, @Req() req, @Res() res) {
 		const imgPath = null;
-		console.log(`get ImagesFile: ${img_name}`);
+		// console.log(`get ImagesFile: ${img_name}`);
 		return res.sendFile(img_name, {root: '/upload/channel'})
 	}
-  //   @Post('channel/create')
-  //   async createChannel(
-  //     @Body()
-  //     channelData: {
-  //       name: string;
-  //       owner: string;
-  //     },
-  //   ): Promise<ChannelModel> {
-  //     const { name, owner } = channelData;
-  //     return this.channelService.createChannel({
-  //       name,
-  //       owner,
-  //     });
-  //   }
 }

@@ -16,7 +16,6 @@
 	border-radius: 50%;
 	width: 70px;
 	height: 70px;
-	/* flex-shrink: 2; */
 	opacity: 1;
 	display: block;
 	transition: .5s ease;

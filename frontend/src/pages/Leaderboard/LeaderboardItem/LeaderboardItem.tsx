@@ -12,7 +12,6 @@ export function LeaderboardItem({data}: leaderboardItemProps) {
 	const getStatus = (userId: number) => {
 		for (const status of statuses) {
 			if (userId === status[0]) {
-				console.log(statuses);
 				return status[1];
 			}
 		}
