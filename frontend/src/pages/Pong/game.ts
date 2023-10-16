@@ -13,14 +13,14 @@ export function game(socket: any, user: any) {
 	const score = new Score();
 
 	// Player
-	socket.emit("new player", { name: user.profile.username, id: user.profile.id, side: user.profile?.prefferedTableSide, scheme: user.profile?.pongColorScheme });
-	socket.on("player not created", function () {
-		let nickname: string | null = "";
-		while (!nickname) {
-			nickname = window.prompt("Enter Your Nickname:");
-		}
-		socket.emit("new player", { name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL });
-	});
+	socket.emit("new player", { name: user?.profile?.username, id: user?.profile?.id, side: user?.profile?.prefferedTableSide, scheme: user?.profile?.pongColorScheme });
+	// socket.on("player not created", function () {
+	// 	let nickname: string | null = "";
+	// 	while (!nickname) {
+	// 		nickname = window.prompt("Enter Your Nickname:");
+	// 	}
+	// 	socket.emit("new player", { name: nickname, id: -1, side: Side.RIGHT, scheme: GameScheme.GENERAL });
+	// });
 	socket.on('player created', function(scheme: GameScheme) {
 		if (scheme) {
 			image.changeScheme(scheme);

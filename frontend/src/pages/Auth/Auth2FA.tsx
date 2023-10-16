@@ -25,7 +25,7 @@ export function Auth2FaForm() {
 			localStorage.setItem('userToken', accessToken);
 			if (user_id) {
 				dispatch(getProfile(parseInt(user_id)));
-				navigate('/Settings/Stats');
+				// navigate('/Settings/Stats');
 			}
 		}
 		else if (user_id){

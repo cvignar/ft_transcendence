@@ -1,9 +1,9 @@
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, Navigate, Outlet, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button/Button';
 import { channelActions } from '../../store/channels.slice';
-import { AppDispatch } from '../../store/store';
+import { AppDispatch, RootState } from '../../store/store';
 import { logoutAPI, userActions } from '../../store/user.slice';
 import { Pong } from '../Pong/pong';
 import styles from './Layout.module.css';
@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 export function Layout() {
 	const navigate = useNavigate();
 	const dispatch = useDispatch<AppDispatch>();
+	const {error} = useSelector((s: RootState) => s.channel.error);
 
 	const logout = () => {
 		dispatch(logoutAPI(Number(getCookie('userId'))));
@@ -29,6 +30,15 @@ export function Layout() {
 			dispatch(channelActions.startConnecting());
 		}
 	}, [dispatch]);
+
+	useEffect(() => {
+		if (error) {
+			const timerId = setTimeout(() => {
+				dispatch(channelActions.clearError());
+			});
+			return () => clearTimeout(timerId);
+		}
+	}, error);
 
 	return <div className={styles['layout']}>
 		<div className={styles['sidebar']}>
